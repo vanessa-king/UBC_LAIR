@@ -1,4 +1,4 @@
-function grd = gridLoadDataUpward(fld,stamp_project,img_nbr,grd_nbr, average_forward_and_backward)
+function grd = gridLoadData(fld,stamp_project,img_nbr,grd_nbr, average_forward_and_backward)
 % here Keyword: function; output argument: grd; function
 % name:gridLoadData;input argument: fld, stamp_project,img_nbr,grd_nbr.
  
@@ -88,11 +88,10 @@ if find(abs(diff(sign(diff(Vraw))))) % Checks if V is swept forwards and backwar
                                      % averages forwards and backwards
     NV = length(Vraw)/2;
     grd.V = Vraw(1:NV);
-    grd.iv = (iv_dbl(1:NV,:,:)+flip(iv_dbl(NV+1:2*NV,:,:),1))/2;
+    grd.iv = (iv_dbl(1:NV,:,:)+flip(iv_dbl(NV+1:2*NV,:,:),1))/2; 
     if (~average_forward_and_backward)
         grd.ivForward = iv_dbl(1:NV,:,:);
         grd.ivBackward = flip(iv_dbl(NV+1:2*NV,:,:),1);
-    end
 else
     grd.V = Vraw;
     grd.iv = iv_dbl;
