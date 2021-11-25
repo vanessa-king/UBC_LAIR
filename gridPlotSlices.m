@@ -1,6 +1,6 @@
-%% Description
+%        Description
 % This function makes dIdV slice at a given bias. 
-%% Parameters
+%        Parameters
 % IVdata: 3D arrary(x*y*energy), Raw IV data
 % V: Vector, the meaured biases of the IVdata e.g: Vred output of "GridCorrNorm.m"
 % Biases: Vector(a scalar if it is 1D), the biases that you want to use e.g: [0.1], [0.1, 0.2]
