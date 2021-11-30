@@ -3,8 +3,9 @@
 %        Parameters
 % IVdata: 3D arrary(x*y*energy), Raw IV data
 % V: Vector, the meaured biases of the IVdata e.g: Vred output of "GridCorrNorm.m"
-% Biases: Vector(a scalar if it is 1D), the biases that you want to use e.g: [0.1], [0.1, 0.2]
-% Plotname: Vector of strings(same dimension as Biases), the plot names of the output plots
+% Biases: Vector(a scalar if it is 1D), the biases that you want to use e.g: [0.1], [0.1, -0.1]
+% Note: known bug with error "Error using image. Color data must be an m-by-n-by-3 or m-by-n matrix." occurs when bias is chosen too close to + edge of the bias range. TBD why. 
+% Plotname: Vector of strings(same dimension as Biases), the plot names of the output plots: ["name one"] or ["name one" "name two"], etc.
 
 function [] = gridPlotSlices(IVdata,V,Biases,plotname)
 
@@ -29,12 +30,12 @@ NegRamp = V(length(V))-V(1) < 0;
 
 % Homework: To add position to plot to manually adjust the size.
 % Plot the biases selected 
-for i = 1:length(plotname):
+for i = 1:length(plotname)
     figure('Name', plotname(i))
         if NegRamp
-             temp_ind = find(V < Biases(k),1);
+             temp_ind = find(V < Biases(i),1);
         else
-             temp_ind = find(V > Biases(k),1);
+             temp_ind = find(V > Biases(i),1);
         end
     clims = [0,3E-9];   
     imagesc(squeeze(IVdata(temp_ind,:,:)),clims)
