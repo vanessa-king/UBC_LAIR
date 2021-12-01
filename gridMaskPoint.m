@@ -27,6 +27,7 @@ axis image
 xx = -R:.01:R;
 yy = sqrt(R^2-xx.^2);
 
+%Confused about here
 figure(img)
 pos = round(ginput(1)); %click for the first point
 plot(pos(1)+xx,pos(2)+yy,'r','LineWidth',0.6)
