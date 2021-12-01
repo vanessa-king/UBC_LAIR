@@ -1,22 +1,25 @@
-function [mask, N] = gridMaskPoint(didv, Vred, imV, R)
-%gridMaskPoint Create mask of radius R around clicked point
-%   mask = selected area
-%   N = number of points in mask
-%   imV = bias slice to show and click on
-%   R = radius of mask (pixels)
+%Description: gridMaskPoint Create mask of radius R around clicked point
+
+function [mask, Num_in_mask] = gridMaskPoint(didv, Vred, imageV, radius)
+
+%Parameters
+%   didv: 3D Matrix with dI/dV data
+%   Vred: reduced vector with bias voltages(see gridCorNorm for definition of Vred)
+%   imageV: float, voltage at which to display image 
+%   radius: float, radius of mask (pixels)
 
 % load colourmap
-m = 1000; % 1000 evenly spaced colour points
-cm_viridis = viridis(m); % Default matlibplot
-cm_inferno = inferno(m);
-cm_magma = magma(m);
-cm_plasma = plasma(m);
+color_scale_resolution = 1000; % 1000 evenly spaced colour points
+cm_viridis = viridis(color_scale_resolution); % Default matlibplot
+cm_inferno = inferno(color_scale_resolution);
+cm_magma = magma(color_scale_resolution);
+cm_plasma = plasma(color_scale_resolution);
 
 didv_flip = flip(permute(didv,[1 3 2]),2);
 
-[~,imN] = min(abs(Vred-imV));
+[~,imN] = min(abs(Vred-imageV));
 
-img = figure('Name', ['Image of states at ',num2str(imV),' V']);
+img = figure('Name', ['Image of states at ',num2str(imageV),' V']);
 clims = [0,3E-9];
 imagesc(squeeze(didv_flip(imN,:,:)),clims);
 % colormap('gray');
@@ -24,9 +27,10 @@ colormap(cm_magma)
 hold on
 axis image
 
-xx = -R:.01:R;
-yy = sqrt(R^2-xx.^2);
+xx = -radius:.01:radius;
+yy = sqrt(radius^2-xx.^2);
 
+%Drawing the mask(circle) on LDOS map at certain bias
 figure(img)
 pos = round(ginput(1)); %click for the first point
 plot(pos(1)+xx,pos(2)+yy,'r','LineWidth',0.6)
@@ -34,11 +38,11 @@ plot(pos(1)+xx,pos(2)-yy,'r','LineWidth',0.6)
 
 % make the mask at point
 mask = zeros(size(didv,2),size(didv,3));
-mask((-R:R)+pos(1),(-R:R)+(size(mask,2)-pos(2))) = logical(fspecial('disk',R));
+mask((-radius:radius)+pos(1),(-radius:radius)+(size(mask,2)-pos(2))) = logical(fspecial('disk',radius));
 
 % number of points you are averaging over
 [row, ~] = find(mask);
-N = length(row);
+Num_in_mask = length(row);
 
 % close(gcf);
 
