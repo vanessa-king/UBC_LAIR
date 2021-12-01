@@ -5,7 +5,7 @@
 % V: Vector, the meaured biases of the IVdata e.g: Vred output of "GridCorrNorm.m"
 % Biases: Vector(a scalar if it is 1D), the biases that you want to use e.g: [0.1], [0.1, -0.1]
 % Note: known bug with error "Error using image. Color data must be an m-by-n-by-3 or m-by-n matrix." occurs when bias is chosen too close to + edge of the bias range. TBD why. 
-% Plotname: Vector of strings(same dimension as Biases), the plot names of the output plots: ["name one"] or ["name one" "name two"], etc.
+% Plotname: Vector of strings(same dimension as Biases), the plot names of the output plots: ["name one"] or ["name one","name two"], etc.
 
 function [] = gridPlotSlices(IVdata,V,Biases,plotname)
 
@@ -20,16 +20,11 @@ cm_plasma = plasma(color_scale_resolution);
 % IVdata is to process the data, will be different for Createc
 IVdata = flip(permute(IVdata,[1 3 2]),2);
 
-%Read how many biases you want to plot 
-%N = length(Biases);
-%cols = ceil(sqrt(N))+1;
-%rows = ceil(N/cols);
-
 % NegRamp is to determine if V is inverted, True if inverted.
 NegRamp = V(length(V))-V(1) < 0;
 
 % Homework: To add position to plot to manually adjust the size.
-% Plot the biases selected 
+% Plot the biases selected, if there is no such bias exist in the function V, then choose the one which is closest(round-up)
 for i = 1:length(plotname)
     figure('Name', plotname(i))
         if NegRamp
