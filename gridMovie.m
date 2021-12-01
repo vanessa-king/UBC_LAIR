@@ -7,14 +7,10 @@
 %
 % didv: vector output of "gridCorrNorm.m"
 % Vred: measured biases of didv
-% v: a VideoWriter object to write a new Motion JPEG AVI file (defined just before calling this function)
+% v: a VideoWriter object to write a new Motion JPEG AVI file (defined just before calling this function)(this is optional, giving argument v will save the video)
 %
 
 function gridMovie(didv, Vred, v)
-
-%
-% James doesn't understand how this nargin statement works...
-%
 
 if nargin > 2, open(v), end
 
