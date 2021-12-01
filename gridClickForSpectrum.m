@@ -7,10 +7,10 @@ function [] = gridClickForSpectrum(didv, Vred, imageV, n, offset, xysmooth, vsmo
 %   Vred: reduced vector with bias voltages (see gridCorrNorm for definition of Vred)
 %   imageV: float, Voltage at which to display image
 %   n: integer, Number of point spectra to plot
-%   offset: Vertical offset for each point spectra (not used?)
+%   offset: Vertical offset for each point spectra 
 %   xysmooth: float, the standard deviation of a Gaussian for smoothing xy pixels (0 is no smoothing)
 %   vsmooth: float, the standard deviation of a Gaussian for smoothing the voltage sweep points (0 is no smoothing)
-%   grd: topo ? 
+%   grd: 1*1 structure, output from gridLoadData, optional
 
 
 % smooth data if prompted
