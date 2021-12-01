@@ -3,8 +3,7 @@
 %        Parameters
 % IVdata: 3D arrary(x*y*energy), Raw IV data
 % V: Vector, the meaured biases of the IVdata e.g: Vred output of "GridCorrNorm.m"
-% Biases: Vector(a scalar if it is 1D), the biases that you want to use e.g: [0.1], [0.1, -0.1]
-% Note: known bug with error "Error using image. Color data must be an m-by-n-by-3 or m-by-n matrix." occurs when bias is chosen too close to + edge of the bias range. TBD why. 
+% Biases: Vector(a scalar if it is 1D), the biases that you want to use e.g: [0.1], [0.1, 0.198].Remark: with bias range(-0.2V,0.2V), don't use 0.2V 
 % Plotname: Vector of strings(same dimension as Biases), the plot names of the output plots: ["name one"] or ["name one","name two"], etc.
 
 function [] = gridPlotSlices(IVdata,V,Biases,plotname)
