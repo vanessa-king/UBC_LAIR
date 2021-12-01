@@ -1,26 +1,24 @@
+% Description: this function is for averaging the didv spectra in the selected area(area type depending on the Mask); 
+%  Remark: Mask should be a boolean matrix of same spatial size as didv. this function always combined with the previous function:'gridMaskPoint'
+
 function [didv_masked, didv_avg] = gridAvgMask(didv, mask)
-%gridAverageMask Average specified area in the didv spectra
-%   Apply the mask, and average over points. 
-%   Mask should be a boolean matrix of same spatial size as didv.
-%
-%   didv_masked = what the mask looks like
-%   didv_avg = averaged didv, can be plotted over bias
+
+% parameters
+%   didv = didv sprectra of the whole map
+%   mask = selected area, parameter defined in the function 'gridMaskPoint'
+
 
 didv_masked = didv;
 
 % points to average over
 [xrow,ycol] = find(mask);
-didv_avg = zeros(size(didv,1),1); % average over points
+didv_avg = zeros(size(didv,1),1); 
 
 for k = 1:size(didv,1)
     didv_masked(k,:,:) = squeeze(didv(k,:,:)).*mask; % here is the mask
     for i = 1:length(xrow)
-        didv_avg(k) = didv_avg(k) + didv(k,xrow(i),ycol(i));
+        didv_avg(k) = didv_avg(k) + didv(k,xrow(i),ycol(i)); % average over points
     end
 end
 didv_avg = didv_avg./length(xrow);
-
-
-
 end
-
