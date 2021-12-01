@@ -7,7 +7,7 @@
 %
 % didv: vector output of "gridCorrNorm.m"
 % Vred: measured biases of didv
-% v: a VideoWriter object to write a new Motion JPEG AVI file (defined just before calling this function)(this is optional, giving argument v will save the video)
+% v: a VideoWriter object to write a new Motion JPEG AVI file (defined just before calling this function). This is purely optional: if you give this (third) argument, v will result in saving the video; if you do not give this (third) argument, the movie is made but not saved.
 %
 
 function gridMovie(didv, Vred, v)
