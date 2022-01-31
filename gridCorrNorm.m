@@ -1,3 +1,9 @@
+%   Description 
+% This function generate normalized and smoothed(optional) didv data set that have v=0 as the smallest absolute bias. 
+%   Parameters 
+% Griddata: 3D arrary, normalization parameter c, smooth Yes/No
+
+
 function [didv, norm_didv, ivcorr, Vred] = gridCorrNorm(grd, C, smooth)
 %GRIDCORRNORM 
 %   Detailed explanation goes here
@@ -11,12 +17,14 @@ Vred = V(1:end-1); % why here is end-1? any physical meaning? ( now only pick 20
 % correct for (I,V)=(0,0)
 % find the smallest bias and set that to zero
 %=============================================
-if find(diff(sign(V))) % here find(diff(sign(V))) == 100
+if find(diff(sign(V))) % here find(diff(sign(V))) == 100 
+    % find gives a statement?
     [~,ind] = min(abs(V)); %here only show the index position of the minium value, ind=101,~ means do not show anything
     ivcorr = NaN(size(iv)); % build up a NaN matrix (201 120 120)
     for kx = 1:size(iv,2) %here kx=1:120
-        for ky = 1:size(iv,3) %here kx=1:120
-            ivcorr(:,kx,ky) = iv(:,kx,ky)-iv(ind,kx,ky); %here the find the mimumum array of V
+        for ky = 1:size(iv,3) %here ky=1:120
+            ivcorr(:,kx,ky) = iv(:,kx,ky)-iv(ind,kx,ky); %here to find the mimumum array of V
+            % Why substract that number. 
         end
     end
 else
@@ -37,6 +45,7 @@ for kx = 1:size(iv,2)
     for ky = 1:size(iv,3)
         didv(:,kx,ky) = diff(ivcorr(:,kx,ky))./diff(V); % just didv not normalised
         normtemp = sqrt((ivcorr(1:length(Vred),kx,ky)./Vred).^2+C^2);
+        % Why c? 
         norm_didv(:,kx,ky) = didv(:,kx,ky)./normtemp; % didv normalised
     end
 end
