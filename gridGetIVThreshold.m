@@ -2,16 +2,19 @@
 %   gridGetIVThreshold Thresholds a grid with dI/dV data at a specific bias
 %   Two options: custom threshold or through the median value from the dIdV distribution plot
 % Parameters
-%   iv_data = V x grid length x grid width data
+%   Input:
+%   iv_data = number_bias_layer x grid length x grid width data
 %   V = V data
 %   bias = bias slice to threshold
+%   nbins = number of bins
+%   Outputs:
 %   iv_threshold = median iv value of slice
 %   bright_indices = 1D array of indices of iv values above threshold.
 %   These work for flipped iv_data only.
 %   dark_indices = 1D array of indices of iv values below or equal to
 %   threshold. These work for flipped iv_data only.
 
-function [iv_threshold, bright_indices, dark_indices, boundary_x, boundary_y] = gridGetIVThreshold(iv_data, V, bias)
+function [iv_threshold, bright_indices, dark_indices, boundary_x, boundary_y] = gridGetIVThreshold(iv_data, V, bias, nbins)
 
 % load colourmap
 color_scale_resolution = 1000; % 1000 evenly spaced colour points
@@ -26,8 +29,9 @@ iv_data = flip(permute(iv_data,[1 3 2]),2);
 
 iv_slice = squeeze(iv_data(imN, :, :));
 
+% This plots dI/dV distribution of the grid at a given bias.
 figure();
-histogram(iv_slice); % This plots dI/dV distribution of the grid at a given bias
+histogram(iv_slice, nbins); 
 title("dI/dV distribution")
 xlabel("dI/dV")
 ylabel("Counts");
@@ -41,7 +45,7 @@ else
 end
 
 figure();
-histogram(iv_slice);
+histogram(iv_slice, nbins);
 title("dI/dV distribution")
 xlabel("dI/dV")
 ylabel("Counts");
