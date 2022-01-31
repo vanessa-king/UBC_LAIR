@@ -1,19 +1,25 @@
-function [iv_threshold, bright_indices, dark_indices, boundary_x, boundary_y] = gridGetIVThreshold(iv_data, V, bias)
-%gridGetIVThreshold Thresholds a grid with IV data at a specific bias
-%through the median value
+% Description
+%   gridGetIVThreshold Thresholds a grid with IV data at a specific bias
+%   Two options: custom threshold or through the median value from the dIdV distribution plot
+% Parameters
 %   iv_data = V x grid length x grid width data
 %   V = V data
 %   bias = bias slice to threshold
 %   iv_threshold = median iv value of slice
 %   bright_indices = 1D array of indices of iv values above threshold.
-%   These work for flipped flipped iv_data only.
+%   These work for flipped iv_data only.
 %   dark_indices = 1D array of indices of iv values below or equal to
 %   threshold. These work for flipped iv_data only.
 
+function [iv_threshold, bright_indices, dark_indices, boundary_x, boundary_y] = gridGetIVThreshold(iv_data, V, bias)
+
 % load colourmap
-m = 1000; % 1000 evenly spaced colour points
-cm_magma = magma(m);
-clims = [1.7E-9,3E-9];
+color_scale_resolution = 1000; % 1000 evenly spaced colour points
+cm_viridis = viridis(color_scale_resolution); % Default matplotlib(for LAIR)
+cm_inferno = inferno(color_scale_resolution);
+cm_magma = magma(color_scale_resolution);
+cm_plasma = plasma(color_scale_resolution);
+clims = [1.7E-9,3E-9]; % This is to adjust dI/dV range to see the features on the grid image better. Change as needed.
 
 iv_data = flip(permute(iv_data,[1 3 2]),2);
 [~,imN] = min(abs(V-bias));
@@ -21,13 +27,13 @@ iv_data = flip(permute(iv_data,[1 3 2]),2);
 iv_slice = squeeze(iv_data(imN, :, :));
 
 figure();
-histogram(iv_slice);
+histogram(iv_slice); % This plots dI/dV distribution of the grid at a given bias
 title("dI/dV distribution")
 xlabel("dI/dV")
 ylabel("Counts");
 axis square
 
-pickManually = input('y for custom threshold, otherwise median threshold: ', 's');
+pickManually = input('type y for custom threshold, otherwise median threshold: ', 's'); % Type y to manually choose a threshold by clicking on the dI/dV distribution plot
 if strcmp(pickManually, 'y')
     [iv_threshold, ~] = ginput(1);
 else
