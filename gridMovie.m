@@ -6,11 +6,11 @@
 % clims: are the colour limits, written as [min(didv(:)),max(didv(:))];
 %
 % didv: vector output of "gridCorrNorm.m"
-% Vred: measured biases of didv
+% V_reduced: measured biases of didv, output of gridCorrNorm
 % v: a VideoWriter object to write a new Motion JPEG AVI file (defined just before calling this function). This is purely optional: if you give this (third) argument, v will result in saving the video; if you do not give this (third) argument, the movie is made but not saved.
 %
 
-function gridMovie(didv, Vred, v)
+function gridMovie(didv, V_reduced, v)
 
 if nargin > 2, open(v), end
 
@@ -33,7 +33,7 @@ for i = 1:size(didv,1)
     clims = [-0.1E-8,1E-8];
     imagesc(flip(permute(squeeze(didv(i,:,:)),[2,1]),1),clims);
     colorbar;
-    title(['V = ',num2str(Vred(i)),'V'], 'FontSize',16);
+    title(['V = ',num2str(V_reduced(i)),'V'], 'FontSize',16);
     axis image
       F = getframe(gcf);
     if nargin > 2, writeVideo(v, F), end
