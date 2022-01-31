@@ -1,10 +1,10 @@
 %Description: gridMaskPoint Create mask of radius R around clicked point
 
-function [mask, Num_in_mask] = gridMaskPoint(didv, Vred, imageV, radius)
+function [mask, Num_in_mask] = gridMaskPoint(didv, V_reduced, imageV, radius)
 
 %Parameters
 %   didv: 3D Matrix with dI/dV data
-%   Vred: reduced vector with bias voltages(see gridCorNorm for definition of Vred)
+%   V_reduced: reduced vector with bias voltages(see gridCorNorm for definition of V_reduced)
 %   imageV: float, voltage at which to display image 
 %   radius: float, radius of mask (pixels)
 
@@ -17,7 +17,7 @@ cm_plasma = plasma(color_scale_resolution);
 
 didv_flip = flip(permute(didv,[1 3 2]),2);
 
-[~,imN] = min(abs(Vred-imageV));
+[~,imN] = min(abs(V_reduced-imageV));
 
 img = figure('Name', ['Image of states at ',num2str(imageV),' V']);
 clims = [0,3E-9];
