@@ -1,11 +1,9 @@
 function topo = topoPlaneSub(image,n,plot)
-%TOPOPLANESUB Subtracts the plane in topography images from Omicron STM.
-%   Takes an image, and randomly sample n points. A plane is fitted to
-%   these points, and subtracted from the image. 
-% 
+%TOPOPLANESUB Subtracts the plane in topography images from Omicron STM.--- Q
+%   Takes an image, and randomly sample n points. A plane is fitted to these points, and subtracted from the image. 
 %   image - the structure file generated from topoLoadData.m (structure)
-%   n - number of points to sample, default 200 (integer)
-%   plot - choose to plot the process of plane sub, default F (boolean)
+%   n - number of points to sample, the default number is 200 (integer)
+%   plot - choose to plot the process of plane sub, the is default is F (boolean)----Q
 %
 %   Outputs a single z matrix with the plane subtracted.
 
@@ -17,10 +15,12 @@ elseif nargin == 2
 end
     
 % auto plane subtract
+% subtract a plane
 xsamp = round(rand(n,1)*(numel(image.x_img)-1))+1;
 ysamp = round(rand(n,1)*(numel(image.y_img)-1))+1;
 zsamp = diag(image.z_img(xsamp, ysamp));
 
+%start the fitting
 f = fit([xsamp, ysamp], zsamp, 'poly11'); % do a fit for a plane
 [Y,X] = meshgrid(1:numel(image.y_img), 1:numel(image.x_img));
 plane = f.p00 + f.p10*X + f.p01*Y;
@@ -43,4 +43,3 @@ end
 
 
 end
-
