@@ -1,5 +1,5 @@
 % Description
-%   gridGetIVThreshold Thresholds a grid with IV data at a specific bias
+%   gridGetIVThreshold Thresholds a grid with dI/dV data at a specific bias
 %   Two options: custom threshold or through the median value from the dIdV distribution plot
 % Parameters
 %   iv_data = V x grid length x grid width data
