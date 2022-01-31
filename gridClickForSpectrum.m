@@ -1,10 +1,10 @@
 
-function [] = gridClickForSpectrum(didv, Vred, imageV, n, offset, xysmooth, vsmooth, grd)
+function [] = gridClickForSpectrum(didv, V_reduced, imageV, n, offset, xysmooth, vsmooth, grd)
 %Description:   
 %   creates a GUI window where you can select a point(s), then it plots the spectra from that point(s).
 %Parameters:
 %   didv: 3D Matrix with dI/dV data
-%   Vred: reduced vector with bias voltages (see gridCorrNorm for definition of Vred)
+%   V_reduced: reduced vector with bias voltages (see gridCorrNorm for definition of V_reduced)
 %   imageV: float, Voltage at which to display image
 %   n: integer, Number of point spectra to plot
 %   offset: Vertical offset for each point spectra 
@@ -34,7 +34,7 @@ switch nargin
         fig_plot = imresize(z_img, [size(didv_flip,2), size(didv_flip,3)]);
     case 7 % grd data not provided, use the didv slice at imageV
         fig_name = ['Image of states at ',num2str(imageV),' V'];
-        [~,imN] = min(abs(Vred-imageV));
+        [~,imN] = min(abs(V_reduced-imageV));
         fig_plot = squeeze(didv_flip(imN,:,:));
 end
        
@@ -60,5 +60,5 @@ for k = 1:n
     plot(position(1)+xx,position(2)-yy,colours(mod(k-1,7)+1))
    
     figure(spec)
-    plot(Vred,squeeze(didv_flip(:,position(2),position(1)))+(k-1)*offset,colours(mod(k-1,7)+1))
+    plot(V_reduced,squeeze(didv_flip(:,position(2),position(1)))+(k-1)*offset,colours(mod(k-1,7)+1))
 end
