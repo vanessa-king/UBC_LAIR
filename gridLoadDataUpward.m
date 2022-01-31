@@ -4,24 +4,24 @@ function grd = gridLoadData(fld,stamp_project,img_nbr,grd_nbr, average_forward_a
  
 
 % file names
-z_file = [stamp_project img_nbr '.Z_flat'];
-iv_file = [stamp_project grd_nbr '.I(V)_flat']; % correctly load the data here
+Z_file = [stamp_project img_nbr '.Z_flat'];
+I_file = [stamp_project grd_nbr '.I(V)_flat']; % correctly load the data here
 
 addpath(fld); % fld here = '.'; means...
 
-fz = flat_parse(z_file); % This function parses a complete FLAT-File specified in "File" and returns its contents in a structure F. 
-mz = flat2matrix(fz); %Transform FLAT data into a matrix
-fiv = flat_parse(iv_file);
-miv = flat2matrix(fiv);
+fZ = flat_parse(Z_file); % This function parses a complete FLAT-File specified in "File" and returns its contents in a structure F. 
+mZ = flat2matrix(fZ); %Transform FLAT data into a matrix
+fI = flat_parse(I_file);
+mI = flat2matrix(fI);
 
 rmpath(fld); %   Remove folder from search path.  
 
 %---------------Treatment of image data-----------------------
 % into nanometres
-xraw = 1e9*mz{2}; % cell array : declared by using {}
-yraw = 1e9*mz{3};
+xraw = 1e9*mZ{2}; % cell array : declared by using {}
+yraw = 1e9*mZ{3};
 
-zraw = mz{1}; %why zraw doesn't need transform into nanometer here?  could it because it is energy level?
+zraw = mZ{1}; %why zraw doesn't need transform into nanometer here?  could it because it is energy level?
 
 if find(abs(diff(sign(diff(xraw))))) % Check if image is scanned forwards and backwards
                                      % Only take the forward
@@ -56,45 +56,45 @@ end
 
 %-----------Treatment of grid data----------------
 % into nanometres
-xraw = 1e9*miv{3};
-yraw = 1e9*miv{4};
-Vraw = miv{2};
+xraw = 1e9*mI{3};
+yraw = 1e9*mI{4};
+Vraw = mI{2};
 
-ivraw = miv{1}; % mz 3-dimensional; miv 4-dimensional (another one dimension is energy)
+Iraw = mI{1}; % mZ 3-dimensional; mI 4-dimensional (another one dimension is energy)
 
 if find(abs(diff(sign(diff(xraw))))) % Check to see if forward and backward
                                      % only take the forward
     grd.x = xraw(1:length(xraw)/2);
-    ivtmp = ivraw(:,1:length(xraw)/2,:);     % this is the forward                                
+    Itmp = Iraw(:,1:length(xraw)/2,:);     % this is the forward                                
 %   grd.x = xraw(:,(length(xraw)/2+1):end); %this is the backward
-%   ivtmp = ivraw(:,(length(xraw)/2+1):end,:);
+%   Itmp = Iraw(:,(length(xraw)/2+1):end,:);
 else
     grd.x = xraw;
-    ivtmp = ivraw;
+    Itmp = Iraw;
 end
 
 if find(abs(diff(sign(diff(yraw))))) % Check to see if up and down
                                      % only take the up
   grd.y = yraw(1:length(yraw)/2);
-  iv_dbl = ivtmp(:,:,1:length(yraw)/2);    % this is the upward                                 
+  I_dbl = Itmp(:,:,1:length(yraw)/2);    % this is the upward                                 
 %     grd.y = yraw((length(yraw)/2+1):end);  %this take the downward
-%     iv_dbl = ivtmp(:,:,(length(yraw)/2+1):end); 
+%     I_dbl = Itmp(:,:,(length(yraw)/2+1):end); 
 else
     grd.y = yraw;
-    iv_dbl = ivtmp;
+    I_dbl = Itmp;
 end
 
 if find(abs(diff(sign(diff(Vraw))))) % Checks if V is swept forwards and backwards
                                      % averages forwards and backwards
     NV = length(Vraw)/2;
     grd.V = Vraw(1:NV);
-    grd.iv = (iv_dbl(1:NV,:,:)+flip(iv_dbl(NV+1:2*NV,:,:),1))/2; 
+    grd.I = (I_dbl(1:NV,:,:)+flip(I_dbl(NV+1:2*NV,:,:),1))/2; 
     if (~average_forward_and_backward)
-        grd.ivForward = iv_dbl(1:NV,:,:);
-        grd.ivBackward = flip(iv_dbl(NV+1:2*NV,:,:),1);
+        grd.I_Forward = I_dbl(1:NV,:,:);
+        grd.I_Backward = flip(I_dbl(NV+1:2*NV,:,:),1);
 else
     grd.V = Vraw;
-    grd.iv = iv_dbl;
+    grd.I = I_dbl;
 end
 
 end
