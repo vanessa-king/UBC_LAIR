@@ -13,7 +13,7 @@ V = grid.V; % pick array bias from grid
 I = grid.I; % pick array iv from grid
 V_reduced = V(1:end-1); % purpose: while performing dI/dV the data size get reduced by 1. You can change the reduced data points from the head or the tail here.  
 
-% correct for (I,V)=(0,0) % note that this is IV curve, when bias is zero, current should be zero.(basically, get rid of the offset)
+% correct for (I,V)=(0,V) % note that this is IV curve, when bias is zero, current should be zero. (basically, get rid of the offset)
 % find the smallest bias and set that to zero
 %=============================================
 %{
@@ -23,7 +23,6 @@ if find(diff(sign(V))) % This "if" statement looks for a sign change in V.
      for kx = 1:size(I,2) %here kx=1:120
         for ky = 1:size(I,3) %here ky=1:120
             I_correction(:,kx,ky) = I(:,kx,ky)-I(ind,kx,ky); %here to find the minimum array of V
-            % Why substract that number. 
         end
     end
 else
@@ -53,3 +52,15 @@ end
 
 end
 %=============================================
+
+Comments from Feb.14
+GridCornorm 
+Jisun's question: 
+machine have systematic offset (bias wise)
+Could it be that the offset in bias created the offset in current
+but if there is also offset in the current detection?
+Then we can not correct it with software, we need to run the oscilloscope check. 
+
+target: print offset, do it or not. manually input the offset(optional).
+
+
