@@ -1,7 +1,7 @@
 %   Description 
 % This function generate normalized and smoothed(optional) didv data set that have v=0 as the smallest absolute bias. 
 %   Parameters 
-%%  Input parameters: grid(3d array): grid data, C(float): normalization parameter , smooth(bool): True/False
+%%  Input parameters: grid (1x1 structure): grid data as output from gridLoadData, C(float): normalization parameter , smooth(bool): True/False
 
 
 function [didv, norm_didv, I_correction, V_reduced] = gridCorrectionNorm(grid, C, smooth)
