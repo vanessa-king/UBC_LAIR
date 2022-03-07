@@ -4,7 +4,7 @@ Collection of data reading and data analysis codes from all UBC LAIR STMs
 
 Sample function commenting format:
 
-% Description 
+% Description
 % what does the function do 
 % Parameters
 %%  Input parameters: name(type)
