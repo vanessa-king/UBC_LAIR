@@ -1,22 +1,22 @@
 %
 % DESCRIPTION
-% This function takes the average of the iv_data and plots it. (For Tesla, this is called in the Plot 1D Density section.)
+% This function takes the average of the I(V) data and plots it. (For Tesla, this is called in the Plot 1D Density section.)
 %
 % PARAMETERS
 %
-%   iv_data size: number_bias_layer x grid size x grid size
+%   I size: number_bias_layer x grid size x grid size
 %   V size: number_bias_layer x 1
 %
 
-function [avg_iv_data] = gridAvg(iv_data, V)
+function [avg_iv_data] = gridAvg(I, V)
 
 %
 % size(V) returns a row vector whose elements are the lengths of the corresponding dimensions of V
-% avg_iv_data is the mean of iv_data based on the dimensions specified in the vector [a b] - here, [3 2] is the total grid size and the order of those numbers probably does not matter.
+% avg_iv_data is the mean of I based on the dimensions specified in the vector [a b] - here, [3 2] is the total grid size and the order of those numbers probably does not matter.
 %
 
 [number_bias_layer, ~] = size(V);
-avg_iv_data = mean(iv_data, [3 2]);
+avg_iv_data = mean(I, [3 2]);
 
 %
 % A figure of the average iv data is made.
