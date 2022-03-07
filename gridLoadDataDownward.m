@@ -1,8 +1,8 @@
-function grd = gridLoadData(fld,stamp_project,img_nbr,grd_nbr)
+function grd = gridLoadData(fld,stamp_project,img_number,grd_number)
 
 % file names
-Z_file = [stamp_project img_nbr '.Z_flat'];
-I_file = [stamp_project grd_nbr '.I(V)_flat'];
+Z_file = [stamp_project img_number '.Z_flat'];
+I_file = [stamp_project grd_number '.I(V)_flat'];
 
 addpath(fld);
 
