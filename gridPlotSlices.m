@@ -1,12 +1,12 @@
 %        Description
 % This function makes dIdV slice at a given bias. 
 %        Parameters
-% IVdata: 3D arrary(x*y*energy), Raw IV data
-% V: Vector, the meaured biases of the IVdata e.g: Vred output of "GridCorrNorm.m"
+% I: 3D array(x*y*energy), raw I(V) data, e.g.: grid.I
+% V: Vector, the meaured biases of the I(V) e.g: Vred output of gridCorrNorm
 % Biases: Vector(a scalar if it is 1D), the biases that you want to use e.g: [0.1], [0.1, 0.198].Remark: with bias range(-0.2V,0.2V), don't use 0.2V 
-% Plotname: Vector of strings(same dimension as Biases), the plot names of the output plots: ["name one"] or ["name one","name two"], etc.
+% plotname: Vector of strings(same dimension as Biases), the plot names of the output plots: ["name one"] or ["name one","name two"], etc.
 
-function [] = gridPlotSlices(IVdata,V,Biases,plotname)
+function [] = gridPlotSlices(I,V,Biases,plotname)
 
 % load colourmap
 color_scale_resolution = 1000; % 1000 evenly spaced colour points
@@ -16,8 +16,8 @@ cm_magma = magma(color_scale_resolution);
 cm_plasma = plasma(color_scale_resolution);
 
 % Homework
-% IVdata is to process the data, will be different for Createc
-IVdata = flip(permute(IVdata,[1 3 2]),2);
+% I is to process the data, will be different for Createc
+I = flip(permute(I,[1 3 2]),2);
 
 % NegRamp is to determine if V is inverted, True if inverted.
 NegRamp = V(length(V))-V(1) < 0;
@@ -32,7 +32,7 @@ for i = 1:length(plotname)
              temp_ind = find(V > Biases(i),1);
         end
     clims = [0,3E-9];   
-    imagesc(squeeze(IVdata(temp_ind,:,:)),clims)
+    imagesc(squeeze(I(temp_ind,:,:)),clims)
     colorbar
     colormap(cm_magma)
         axis image
