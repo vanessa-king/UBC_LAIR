@@ -1,20 +1,20 @@
 % Description
 %   gridGetIVThreshold Thresholds a grid with dI/dV data at a specific bias
-%   Two options: custom threshold or through the median value from the dIdV distribution plot
+%   Two options: custom threshold or through the median value from the dI/dV distribution plot
 % Parameters
 %   Input:
-%   iv_data = number_bias_layer x grid length x grid width data
+%   I = number_bias_layer x grid length x grid width data
 %   V = V data
 %   bias = bias slice to threshold
 %   nbins = number of bins
 %   Outputs:
-%   iv_threshold = median iv value of slice
-%   bright_indices = 1D array of indices of iv values above threshold.
-%   These work for flipped iv_data only.
-%   dark_indices = 1D array of indices of iv values below or equal to
-%   threshold. These work for flipped iv_data only.
+%   I_threshold = median I(V) value of slice
+%   bright_indices = 1D array of indices of I(V) values above I_threshold.
+%   These work for flipped I only.
+%   dark_indices = 1D array of indices of I(V) values below or equal to
+%   I_threshold. These work for flipped I only.
 
-function [iv_threshold, bright_indices, dark_indices, boundary_x, boundary_y] = gridGetIVThreshold(iv_data, V, bias, nbins)
+function [I_threshold, bright_indices, dark_indices, boundary_x, boundary_y] = gridGetIVThreshold(I, V, bias, nbins)
 
 % load colourmap
 color_scale_resolution = 1000; % 1000 evenly spaced colour points
@@ -24,14 +24,14 @@ cm_magma = magma(color_scale_resolution);
 cm_plasma = plasma(color_scale_resolution);
 clims = [1.7E-9,3E-9]; % This is to adjust dI/dV range to see the features on the grid image better. Change as needed.
 
-iv_data = flip(permute(iv_data,[1 3 2]),2);
+I = flip(permute(I,[1 3 2]),2);
 [~,imN] = min(abs(V-bias));
 
-iv_slice = squeeze(iv_data(imN, :, :));
+I_slice = squeeze(I(imN, :, :));
 
 % This plots dI/dV distribution of the grid at a given bias.
 figure();
-histogram(iv_slice, nbins); 
+histogram(I_slice, nbins); 
 title("dI/dV distribution")
 xlabel("dI/dV")
 ylabel("Counts");
@@ -39,32 +39,32 @@ axis square
 
 pickManually = input('type y for custom threshold, otherwise median threshold: ', 's'); % Type y to manually choose a threshold by clicking on the dI/dV distribution plot
 if strcmp(pickManually, 'y')
-    [iv_threshold, ~] = ginput(1);
+    [I_threshold, ~] = ginput(1);
 else
-    iv_threshold = median(iv_slice(:));
+    I_threshold = median(I_slice(:));
 end
 
 figure();
-histogram(iv_slice, nbins);
+histogram(I_slice, nbins);
 title("dI/dV distribution")
 xlabel("dI/dV")
 ylabel("Counts");
 axis square
 hold on
-xline(iv_threshold, 'color', [1 0 0])
+xline(I_threshold, 'color', [1 0 0])
 hold off
 
-bright_indices = iv_slice > iv_threshold;
-dark_indices = iv_slice <= iv_threshold;
+bright_indices = I_slice > I_threshold;
+dark_indices = I_slice <= I_threshold;
 
 figure();
-imagesc(iv_slice, clims);
+imagesc(I_slice, clims);
 axis square
 title(['Slice at ',num2str(bias),' V']);
 colormap(cm_magma)
 colorbar
 
-contour = iv_slice;
+contour = I_slice;
 contour(bright_indices) = 1;
 contour(dark_indices) = 0;
 [boundary_x, boundary_y] = pixelatedContour(contour);
