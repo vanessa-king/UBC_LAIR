@@ -1,5 +1,5 @@
 
-function [] = gridClickForSpectrum(didv, V_reduced, imageV, n, offset, xysmooth, vsmooth, grd)
+function [] = gridClickForSpectrum(didv, V_reduced, imageV, n, offset, xysmooth, vsmooth, grid)
 %Description:   
 %   creates a GUI window where you can select a point(s), then it plots the spectra from that point(s).
 %Parameters:
@@ -10,7 +10,7 @@ function [] = gridClickForSpectrum(didv, V_reduced, imageV, n, offset, xysmooth,
 %   offset: Vertical offset for each point spectra 
 %   xysmooth: float, the standard deviation of a Gaussian for smoothing xy pixels (0 is no smoothing)
 %   vsmooth: float, the standard deviation of a Gaussian for smoothing the voltage sweep points (0 is no smoothing)
-%   grd: 1*1 structure, output from gridLoadData, optional
+%   grid: 1*1 structure, output from gridLoadData, optional
 
 
 % smooth data if prompted
@@ -27,12 +27,12 @@ didv_flip = flip(permute(didv,[1 3 2]),2); % flip didv so that image (x,y) = (0,
 
 % use cases for different function arguments -> use dIdV at imageV, or use the topo
 switch nargin
-    case 8 % grd data is provided, use the topology instead
-        topo = topoPlaneSub(grd,200,0); % subtract plane
+    case 8 % grid data is provided, use the topology instead
+        topo = topoPlaneSub(grid,200,0); % subtract plane
         fig_name = 'Topology associated with grid';
         z_img = flip(permute(topo,[2 1]),1);
         fig_plot = imresize(z_img, [size(didv_flip,2), size(didv_flip,3)]);
-    case 7 % grd data not provided, use the didv slice at imageV
+    case 7 % grid data not provided, use the didv slice at imageV
         fig_name = ['Image of states at ',num2str(imageV),' V'];
         [~,imN] = min(abs(V_reduced-imageV));
         fig_plot = squeeze(didv_flip(imN,:,:));
