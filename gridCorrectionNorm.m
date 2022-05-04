@@ -4,7 +4,7 @@
 %%  Input parameters: grid (1x1 structure): grid data as output from gridLoadData, C(float): normalization parameter , smooth(bool): True/False
 
 
-function [didv, norm_didv, I_correction, V_reduced] = gridCorrectionNorm(grid, C, smooth)
+function [didv, norm_didv, I_correction, V_reduced] = gridCorrectionNorm(grid, C, smooth, normalize)
 
 % if smooth = False no smoothing before treating data 
 % An example: gridCorrectionNorm(grid, 3E-10, 1), 1 means do the smooth part, if 0 means do not smooth current (or spatial)
@@ -16,7 +16,7 @@ V_reduced = V(1:end-1); % purpose: while performing dI/dV the data size get redu
 % correct for (I,V)=(0,V) % note that this is IV curve, when bias is zero, current should be zero. (basically, get rid of the offset)
 % find the smallest bias and set that to zero
 %=============================================
-%{
+
 if find(diff(sign(V))) % This "if" statement looks for a sign change in V. 
     [~,ind] = min(abs(V)); %here only show the index position of the minimum value
     I_offset = NaN([1,size(I,2),size(I,3)])
@@ -36,6 +36,7 @@ if smooth
     I_correction = smoothdata(I_correction, 1, 'gaussian', 10); % "10" here is the window size 
 end
 
+end
 %Remark: the correction is for the normalization, note that in the normalization you are dividing didv to IV, which then the offset matters.
 %=============================================
 
@@ -48,6 +49,7 @@ norm_didv = NaN(length(V_reduced),size(I,2),size(I,3));
 for kx = 1:size(I,2)
     for ky = 1:size(I,3)
         didv(:,kx,ky) = diff(I_correction(:,kx,ky))./diff(V); % just didv not normalised
+        if normalize
         normtemp = sqrt((I_correction(1:length(V_reduced),kx,ky)./V_reduced).^2+C^2);
         % C here is to deal with the anamoly of V=0 while normalizing.
         norm_didv(:,kx,ky) = didv(:,kx,ky)./normtemp; % didv normalised
@@ -57,7 +59,7 @@ end
 
 end
 %=============================================
-
+%{
 Comments from Feb.14
 GridCornorm 
 Jisun's question: 
@@ -67,5 +69,6 @@ but if there is also offset in the current detection?
 Then we can not correct it with software, we need to run the oscilloscope check. 
 
 Comment closed.
+%}
 
 
