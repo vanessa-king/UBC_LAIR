@@ -8,23 +8,23 @@
 %   V size: number_bias_layer x 1
 %
 
-function [avg_iv_data] = gridAvg(I, V)
+function [avg_I] = gridAvg(I, V)
 
 %
 % size(V) returns a row vector whose elements are the lengths of the corresponding dimensions of V
-% avg_iv_data is the mean of I based on the dimensions specified in the vector [a b] - here, [3 2] is the total grid size and the order of those numbers probably does not matter.
+% avg_I is the mean of I based on the dimensions specified in the vector [a b] - here, [3 2] is the total grid size and the order of those numbers probably does not matter.
 %
 
 [number_bias_layer, ~] = size(V);
-avg_iv_data = mean(I, [3 2]);
+avg_I = mean(I, [3 2]);
 
 %
 % A figure of the average iv data is made.
 %
 
 figure();
-plot(V,reshape(avg_iv_data(:),number_bias_layer,1))
+plot(V,reshape(avg_I(:),number_bias_layer,1))
 xlabel("V")
-ylabel("average iv data")
+ylabel("average I(V) data")
 end
 
