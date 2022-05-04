@@ -1,16 +1,16 @@
 %   Description 
-% This function generate normalized and smoothed(optional) didv data set that have v=0 as the smallest absolute bias. 
+% This function generate normalized and smoothed(optional) didv data set(use it only when you want to normalize the data). 
 %   Parameters 
 %%  Input parameters: grid (1x1 structure): grid data as output from gridLoadData, C(float): normalization parameter , smooth(bool): True/False
 
 
 function [didv, norm_didv, I_correction, V_reduced] = gridCorrectionNorm(grid, C, smooth)
- 
+
 % if smooth = False no smoothing before treating data 
-% An example: gridCorrectionNorm(grid, 3E-10, 1) 0 means do not smooth current (or spatial); 1 means do the smooth part
+% An example: gridCorrectionNorm(grid, 3E-10, 1), 1 means do the smooth part, if 0 means do not smooth current (or spatial)
 
 V = grid.V; % pick array bias from grid 
-I = grid.I; % pick array iv from grid
+I = grid.I; % pick array I from grid
 V_reduced = V(1:end-1); % purpose: while performing dI/dV the data size get reduced by 1. You can change the reduced data points from the head or the tail here.  
 
 % correct for (I,V)=(0,V) % note that this is IV curve, when bias is zero, current should be zero. (basically, get rid of the offset)
@@ -19,12 +19,15 @@ V_reduced = V(1:end-1); % purpose: while performing dI/dV the data size get redu
 %{
 if find(diff(sign(V))) % This "if" statement looks for a sign change in V. 
     [~,ind] = min(abs(V)); %here only show the index position of the minimum value
+    I_offset = NaN([1,size(I,2),size(I,3)])
     I_correction = NaN(size(I)); % build up a NaN matrix (201 120 120)
      for kx = 1:size(I,2) %here kx=1:120
         for ky = 1:size(I,3) %here ky=1:120
             I_correction(:,kx,ky) = I(:,kx,ky)-I(ind,kx,ky); %here to find the minimum array of V
-        end
+            I_offset(1,kx,ky) = I(ind,kx,ky)
+            end
     end
+    imagesc(I_offset)
 else
 
 I_correction = I
@@ -32,6 +35,8 @@ I_correction = I
 if smooth
     I_correction = smoothdata(I_correction, 1, 'gaussian', 10); % "10" here is the window size 
 end
+
+%Remark: the correction is for the normalization, note that in the normalization you are dividing didv to IV, which then the offset matters.
 %=============================================
 
 % differentiate and normalise the data
@@ -61,6 +66,6 @@ Could it be that the offset in bias created the offset in current
 but if there is also offset in the current detection?
 Then we can not correct it with software, we need to run the oscilloscope check. 
 
-target: print offset, do it or not. manually input the offset(optional).
+Comment closed.
 
 
