@@ -6,8 +6,8 @@
 % Parameters:
 %   folder: 3D Matrix with dI/dV data
 %   stamp_project: the filename leader, takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--'
-%   img_nbr: the z-file name, takes the form '###_#'
-%   grd_nbr: the iv-file name, also takes the form '###_#'
+%   img_number: the z-file name, takes the form '###_#'
+%   grid_number: the iv-file name, also takes the form '###_#'
 
 function grid = gridLoadData(folder,stamp_project,img_number,grid_number, average_forward_and_backward)
 
