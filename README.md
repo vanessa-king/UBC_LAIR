@@ -5,10 +5,17 @@ Collection of data reading and data analysis codes from all UBC LAIR STMs
 Sample function commenting format:
 
 % Description
-% what does the function do 
+
+% what does the function do
+
 % Parameters
+
 %%  Input parameters: name(type)
+
 %%  Output parameters: name(type)
+
+function [output] = functionName(input)
+
 ~~~~~~~~~~~function~~~~~~~~~~~~~
 
 
@@ -28,7 +35,7 @@ n : number of points to sample [topoPlaneSub.m]
 offset : vertical offset for each point spectra [gridClickForSpectrum.m]
 xysmooth : the standard deviation of a Gaussian for smoothing xy points (0 is no smoothing) [gridClickForSpectrum.m]
 vsmooth : the standard deviation of a Gaussian for smoothing the voltage sweep points (0 is no smoothing) [gridClickForSpectrum.m]
-grid : grid map (structure) containing x_img, y_img, z_img, x, y, V, and I data [gridLoadDataUpward.m, gridClickForSpectrum.m, gridCorrectionNorm.m]
+grid : grid map (structure) containing x_img, y_img, z_img, x, y, V, and I data [gridLoadDataUpward.m, gridClickForSpectrum.m, gridCorrectionNorm.m, pythonDataToGrid.m]
 norm_didv : 3D matrix with normalized dI/dV data [gridCorrectionNorm.m]
 I_correction : current as a function of voltage corrected to 0 V. [gridCorrectionNorm.m]
 C : normalization parameter [gridCorrectionNorm.m]
@@ -59,3 +66,6 @@ topo : topography 3D matrix [topoPlaneSub.m]
 image : structure, contains topo data. [topoLoadData.m, topoPlaneSub.m]
 didv_masked : masked version of didv [gridAvgMask.m]
 contour : boolean matrix corresponding to bright_indices and dark_indices [gridGetIVThreshold.m, pixelatedContour.m]
+fileName : stringo of full path and file name, including extension. [pythonDataToGrid.m]
+full_3ds : everything within a 3ds file, as read by the nanonispy library [read_grid_data.py]
+gridArrays : 4D array containing the x, y, V, I data of a grid [read_grid_data.py]
