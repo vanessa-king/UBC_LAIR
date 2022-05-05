@@ -1,8 +1,12 @@
-function grid = pythonDataToGrid(fileName)
-% Reads python processed gridmap data and returns as grid structure
-% Input: fileName = string of full path and 3ds file name, ie: '/Users/vanessa/Desktop/UBC/Lab/Generic_Data_Processing_Code/Grid_Spectroscopy--NbIrPtTe001.3ds'
+% Reads Nanonis python-processed gridmap data and returns as grid structure
+% Parameters 
+%   Input: fileName = string of full path and 3ds file name, ie: '/Users/vanessa/Desktop/UBC/Lab/Generic_Data_Processing_Code/Grid_Spectroscopy--NbIrPtTe001.3ds'
+%   Output: grid = structure containing x, y, V, I gridmap data, same format as output of gridLoadData()
 
-pythonScript_and_fileName = strcat("read_grid_data.py ",fileName);
+
+function grid = pythonDataToGrid(fileName)
+
+pythonScript_and_fileName = strcat("read_grid_data.py ",fileName); % combines the name of python script to run and the filename
 
 python_Data = pyrunfile(pythonScript_and_fileName, "gridArrays"); %Calls pythonScript, gives fileName as input, gets gridArrays as output
 
