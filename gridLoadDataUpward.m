@@ -73,8 +73,8 @@ end
 
 % This section is to remove NaN values in a partial image. If the image is complete, this section doesn't really do anything. 
 grid.z_img = grid.z_img_all(:,all(~isnan(grid.z_img_all)));
-size1=size(grid.z_img,2);
-grid.y_img = grid.y_img_all(1:size1,1);
+reduced_topo_size = size(grid.z_img,2);
+grid.y_img = grid.y_img_all(1:reduced_topo_size,1);
 
 % uncomment this if you want to plot your images
 % figure('Name','Topography');
@@ -126,11 +126,11 @@ else
     grid.I_all = I_dbl;
     end
 
-% This section is to calculate where I(V) has NaN values and then remove them. 
-size2 = floor(size(grid.x_img,1)/size(grid.x,1));
-size3 = ceil(size1/size2);
-grid.y = grid.y_all(1:size3,1);
-grid.I = grid.I_all(:,:,1:size3);
-grid.I_Forward = grid.I_Forward_all(:,:,1:size3);
-grid.I_Backward = grid.I_Backward_all(:,:,1:size3);
+% This section is to calculate where I(V) has NaN values and then remove them for a partial image/grid. 
+ratio = reduced_topo_size/size(grid.y_img_all,1);
+reduced_grid_size = ceil(ratio*size(grid.y_all,1));
+grid.y = grid.y_all(1:reduced_grid_size,1);
+grid.I = grid.I_all(:,:,1:reduced_grid_size);
+grid.I_Forward = grid.I_Forward_all(:,:,1:reduced_grid_size);
+grid.I_Backward = grid.I_Backward_all(:,:,1:reduced_grid_size);
 end
