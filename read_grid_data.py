@@ -16,40 +16,39 @@
 #A python script (not a function) that reads a Nanonis 3ds gridmap file using the nanonispy library.
 #Provides the same unit conversions of x, y data as gridLoadData() for consistency.
 #Parameters:
-# Input:
-# Output:
+# full_3ds : everything within a 3ds file
 
 
 import sys
 import numpy as np
 import nanonispy as nap
 
-grid = nap.read.Grid(sys.argv[1])
-# grid contains everything in the .3ds file
+full_3ds = nap.read.Grid(sys.argv[1])
+# full_3ds contains everything in the .3ds file
 # sys.argv[1] takes the first command-line input. Used to get input from MATLAB
 
 
-#print("This file has the following channels: ",grid.header['channels'])
+#print("This file has the following channels: ",full_3ds.header['channels'])
 
-#print("This file has the following parameters: ",grid.header['experimental_parameters'])
+#print("This file has the following parameters: ", full_3ds.header['experimental_parameters'])
 
 #-------Treatment of grid data-------
 
 #X(m) experimental parameter, shape (num_x, num_y)
-x = grid.signals['params'][:, :, 2]
+x = full_3ds.signals['params'][:, :, 2]
 #Convert from m to nm
 x = x*1e9
 
 #Y(m) experimental parameter, shape (num_x, num_y)
-y = grid.signals['params'][:, :, 3]
+y = full_3ds.signals['params'][:, :, 3]
 #Convert from m to nm
 y = y*1e9
 
 #V values of grid map, shape (num_V)
-V = grid.signals['sweep_signal']
+V = full_3ds.signals['sweep_signal']
 
 #Current (A) fwd, shape (num_x, num_y, num_V)
-I = grid.signals[grid.header['channels'][0]]
+I = full_3ds.signals[full_3ds.header['channels'][0]]
 I = I*1e9 #Not a unit conversion, but necessary for transfer into MATLAB due to memory issues.
 
 gridArrays = [x, y, V, I]
