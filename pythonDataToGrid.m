@@ -6,6 +6,7 @@
 %  Reads Nanonis python-processed gridmap data and returns as grid structure
 % Parameters 
 %   Input: fileName = string of full path and 3ds file name, ie: '/Users/vanessa/Desktop/UBC/Lab/Generic_Data_Processing_Code/Grid_Spectroscopy--NbIrPtTe001.3ds'
+%             *Note: because this file is being read in a python script, the filename MUST NOT have spaces
 %   Output: grid = structure containing x, y, V, I gridmap data, same format as output of gridLoadData()
 
 
