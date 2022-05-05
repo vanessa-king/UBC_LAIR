@@ -1,4 +1,9 @@
-% Reads Nanonis python-processed gridmap data and returns as grid structure
+% Requirements:
+% Matlab 2021B or newer - 'pyrunfile' does not exist in older versions
+% python 3.8 or 3.9. Type 'pyenv' in Matlab to see which python version Matlab recognizes
+
+% Description:
+%  Reads Nanonis python-processed gridmap data and returns as grid structure
 % Parameters 
 %   Input: fileName = string of full path and 3ds file name, ie: '/Users/vanessa/Desktop/UBC/Lab/Generic_Data_Processing_Code/Grid_Spectroscopy--NbIrPtTe001.3ds'
 %   Output: grid = structure containing x, y, V, I gridmap data, same format as output of gridLoadData()
