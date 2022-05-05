@@ -1,7 +1,23 @@
-#If first use, do the following in a new terminal window (currently written for zsh):
+#Requirements:
+# - Python 3.8 or 3.9 : so that Matlab can run this file on your behalf
+# - Git
+
+#If first time using, do the following:
+#For Mac: In a new terminal window (zsh):
 #1. type "git clone https://github.com/underchemist/nanonispy.git"
 #2. change your folder using "cd currentfolder/nanonispy" where 'currentfolder' is your current folder path
 #3. type "python setup.py install"
+#For windows on Git Bash:
+#1. type "git clone https://github.com/underchemist/nanonispy.git"
+#2. change your folder using "cd currentfolder/nanonispy" where 'currentfolder' is your current folder path
+#3. type "python setup.py install"
+
+#Description:
+#A python script (not a function) that reads a Nanonis 3ds gridmap file using the nanonispy library.
+#Provides the same unit conversions of x, y data as gridLoadData() for consistency.
+#Parameters:
+# Input:
+# Output:
 
 
 import sys
