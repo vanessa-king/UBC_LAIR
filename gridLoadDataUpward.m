@@ -6,8 +6,8 @@
 % Parameters:
 %   folder: 3D Matrix with dI/dV data
 %   stamp_project: the filename leader, takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--'
-%   img_number: the z-file name, takes the form '###_#'
-%   grid_number: the iv-file name, also takes the form '###_#'
+%   img_nbr: the z-file name, takes the form '###_#'
+%   grd_nbr: the iv-file name, also takes the form '###_#'
 
 function grid = gridLoadData(folder,stamp_project,img_number,grid_number, average_forward_and_backward)
 
@@ -73,8 +73,8 @@ end
 
 % This section is to remove NaN values in a partial image. If the image is complete, this section doesn't really do anything. 
 grid.z_img = grid.z_img_all(:,all(~isnan(grid.z_img_all)));
-sz1=size(grid.z_img,2);
-grid.y_img = grid.y_img_all(1:sz1,1);
+size1=size(grid.z_img,2);
+grid.y_img = grid.y_img_all(1:size1,1);
 
 % uncomment this if you want to plot your images
 % figure('Name','Topography');
@@ -124,14 +124,13 @@ if find(abs(diff(sign(diff(Vraw)))))
 else
     grid.V = Vraw;
     grid.I_all = I_dbl;
-end
-    
-    
-grid.I_2D_all = squeeze(grid.I_all(1,:,:));    
-grid.I_2D = grid.I_2D_all(:,all(~isnan(grid.I_2D_all)));
-sz2=size(grid.I_2D,2);
-grid.y = grid.y_all(1:sz2,1);
-grid.I = grid.I_all(:,:,1:sz2);
-grid.I_Forward = grid.I_Forward_all(:,:,1:sz2);
-grid.I_Backward = grid.I_Backward_all(:,:,1:sz2);
+    end
+
+% This section is to calculate where I(V) has NaN values and then remove them. 
+size2 = floor(size(grid.x_img,1)/size(grid.x,1));
+size3 = ceil(size1/size2);
+grid.y = grid.y_all(1:size3,1);
+grid.I = grid.I_all(:,:,1:size3);
+grid.I_Forward = grid.I_Forward_all(:,:,1:size3);
+grid.I_Backward = grid.I_Backward_all(:,:,1:size3);
 end
