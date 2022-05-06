@@ -4,7 +4,7 @@
 %%  Input parameters: grid (1x1 structure): grid data as output from gridLoadData, C(float): normalization parameter , smooth(bool): True/False
 
 
-function [didv, norm_didv, I_correction, V_reduced] = gridCorrectionNorm(grid, C, smooth, normalize)
+function [didv, norm_didv, I_correction, V_reduced, I_offset] = gridCorrectionNorm(grid, C, smooth, normalize)
 
 % if smooth = False no smoothing before treating data 
 % An example: gridCorrectionNorm(grid, 3E-10, 1), 1 means do the smooth part, if 0 means do not smooth current (or spatial)
@@ -12,22 +12,20 @@ function [didv, norm_didv, I_correction, V_reduced] = gridCorrectionNorm(grid, C
 V = grid.V; % pick array bias from grid 
 I = grid.I; % pick array I from grid
 V_reduced = V(1:end-1); % purpose: while performing dI/dV the data size get reduced by 1. You can change the reduced data points from the head or the tail here.  
-
+I_offset = NaN([size(I,2),size(I,3)]);% purpose: if want normalize, this is the correction(constant offset) made to current. 
 % correct for (I,V)=(0,V) % note that this is IV curve, when bias is zero, current should be zero. (basically, get rid of the offset)
 % find the smallest bias and set that to zero
 %=============================================
 
 if find(diff(sign(V))) % This "if" statement looks for a sign change in V. 
     [~,ind] = min(abs(V)); %here only show the index position of the minimum value
-    I_offset = NaN([1,size(I,2),size(I,3)])
     I_correction = NaN(size(I)); % build up a NaN matrix (201 120 120)
-     for kx = 1:size(I,2) %here kx=1:120
+    for kx = 1:size(I,2) %here kx=1:120
         for ky = 1:size(I,3) %here ky=1:120
             I_correction(:,kx,ky) = I(:,kx,ky)-I(ind,kx,ky); %here to find the minimum array of V
-            I_offset(1,kx,ky) = I(ind,kx,ky)
-            end
+            I_offset(kx,ky) = I(ind,kx,ky);
+        end
     end
-    imagesc(I_offset)
 else
 
 I_correction = I
@@ -69,6 +67,12 @@ but if there is also offset in the current detection?
 Then we can not correct it with software, we need to run the oscilloscope check. 
 
 Comment closed.
+
+May 5th
+optimize the offset: 
+output mean+- sigma
+plot the value-mean, color map: threshold map: red-white-blue
+
 %}
 
 
