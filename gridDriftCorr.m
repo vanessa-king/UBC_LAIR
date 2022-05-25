@@ -1,17 +1,16 @@
 function [gridcorr] = gridDriftCorr(grid, before, after, theta)
-%GRIDDRIFTCORR Correct for drift over time in grid IV spectroscopy.
-%   Calculates the drift from before and after topography images and skews
-%   the iv grid to compensate. You can rotate by angle theta (deg) if you
-%   so choose.
-%   Input: 
+%Description:
+%   GRIDDRIFTCORR Correct for drift over time in grid IV spectroscopy.
+%   Calculates the drift from before and after topography images and skews, the iv grid to compensate. You can rotate by angle theta (deg) as well.
+
+%Input: 
 %   - grid: original data structure from gridLoadData
 %   - before: topography structure from topoLoadData of image before  taking the grid
 %   - after: topography strcutre from topoLoadData of image after the grid
 %   - theta: angle theta to rotate (in degrees)
-%   
-%   Output:
+  
+%Output:
 %   - gridcorr: structure with same fields as grid, but with drift corrected
-%
 %   Note that skew results in larger grid. Extra elements are left as 0.
 %   The x,y scale for the topography and grid are extended linearly to accomodate.
 
