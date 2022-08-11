@@ -54,7 +54,7 @@ OR
 n : number of points to sample [topoPlaneSub.m]
 nbins : number of bins [gridGetIVThreshold.m]
 norm_didv : 3D matrix with normalized dI/dV data [gridCorrectionNorm.m]
-normalize : True/False for whether to normalize or not [gridCorrectionNorm.m]
+normalize : True/False for whether to normalize or not [gridCorrectionNorm.m] [matrixToNanonis.m]
 Num_in_mask : number of points you want to average over in the mask [gridMaskPoint.m]
 number_bias_layer : number of bias layers in a grid [gridAvg.m]
 offset : vertical offset for each point spectra [gridClickForSpectrum.m]
