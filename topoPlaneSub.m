@@ -2,7 +2,7 @@
 % what does the function do : Subtracts the plane in topography images, local flat/global flat
 % Parameters
 %%  Input parameters: 
-    % image(structure): the structure file generated from topoLoadData.m 
+    % image(structure): the structure variable, either from loadDataUpward or from TopoLoadData
     % n(integer): number of points to sample, the default number is 200 
     % plot(boolean): choose to plot the process of plane sub, the is default is F 
 %%  Output parameters: 
