@@ -1,0 +1,49 @@
+function [] = PlotSlices(IVdata,V,Biases)
+
+IVdata = flipdim(permute(IVdata,[1 3 2]),2);
+
+sxy = .5;
+sv = 2;
+
+if sxy
+    flt = fspecial('gaussian',ceil(sxy*5),sxy);
+    for k = 1:size(IVdata,1)
+        IVdata(k,:,:) = imfilter(squeeze(IVdata(k,:,:)),flt,'replicate');
+    end
+end
+
+if sv
+    for k = 1:size(IVdata,2)
+        for l = 1:size(IVdata,3)
+            IVdata(:,k,l) = Gauss1d(IVdata(:,k,l),sv);
+        end
+    end
+end
+
+N = length(Biases);
+cols = ceil(sqrt(N)+1);
+rows = ceil(N/cols);
+
+NegRamp = V(length(V))-V(1) < 0;
+
+mi = .7;ma = .7*max(max(max(IVdata(find(V > Biases(1),1):find(V > Biases(length(Biases)),1),:,:))));
+
+inferno = infernomap;
+figure
+for k = 1:N
+    subplot(rows,cols,k)
+    if NegRamp
+        temp_ind = find(V < Biases(k),1);
+    else
+        temp_ind = find(V > Biases(k),1);
+    end
+        imagesc(squeeze(IVdata(temp_ind,:,:)))
+       % image(64/(ma-mi)*(squeeze(IVdata(temp_ind,:,:))-mi))
+        axis image;colormap(inferno)
+        title([num2str(V(temp_ind)),' V'])
+%         ma = 2*mean(mean(sqrt(squeeze(IVdata(k,:,:)).^2)));mi = -ma;
+%         image(64*(squeeze(IVdata(temp_ind,:,:))-mi)/(ma-mi))
+%         axis image
+%         title([num2str(V(temp_ind)),' V'])
+%         colormap(diffcolour);
+end
