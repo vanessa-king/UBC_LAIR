@@ -1,246 +1,268 @@
 %%
 % (1) This section of code loads the necessary script directories, data paths,
 % and files to be analyzed.
-%
 
-%add relevant script directories
-root_folder = 'C:\Users\jamesday\Documents\UBC\Data\CaPt\Tesla-Code\Tesla-Code';
-addpath([root_folder '\omicron']); %QUESTION FOR JISUN: DO WE ACTUALLY USE THIS FOLDER?
-addpath([root_folder '\custom_scripts']);
+% load all necessary script directories
+root_folder = 'C:\Users\jskim5\Documents\Research\1. UBC\2. Tesla STM-ARPES system\Tesla-Code';
+addpath([root_folder '\custom_scripts']); % ../ means using up-one-level folder
 addpath([root_folder '\colourmaps'])
+addpath([root_folder '\omicron'])
 
 % add data path
-addpath([root_folder '\data']);
+addpath([root_folder '\CaPt_data']);
+
 addpath([root_folder '\output'])
-fld = '.';
 
-% stamp_project is the filename leader and takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--'; 
-stamp_project = '20210827-184700_CaPt--STM_Spectroscopy--'; 
+folder = '.';
 
-%set the iv-file name
-iv_nbr = '51_1';
+% stamp_project is the filename leader and takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--';
+stamp_project = '20210308-124244_CaPt--STM_Spectroscopy--'; 
 
-%set the z-file (aka topo) name
-img_nbr = '207_1';
-
-%points per sweep is set
+% set the grid I(V) file number
+grid_number = '108_1';
+% set the z-file (aka topo) image number
+img_number = '54_1'; 
+% points/sweep used in the grid measurement
 pointsPerSweep = 500;
-
-%seconds per sample is set
+% T-raster used in the grid measurement
 Traster = 11.33 * 10^(-3); 
 
 %%
-% (2) This section of code loads the files called above (iv_nbr and img_nbr),
-% in either the upward or downward direction, to create "grd". Only one of upward or downward should be used.
-%
+% (2) This section of code loads the files called above (gird_number and img_number),
+% in either the upward or downward direction, to create "grid". Only one of upward or downward should be used.
 
 avg_forward_and_backward = false;
-grd = gridLoadDataUpward(fld,stamp_project,img_nbr,iv_nbr, avg_forward_and_backward);
-% grd = gridLoadDataDownward(fld,stamp_project,img_nbr,iv_nbr, avg_forward_and_backward);
+grid = gridLoadDataUpward(folder,stamp_project,img_number,grid_number, avg_forward_and_backward); % Taking data Upward
+% grid = gridLoadDataDownward(folder,stamp_project,img_number,grid_number); % Taking data Downward
 
-%%
-% (3a) This section of code first gets a time axis to plot against i(v) or di/dv.
+%% Moving average
+% (3a) This section of code first gets a time axis to plot against I(v) or di/dv.
 % Second, it applies moving-average smoothing to the di/dv data vs time.
-%
 
 time = getTimeAxis(pointsPerSweep, Traster);
-grd.iv = gridSmooth(grd.iv,time); % requires Curve Fitting Toolbox
+grid.I = gridSmooth(grid.I,time); % requires curve fitting toolbox
 if (~avg_forward_and_backward)
-    grd.ivForward = gridSmooth(grd.ivForward,time); 
-    grd.ivBackward = gridSmooth(grd.ivBackward,time);
-end
-%%
-% (3b) This section of code will does some funny vertical shifting. Dong will talk to
-% Sarah about its purpose, as it's not clear that we need this.
-%
-
-[didv, norm_didv, ivcorr, Vred] = gridCorrNorm(grd, 3E-10, 0); 
-if (~avg_forward_and_backward)
-    grdForward = grd;
-    [grdForward.iv] = grdForward.ivForward;
-    [didv_forward, ~, ~, ~] = gridCorrNorm(grdForward, 3E-10, 0);
-    grdBackward = grd;
-    [grdBackward.iv] = grdForward.ivBackward;
-    [didv_backward, ~, ~, ~] = gridCorrNorm(grdBackward, 3E-10, 0);
+    grid.I_Forward = gridSmooth(grid.I_Forward,time); 
+    grid.I_Backward = gridSmooth(grid.I_Backward,time);
 end
 %% 
-% (4) This section of code takes the average of the iv data (e.g., the whole
-% grid) and plots both "i versus v" and "di/dv versus v"
+% (3b) This section of code will does some funny vertical shifting. Dong will talk to
+% Sarah about its purpose, as it's not clear that we need this.
+
+[didv, norm_didv, I_correction, V_reduced] = gridCorrectionNorm(grid, 3E-10, 0,1); 
+if (~avg_forward_and_backward)
+    gridForward = grid;
+    [gridForward.I] = gridForward.I_Forward;
+    [didv_forward, ~, ~, ~] = gridCorrectionNorm(gridForward, 3E-10, 0,1);
+    gridBackward = grid;
+    [gridBackward.I] = gridForward.I_Backward;
+    [didv_backward, ~, ~, ~] = gridCorrectionNorm(gridBackward, 3E-10, 0,1);
+end    
+
+%% 
+%(4) This section of code takes the average of the I(V) data (e.g., the whole
+% grid) and plots both "I versus V" and "dI/dV versus V"
 %
 % NOTE: IF I DON'T RUN THE SECTION ABOVE, THIS SECTION DOESN'T RECOGNIZE
-% VRED
+% V_reduced
 
-[elayer, ~] = size(Vred);
+[number_bias_layer, ~] = size(V_reduced);
 
-% This makes the "i versus v" plot
-avg_iv_forward = gridAvg(grd.ivForward, grd.V);
-fig = gcf;
-close(fig);
-gridAvg(grd.ivBackward, grd.V);
-title('grid file207-1') %make certain that this title name is updated
-hold on
-plot(grd.V,avg_iv_forward)
-hold off
-legend('bwd', 'fwd');
-ylabel('I(V) [a.u.]')
+% This makes the averaged "I versus V" plot
+avg_iv = gridAvg(grid.I, grid.V,1);
+ylabel('I(V) (nA)')
 
-% This makes the "di/dv versus v" plot
-avg_didv_forward = gridAvg(didv_forward, Vred);
-fig = gcf;
-close(fig);
-gridAvg(didv_backward, Vred);
-hold on
-plot(Vred,reshape(avg_didv_forward(:),elayer,1))
-title('topo file 51-1') %make certain that this title name is updated
-hold off
-legend('bwd', 'fwd');
-ylabel('dI/dV [a.u.]')
-%%
-% (5) This section of code plots the few selected di/dv, depending on where
-% the user clicked, and saves them. The main toggle here is the fourth input which defines
-% the number of point spectra to plot.
-%
-
-gridClickForSpectrum(didv,Vred,0,2,0,0,0,grd) % requires the Image Processing Toolbox
-
-set(gca,'FontSize',20,'XLim',[-0.05,0.05],'YLim',[0,4E-9]);
-
-saveas(gca,[root_folder, '\output', '/grid',iv_nbr,'I(V)-A.png']) %make sure to update the saved filename
-
-%%
-% (6) This section of code takes a slice of di/dv at certain energy,
-% defined by the user, and saves it.
-%
-
-gridPlotSlices(didv,Vred,0.0047,'tryyy'); %be sure to set the energy you want (third input) and make certain that this title name is set appropriately
-
-saveas(gca,[root_folder, '\output', '/grid_fullCaPt10-4-8_',stamp_project,'I(V)_32.png']) %make sure to update the saved filename
-%%
-% (7) This section of code makes a movie of all energy slices from grid
-% measurement and saves it.
-%
-
-v = VideoWriter([root_folder, '\output', '/grid_CaPt10-4-8_Tmovie_',stamp_project,'I(V)_',num2str(iv_nbr),'.avi']);
-gridMovie(didv, Vred, v); 
-
-%%
-% (8) This section of code thresholds a grid of i(v) data at a specific
-% bias either through the median or a custom value. This sectioning is shown as a boundary on
-% di/dv, as well as separate "bright" and "dark" spectra.
-%
-
-% Enter the bias value here
-bias = 0.0047;
-
-% This sets the energy threshold
-[iv_threshold, bright_indices, dark_indices, boundary_x, boundary_y] = gridGetThreshold(didv, Vred, bias);
-avg_iv_bright = gridAvgFilter(didv, Vred, bright_indices);
-avg_iv_dark = gridAvgFilter(didv, Vred, dark_indices);
-
-% This makes the "bright" and "dark" spectra plots
-figure();
-plot(Vred,avg_iv_bright)
-hold on
-plot(Vred, avg_iv_dark)
+% This makes the averaged "dI/dV versus V" plot
+avg_didv = gridAvg(didv, V_reduced,1);
 ylabel('dI/dV [a.u.]','fontsize', 20)
 xlabel('V','fontsize', 20)
 xticks([-0.04 -0.02 0 0.02 0.04])
+%xlim([-0.02 0.02])
 ylim([0 3e-9])
 set(gca,'fontsize',20)
-legend("Bright", "Dark",'fontsize', 20);
-axis square
+
+% This makes the averaged "I versus V" plot for forward and backward sweeps separately
+avg_iv_forward = gridAvg(grid.I_Forward, grid.V);
+gridAvg(grid.I_Backward, grid.V,1);
+hold on
+plot(grid.V,avg_iv_forward)
 hold off
+legend('bwd', 'fwd');
+ylabel('I(V) (nA)');
+title("Avg I(V) for bwd and fwd");
+
+% This makes the averaged "dI/dV versus V" plot for forward and backward sweeps separately
+avg_didv_forward = gridAvg(didv_forward, V_reduced);
+gridAvg(didv_backward, V_reduced,1);
+hold on
+plot(V_reduced,reshape(avg_didv_forward(:),number_bias_layer,1))
+hold off
+legend('bwd', 'fwd');
+ylabel('dI/dV [a.u.]')
+xlabel('V','fontsize', 14)
+xticks([-0.04 -0.02 0 0.02 0.04])
+ylim([0 4.5e-9])
+
 %%
-% (9) This section of code subtracts the plane in the topographic image. It
-% also overlays a boundary (in energy space) over the topographic image.
-%
+% (5) This section of code plots the few selected dI/dV, depending on where
+% the user clicked, and saves them. The main toggle here is the fourth input which defines
+% the number of point spectra to plot. Since gridClickForSpectrum plots
+% 'Topology associated with grid' with reduced resolution to match grid's
+% pixel size, you can choose to plot the topography image with the full
+% resolution by putting 1 after 200 in topoPlaneSub(grid,200,1) inside gridClickForSpectrum. 
+% See topoPlaneSub function for details.
+% Currently it's set to plot 'Plane Subtracted Topography'.
+
+gridClickForSpectrum(didv, V_reduced, 0, 3, 0, 0,0,grid) % requires Image Processing Toolbox
+
+set(gca,'FontSize',20,'XLim',[-0.05,0.05],'YLim',[-0.1E-8,0.8E-8])
+ylabel('dI/dV [a.u.]','fontsize', 14)
+xlabel('V','fontsize', 14)
+xticks([-0.04 -0.02 0 0.02 0.04]);
+saveas(gca,[root_folder, '\output', '/grid',grid_number,'I(V)-A.png']) %make sure to update the saved filename
+%%
+% (6) This section of code takes a slice of dI/dV at certain bias,defined by the user, and saves it.
+
+gridPlotSlices(didv,V_reduced,0.0047,'tryyy'); %be sure to set the bias you want (third input) and make certain that this title name is set appropriately
+
+%saveas(gca,[root_folder, '\output','/grid_fullCaPt10-4-8_',stamp_project,'I(V)_32.png']) %make sure to update the saved filename
+%%
+% (7) This section of code makes a movie of all energy slices from grid
+% measurement and saves it.
+
+v = VideoWriter([root_folder, '\output', '/grid_CaPt10-4-8_movie_',stamp_project,'I(V)_',num2str(grid_number),'.avi']);
+gridMovie(didv, V_reduced, v); 
+
+%% Grid thresholding
+% (8) This section of code thresholds a grid of dI/dV data at a specific
+% bias either through the median or a custom value of dI/dV amplitude. This sectioning is shown as a boundary on
+% dI/dV image at a specific bias the user chose, as well as separate "bright" and "dark" spectra.
+
+% Enter the bias value to plot dI/dV image at this bias
+bias = 0.0047;
+%1 indicates using median threshold value in gridGetThreshold, 0 to have an option to choose a custom value
+grid_thresh = gridGetThreshold(didv, V_reduced, bias, 1);
+avg_didv_bright = gridAvgFilter(didv, V_reduced, grid_thresh.upper_indices);
+avg_didv_dark = gridAvgFilter(didv, V_reduced, grid_thresh.lower_indices);
+
+% This makes the "bright" and "dark" spectra plots. Bright means the
+% spectra above the threshold are averaged together. Dark means the spectra
+% below or equal to the threshold are averaged together. 
+figure();
+plot(V_reduced,avg_didv_bright)
+hold on
+plot(V_reduced, avg_didv_dark)
+%title("Average dI/dV for bright and dark");
+ylabel('dI/dV [a.u.]','fontsize', 14)
+xlabel('V','fontsize', 14)
+xticks([-0.04 -0.02 0 0.02 0.04])
+ylim([0 3e-9])
+set(gca,'fontsize',20)
+legend("Bright", "Dark",'fontsize', 14);
+%axis square
+hold off
+
+%% grid threshold plot on topology
+% (9) This section of code plots a plane substracted topographic image. Then, it
+% overlays a boundary determined in the section (8) over the topographic image.
 
 didv_flip = flip(permute(didv,[1 3 2]),2); % flip didv so that image (x,y) = (0,0) at the bottom left
-topo = topoPlaneSub(grd,200,0); % subtract plane
+topo = topoPlaneSub(grid,200,0); % subtract plane
 fig_name = 'Topology associated with grid';
 z_img = flip(permute(topo,[2 1]),1);
 fig_plot = imresize(z_img, [size(didv_flip,2), size(didv_flip,3)]);
 img = figure('Name', fig_name); imagesc(fig_plot); colormap('gray'); hold on
 axis image
 hold on;
-plot(boundary_x, boundary_y, 'r', 'LineWidth', 2);
+plot(grid_thresh.boundary_x, grid_thresh.boundary_y, 'g', 'LineWidth', 2);
 hold off
-%%
-% (10,11) This section of code finds average di/dv with with index filter
-% applied. Note that it contains two custom scripts in "topoGetThreshold"
-% and "gridAvgFilter".
+%% topo thresholding
+% (10) This section of code is similar to the section (8) but for thresholding, it uses topographic height
+% distribution instead of dI/dV amplitude. 
 %
+% 1 indicates using median threshold value in topoGetThreshold, 0 to have an option to choose a custom value
+topo_thresh = topoGetThreshold(topo, 1);
+avg_iv_tall = gridAvgFilter(didv, V_reduced, topo_thresh.upper_indices);
+avg_iv_short = gridAvgFilter(didv, V_reduced, topo_thresh.lower_indices);
 
-% This sets the height threshold
-[height_threshold, tall_indices, short_indices, boundary_x, boundary_y] = topoGetThreshold(topo);
-avg_iv_tall = gridAvgFilter(didv, Vred, tall_indices);
-avg_iv_short = gridAvgFilter(didv, Vred, short_indices);
-
-%This makes the plots
 figure();
-plot(Vred,avg_iv_tall)
+plot(V_reduced,avg_iv_tall)
 hold on
-plot(Vred, avg_iv_short)
+plot(V_reduced, avg_iv_short)
 title("Average dI/dV for tall and short");
 xlabel("V")
 ylabel("Avg iv data")
 legend("Tall", "Short");
 axis square
 hold off
-
+%% Topo threshold plot on grid
+% (11) This section of code plots a dI/dV image chosen at the section (8). Then, it
+% overlays a boundary determined in the section (10) over the dI/dV image.
+[~,imN] = min(abs(V_reduced-bias));
+didv_slice = squeeze(didv_flip(imN, :, :));
+figure();
+clims = [1.7E-9,3E-9];
+imagesc(didv_slice, clims);
+axis square
+title(['Slice at ',num2str(bias),' V']);
+color_scale_resolution = 1000; % 1000 evenly spaced colour points
+cm_viridis = viridis(color_scale_resolution); % Default matplotlib(for LAIR)
+colormap(cm_viridis)
+colorbar
+hold on
+plot(topo_thresh.boundary_x,topo_thresh.boundary_y, 'g', 'LineWidth', 2);
+hold off
 
 %%
-% (12,13) This section of code creates a circular mask of radius R around a
-% clicked point. It then plots the average di/dv on that point. The user may toggle R and energy slice.
+% (12) This section of code creates a circular mask of radius R around a
+% clicked point. It then plots the average dI/dV on that point. The user may toggle R and energy slice.
 %
 % THIS SECTION IS CURRENTLY STRUCTURED FOR DONOR AND ACCEPTOR ENERGIES, SO
 % WE WILL WANT TO MODIFY THIS ACCORDINGLY.
 
 % plots di/dv at the specified energy (thrid input) and allows user to
 % click on a point with a mask of radius R (fourth input)
-A_mask = gridMaskPoint(didv, Vred, 0.0055, 1);
-D_mask = gridMaskPoint(didv, Vred, -0.0019, 1);
+A_mask = gridMaskPoint(didv, V_reduced, 0.0055, 2);
+%D_mask = gridMaskPoint(didv, Vred, -0.0019, 2);
 
-% takes the average of the di/dv spectra in the selected area
+% takes the average of the dI/dV spectra in the selected area
 [~, A_sts] = gridAvgMask(didv, A_mask);
-[~, D_sts] = gridAvgMask(didv, D_mask);
+%[~, D_sts] = gridAvgMask(didv, D_mask);
 
 % plots the spectra at the spots where the masks were applied
 figure; hold on;
 set(gca,'DefaultLineLineWidth',2)
 set(gca,'FontSize',20)
-plot(Vred, D_sts); 
-plot(Vred, A_sts);  
-xlim([-0.02, 0.02])
+%plot(Vred, D_sts); 
+plot(V_reduced, A_sts,'b');  
+ylabel('dI/dV [a.u.]','fontsize', 20)
+xlabel('V','fontsize', 20)
+xticks([-0.04 -0.02 0 0.02 0.04])
+xlim([-0.05, 0.05])
 ylim([0, 4E-9])
-legend('negative','positive')
+%legend('Donor','Acceptor','Au')
+%legend('negative','positive')
 xlabel('Bias (V)')
 ylabel('dI/dV a.u.)')
 hold off
-%
 
 %%
-% (TBD) This section of code should run like the previous one, but here you
+% (13) This section of code should run like the previous one, but here you
 % click two points that define a single rectangle (presumably, opposite
 % corners).
-%
-%
-% plot the averaged didv on square
 
-B_mask = gridMaskSquare(didv, Vred, 0.0019);
-%gridMaskSquare Make a mask based on rectangle drawn on didv
-%   Define 2 points that makes up a rectangle the will be the mask.
-%   mask = mask of selected area
-%   N = number of points included in mask
-%   imV = bias slice to show and click on
+% plots dI/dV at the specified energy (thrid input) and allows user to
+% click on two points to define a rectangle.
+B_mask = gridMaskSquare(didv, V_reduced, 0.0019);
 
+% takes the average of the dI/dV spectra in the selected area
 [~, B_sts] = gridAvgMask(didv, B_mask);
 
-% plot figures
+% plots the spectra at the spots where the masks were applied
 figure; hold on;
 set(gca,'DefaultLineLineWidth',2)
 set(gca,'FontSize',20)
-plot(Vred, B_sts); 
+plot(V_reduced, B_sts); 
 xlim([-0.05, 0.05])
 %legend('Donor','Acceptor','Au')
 legend('average didv on square')
@@ -248,13 +270,9 @@ xlabel('Bias (V)')
 ylabel('dI/dV')
 hold off
 
-
 %%
-% (TBD) I have never used this one... Also, it is in this section and below
-% that some errors (see orange bars to the side) start popping up.
-%
-%
-
+%(TBD) We have never used this one yet. The codes from this section are to plot QPI dipersion.
+% Note: it is in this section and below that some errors (see orange bars to the side) start popping up.
 for k=1:200 % picking 200 energy evenly, from IV direclty, 200 didv 0 is missing.
     didv2(:,:,k) = didv(k,:,:); %arrange as (x,y,k)
     Med(k) = median(median(didv2(:,:,k))); %median twice, pick one specific peak in histogram
@@ -262,9 +280,6 @@ for k=1:200 % picking 200 energy evenly, from IV direclty, 200 didv 0 is missing
 end
 
 %% For real space grid map
-%
-% (TBD) I have never used this one...
-%
 
 % eint=1;
 % for k=1:200/eint
@@ -272,7 +287,7 @@ end
 for k=1:50
     const=50; % constant number for caxis contrast.
     energy = -202+2*k;
-%     figure(13)
+    figure(13)
     t = sprintf(  'k = %d, Energy: %d mV',k,energy);
     figure(13)
     imagesc(rot90(didv2(:,:,k))) %plot 2D image
@@ -293,12 +308,10 @@ for k=1:50
    % F = getframe(gca);
  %   imwrite(F.cdata,['output2/grid_NbIrTe4_Tmovie_',stamp_project,'dI(V)_',num2str(iv_nbr),'.png']])
 end
+%%
 
-%% From real space image to QPI
-%
-% (TBD) Again, haven't used it yet...
-%
 
+%% From real space igame to QPI
 %qcenter=101;  % to define a center first 
 qcenter = 29;
 for k=1:200
@@ -313,11 +326,7 @@ for k=1:200
     Medq(k) = median(median(QPI(:,:,k))); % same as real space, pick one specific peak in histogram
     sgq(k) = std(std(QPI(:,:,k)));
 end
-%% plot qpi
-%
-% (TBD) Another as-of-yet unused one...
-%
-
+%% plot qpi 
 constq=2;
 eint=5;
 for k=1:200/eint
@@ -348,9 +357,6 @@ end
 
 
 %% plot slide cut of QPI
-%
-% (TBD) Here be dragons.
-%
 
 %%
 %for k=1:200 % picking 200 energy evenly, from IV direclty, 200 norm_didv 0 is missing.
@@ -367,10 +373,6 @@ lineqx(:,:) = QPI(:,qcenter,:); %arrange as (qx,k,qy)
 %end
 
 %% For real space grid map
-%
-% (TBD) More dragons.
-%
-
 %for k=110:110
 %     const=0.1; % constant number for caxis contrast.
     figure(14)
@@ -390,5 +392,4 @@ lineqx(:,:) = QPI(:,qcenter,:); %arrange as (qx,k,qy)
  %   imwrite(F.cdata,['output2/grid_NbIrTe4_Tmovie_',stamp_project,'dI(V)_',num2str(iv_nbr),'.png']])
 %end
 %%
-
 
