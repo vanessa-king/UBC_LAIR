@@ -1,7 +1,7 @@
 % Description:   
 %  Loads the files (called in the opening section of our script) in either the upward or downward
 %  direction, to create "grid". Only one of upward or downward should be used. This code can handle a partial grid
-% but truncates it in y not x.
+%  but truncates it in y not x.
 % 
 % Parameters:
 %   folder: 3D Matrix with dI/dV data
