@@ -1,3 +1,4 @@
+%% For all 3ds loading functions, lets use load3dsall.m 
 %% Header loading
 [header, data, par] = load3ds('Grid Spectroscopy010.3ds',0);  % Type your grid file name here
 Rxsize=15;
