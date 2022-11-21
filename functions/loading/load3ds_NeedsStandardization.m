@@ -1,3 +1,4 @@
+%%  for all 3ds loading functions, lets use load3dsall.m 
 function [header, data, par] = load3ds(fn, pt_index)
 % load3ds  Nanonis 3ds file loader
 %   [header, data, par] = load3ds(fn, pt_index) reads a Nanonis 
