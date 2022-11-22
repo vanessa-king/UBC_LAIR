@@ -21,6 +21,7 @@ function [output] = functionName(input)
 
 
 Parameter pool and directory:
+x_num(size)/y_num(size): number of the x/y dimension size.
 average_forward_and_backward : True/False whether to average the forward and backward scan [gridLoadDataUpward.m]
 avg_I : mean of I data [gridAvg.m]
 bias : voltage bias slice to threshold [gridGetIVThreshold.m]
