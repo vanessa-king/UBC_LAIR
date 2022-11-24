@@ -25,7 +25,7 @@ function m=flat2matrix3d(flat,select)
 
 % This file is part of FLAT Toolbox
 % Copyright (c) 2009, Christopher Siol, Electronic Materials, 
-% Institute of Materials Science, Technische Universit‰t Darmstadt 
+% Institute of Materials Science, Technische Universit√§t Darmstadt 
 % All rights reserved.
 %
 % FLAT Toolbox is free software: you can redistribute it and/or modify it
