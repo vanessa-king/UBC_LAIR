@@ -1,7 +1,7 @@
 % FLAT-Toolbox Version 1.0 Nov-2009 
 % 
 % Copyright (c) 2009, Christopher Siol, Electronic Materials, 
-% Institute of Materials Science, Technische Universit‰t Darmstadt 
+% Institute of Materials Science, Technische Universit√§t Darmstadt 
 % http://www.mawi.tu-darmstadt.de/em
 % All rights reserved.
 % 
