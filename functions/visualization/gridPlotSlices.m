@@ -37,5 +37,6 @@ for i = 1:length(plotname)
     colormap(cm_magma)
         axis image
         title([num2str(V(temp_ind)),' V'])
+end
 
 end
