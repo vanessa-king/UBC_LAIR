@@ -10,6 +10,14 @@
 
 function [avg_I] = gridAvg(I, V)
 
+%setting default value for plotBool; further specifications for arguments
+%could be made here, e.g.: I {mustBe...}
+arguments
+    I 
+    V
+    plotBool = 0
+end
+
 %
 % size(V) returns a row vector whose elements are the lengths of the corresponding dimensions of V
 % avg_I is the mean of I based on the dimensions specified in the vector [a b] - here, [3 2] is the total grid size and the order of those numbers probably does not matter.
@@ -21,10 +29,11 @@ avg_I = mean(I, [3 2]);
 %
 % A figure of the average iv data is made.
 %
-
-figure();
-plot(V,reshape(avg_I(:),number_bias_layer,1))
-xlabel("V")
-ylabel("average I(V) data")
+if plotBool == 1
+  figure();
+  plot(V,reshape(avg_I(:),number_bias_layer,1))
+  xlabel("V")
+  ylabel("average I(V) data")
+end
 end
 
