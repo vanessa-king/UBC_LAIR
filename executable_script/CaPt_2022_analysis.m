@@ -3,15 +3,8 @@
 % and files to be analyzed.
 
 % load all necessary script directories
-root_folder = 'C:\Users\jskim5\Documents\Research\1. UBC\2. Tesla STM-ARPES system\Tesla-Code';
-addpath([root_folder '\custom_scripts']); % ../ means using up-one-level folder
-addpath([root_folder '\colourmaps'])
-addpath([root_folder '\omicron'])
+root_folder = 'C:\Users\MarkusAdmin\OneDrive - UBC\MatlabProgramming\MATLAB_UBC\UBC_LAIR';
 
-% add data path
-addpath([root_folder '\CaPt_data']);
-
-addpath([root_folder '\output'])
 
 folder = '.';
 
