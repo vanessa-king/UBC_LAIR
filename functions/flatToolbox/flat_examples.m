@@ -93,8 +93,8 @@ int=2:100;
 
 % choose a direction
 dir=1;
-% For 1D data the “Trace” is stored in m.y(:,1) 
-% and the “Retrace” is stored in m.y(:,2)
+% For 1D data the â€œTraceâ€ is stored in m.y(:,1) 
+% and the â€œRetraceâ€ is stored in m.y(:,2)
 
 % show the data as circles
 plot(m.x(int,dir),m.y(int,dir),'o')
