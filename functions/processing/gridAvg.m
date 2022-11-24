@@ -8,7 +8,7 @@
 %   V size: number_bias_layer x 1
 %
 
-function [avg_I] = gridAvg(I, V)
+function [avg_I] = gridAvg(I, V, plotBool)
 
 %setting default value for plotBool; further specifications for arguments
 %could be made here, e.g.: I {mustBe...}
