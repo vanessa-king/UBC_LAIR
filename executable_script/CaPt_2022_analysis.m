@@ -116,7 +116,7 @@ saveas(gca,[root_folder, '\output', '/grid',grid_number,'I(V)-A.png']) %make sur
 %%
 % (6) This section of code takes a slice of dI/dV at certain bias,defined by the user, and saves it.
 
-gridPlotSlices(didv,V_reduced,0.0045,'Testplot'); %be sure to set the bias you want (third input) and make certain that this title name is set appropriately
+gridPlotSlices(didv,V_reduced, [0.0045, 0.007, 0.009],["TestplotA","TestplotB","TestplotC"]); %be sure to set the bias you want (third input) and make certain that this title name is set appropriately ["name"]
 
 %saveas(gca,[root_folder, '\output','/grid_fullCaPt10-4-8_',stamp_project,'I(V)_32.png']) %make sure to update the saved filename
 %%

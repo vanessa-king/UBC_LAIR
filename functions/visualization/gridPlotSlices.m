@@ -24,7 +24,7 @@ NegRamp = V(length(V))-V(1) < 0;
 
 % Homework: To add position to plot to manually adjust the size.
 % Plot the biases selected, if there is no such bias exist in the function V, then choose the one which is closest(round-up)
-for i = 1:length(plotname)
+for i = 1:size(plotname,2)
     figure('Name', plotname(i))
         if NegRamp
              temp_ind = find(V < Biases(i),1);
