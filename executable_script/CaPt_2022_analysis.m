@@ -134,7 +134,7 @@ gridMovie(didv, V_reduced, v);
 % Enter the bias value to plot dI/dV image at this bias
 bias = 0.0047;
 %1 indicates using median threshold value in gridGetThreshold, 0 to have an option to choose a custom value
-grid_thresh = gridGetThreshold(didv, V_reduced, bias, 1);
+grid_thresh = gridGetIVThreshold(didv, V_reduced, bias, 1);
 avg_didv_bright = gridAvgFilter(didv, V_reduced, grid_thresh.upper_indices);
 avg_didv_dark = gridAvgFilter(didv, V_reduced, grid_thresh.lower_indices);
 
