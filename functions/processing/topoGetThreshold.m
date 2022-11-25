@@ -1,4 +1,4 @@
-function [height_threshold, tall_indices, short_indices, boundary_x, boundary_y] = topoGetThreshold(topo)
+function [topoThresh] = topoGetThreshold(topo)
 %topoGetThreshold Gets the threshold from the height distribution
 %of the topo
 
@@ -45,5 +45,13 @@ contour(short_indices) = 0;
 hold on
 plot(boundary_x,boundary_y,'g','LineWidth',2);
 hold off
+
+%define struct for return of function (alternativley return these 5 values
+%individually: [height_threshold, tall_indices, short_indices, boundary_x, boundary_y]
+topoThresh.height_threshold = height_threshold;
+topoThresh.tall_indices = tall_indices;
+topoThresh.short_indices = short_indices;
+topoThresh.boundary_x = boundary_x;
+topoThresh.boundary_y = boundary_y;
 
 end

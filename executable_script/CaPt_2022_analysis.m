@@ -134,9 +134,9 @@ gridMovie(didv, V_reduced, v);
 % Enter the bias value to plot dI/dV image at this bias
 bias = 0.0047;
 %1 indicates using median threshold value in gridGetThreshold, 0 to have an option to choose a custom value
-grid_thresh = gridGetIVThreshold(didv, V_reduced, bias, 1);
-avg_didv_bright = gridAvgFilter(didv, V_reduced, grid_thresh.upper_indices);
-avg_didv_dark = gridAvgFilter(didv, V_reduced, grid_thresh.lower_indices);
+grid_thresh = gridGetIVThreshold(didv, V_reduced, bias, 5);
+avg_didv_bright = gridAvgFilter(didv, V_reduced, grid_thresh.bright_indices);
+avg_didv_dark = gridAvgFilter(didv, V_reduced, grid_thresh.dark_indices);
 
 % This makes the "bright" and "dark" spectra plots. Bright means the
 % spectra above the threshold are averaged together. Dark means the spectra
@@ -174,9 +174,9 @@ hold off
 % distribution instead of dI/dV amplitude. 
 %
 % 1 indicates using median threshold value in topoGetThreshold, 0 to have an option to choose a custom value
-topo_thresh = topoGetThreshold(topo, 1);
-avg_iv_tall = gridAvgFilter(didv, V_reduced, topo_thresh.upper_indices);
-avg_iv_short = gridAvgFilter(didv, V_reduced, topo_thresh.lower_indices);
+topo_thresh = topoGetThreshold(topo);
+avg_iv_tall = gridAvgFilter(didv, V_reduced, topo_thresh.tall_indices);
+avg_iv_short = gridAvgFilter(didv, V_reduced, topo_thresh.short_indices);
 
 figure();
 plot(V_reduced,avg_iv_tall)

@@ -14,7 +14,7 @@
 %   dark_indices = 1D array of indices of I(V) values below or equal to
 %   I_threshold. These work for flipped I only.
 
-function [I_threshold, bright_indices, dark_indices, boundary_x, boundary_y] = gridGetIVThreshold(I, V, bias, nbins)
+function [gridIVThresh] = gridGetIVThreshold(I, V, bias, nbins)
 
 % load colourmap
 color_scale_resolution = 1000; % 1000 evenly spaced colour points
@@ -71,4 +71,12 @@ contour(dark_indices) = 0;
 hold on
 plot(boundary_x,boundary_y, 'g', 'LineWidth', 2);
 hold off
+
+%define struct for return of function (alternativley return these 5 values
+%individually: [I_threshold, bright_indices, dark_indices, boundary_x, boundary_y]
+gridIVThresh.I_threshold = I_threshold;
+gridIVThresh.bright_indices = bright_indices;
+gridIVThresh.dark_indices = dark_indices;
+gridIVThresh.boundary_x = boundary_x;
+gridIVThresh.boundary_y = boundary_y;
 end
