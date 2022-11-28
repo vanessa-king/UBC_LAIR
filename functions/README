@@ -14,3 +14,5 @@ visualization:  all functions plotting data, rendering videos, ...
 external code
 toolboxes:      are saved in individual folders (e.g. flatToolbox) in the functions folder (Do not copy standard MATLAB toolboxes like ImageProcessing, ...) 
 functions:      are saved in the 3rdPary folder. Create a new sub folder for every function and include all information (e.g. license files!)
+
+colormaps:      any colormaps used for visualization can be stored here
