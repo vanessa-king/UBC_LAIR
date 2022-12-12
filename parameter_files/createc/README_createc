@@ -1,1 +1,6 @@
 this will become the readme file for the createc parameter files folder
+Grid/QPI analysis parameter file: 
+Most of the parameters are directly loaded from nanonis grid map data file (.3ds)
+Manual input of the parameters include: 
+1. gaussian_smoothing_order in load3dsall.m
+2. "nos" in Gridmap print out section
