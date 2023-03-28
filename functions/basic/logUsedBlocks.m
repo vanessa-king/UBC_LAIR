@@ -1,4 +1,4 @@
-function [] = logUsedBlocks(LOGpath, LOGfile, block, comment ,initialize)
+function [LOGcomment] = logUsedBlocks(LOGpath, LOGfile, block, LOGcomment ,initialize)
 %Logging blocks used in the UBC_LAIR main script. 
 %   The function creates and updates a .txt file that logs all the blocks
 %   that were executed in the in the script with a time stamp.
@@ -19,7 +19,7 @@ arguments
     LOGpath     {mustBeText}    %string
     LOGfile     {mustBeText}    %string
     block       {mustBeText}    %string
-    comment     {mustBeText}    %string
+    LOGcomment  {mustBeText}    %string
     initialize  {mustBeNumericOrLogical} = 0
 end
 
@@ -38,8 +38,12 @@ if initialize == 0
     fid = fopen(strcat(LOGpath, '\',LOGfile,'_LOGfile.txt'),'a+');
     t = datetime;
     dtstr = string(t);
-    M=convertStringsToChars(strcat(dtstr, "  ",block, "   ",comment));
+    M=convertStringsToChars(strcat(dtstr, "  ",block, "   ",LOGcomment));
     fprintf(fid,'%s\r\n',M);
     fclose(fid);
 end
+
+%resets LOGcomment so the next block doesn't accidently carry over an old
+%string. 
+LOGcomment = "";
 end
