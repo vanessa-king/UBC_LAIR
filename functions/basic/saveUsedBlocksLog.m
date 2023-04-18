@@ -18,6 +18,6 @@ arguments
 end
 
 % a copy of the master LOGfile is created in the specified location 
-[status,message,messageId] = copyfile(strcat(LOGpath,'/',LOGfile,'_LOGfile.txt'),strcat(SAVEpath,'/',SAVEfile,'_LOGfile.txt'), 'f');
+[status,message,messageId] = copyfile(strcat(LOGpath,'\',LOGfile,'_LOGfile.txt'),strcat(SAVEpath,'\',SAVEfile,'_LOGfile.txt'), 'f');
 
 end

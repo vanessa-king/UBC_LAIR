@@ -26,7 +26,7 @@ end
 % open or create file and write header in the initialization run
 % clears the log file!
 if initialize == 1
-    fid = fopen(strcat(LOGpath, '/',LOGfile,'_LOGfile.txt'),'w+');
+    fid = fopen(strcat(LOGpath, '\',LOGfile,'_LOGfile.txt'),'w+');
     %header = 'DATE                  BLOCK   COMMENT';
     fprintf(fid,'%21s %7s %s\r\n','DATE and TIME        ','BLOCK  ','COMMENT');
     initialize = 0;
@@ -35,7 +35,7 @@ end
 
 % append timestamp and executed block to the log file
 if initialize == 0
-    fid = fopen(strcat(LOGpath, '/',LOGfile,'_LOGfile.txt'),'a+');
+    fid = fopen(strcat(LOGpath, '\',LOGfile,'_LOGfile.txt'),'a+');
     t = datetime;
     dtstr = string(t);
     M=convertStringsToChars(strcat(dtstr, "  ",block, "   ",LOGcomment));
