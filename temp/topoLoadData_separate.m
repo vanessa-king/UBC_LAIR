@@ -6,7 +6,7 @@
 %   'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--', for example
 %   img_number: the z-file name, takes the form '###_#'
 
-function topo = topoLoadData(folder,stamp_project,img_number)
+function topo = topoLoadData_separate(folder,stamp_project,img_number)
 
 
 Z_file = [stamp_project img_number '.Z_flat'];

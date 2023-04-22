@@ -23,7 +23,7 @@ comment = strcat("GridLoadData_Var=",folder,"|",stamp_project,"|",num2str(img_nu
 %here the regular function 'begins' with data processing
 
 %load the topo data
-grid = topoLoadData(folder,stamp_project,img_number);
+grid = topoLoadData_separate(folder,stamp_project,img_number);
 
 %create the file names
 I_file = [stamp_project grid_number '.I(V)_flat']; 
