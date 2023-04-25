@@ -16,9 +16,14 @@ function [grid,comment] = gridLoadDataUpward_separate(folder,stamp_project,img_n
 %Note not all variables need to be tracked, e.g. do not convert the whole grid (x,y,I) values to a string! Only those that denote which type of
 %processing is done.  
 
-%output format for comment: "<name>_VAR=<VAR1>|<VAR2>|...|"  
-%convert all <VARn> to strings
-comment = strcat("GridLoadData_Var=",folder,"|",stamp_project,"|",num2str(img_number),"|",num2str(grid_number),"|",string(average_forward_and_backward),"|");
+%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
+%Never plot data (e.g. the whole gird) in the comment, only plot the values
+%('=<VARn_value>') of variables that decide/affect how the function
+%processes data (e.g. order of fit, ...) 
+%Note convert all <VARn_value> to strings; 
+
+%comment = strcat("GridLoadData_Var:","folder",folder,"|",stamp_project,"|",num2str(img_number),"|",num2str(grid_number),"|",string(average_forward_and_backward),"|");
+comment = sprintf("gridLoadDataUpward_separate(folder=%s, stamp_project=%s, img_number=%s, grid_number=%s, average_forward_and_backward=%s)|", folder, stamp_project, img_number, grid_number, mat2str(average_forward_and_backward));
 
 %here the regular function 'begins' with data processing
 

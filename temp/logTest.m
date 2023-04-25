@@ -53,7 +53,8 @@ Traster = 11.33 * 10^(-3);
 %fiel name given.
 LOGpath = folder;
 LOGfile = strcat(stamp_project,"_grdNr_",grid_number,"_imgNr_",img_number,"_PpS_",num2str(pointsPerSweep),"_Traster_",num2str(Traster));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI00A", "Initializing log file", 1);
+LOGcomment = "Initializing log file";
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI00A", LOGcomment, 1);
 
 %% LG00A Load-Grid-00-A; load grid 
 % (2) This section of code loads the files called above (gird_number and img_number),
