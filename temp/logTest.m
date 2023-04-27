@@ -72,7 +72,6 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG00A", LOGcomment ,0);
 %change all functions now!)
 
 time = getTimeAxis(pointsPerSweep, Traster);
-LOGcomment = strcat("getTimeAxis_Var=", num2str(pointsPerSweep),"|",num2str(Traster),"|"); %this should be a return of the function
 
 grid.I = gridSmooth(grid.I,time); % requires curve fitting toolbox
 LOGcomment = strcat(LOGcomment,"gridSmooth_Var=","grid.I","|","time","|"); %logging values is not useful here?
