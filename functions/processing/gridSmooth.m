@@ -1,4 +1,4 @@
-function [smooth_iv] = gridSmooth(iv,time)
+function [smooth_iv,comment] = gridSmooth(iv,time)
 %GRIDSMOOTH Applies moving-average smoothin on didv data vs. time.
 %   iv = grid of iv data (3d matrix). Size n x length(time) x
 %   length(time)
