@@ -4,6 +4,8 @@ function [smooth_iv] = gridSmooth(iv,time)
 %   length(time)
 %   time = independent variable axis to plot didv against
 
+comment = sprintf("gridSmooth(iv=%s, time=%s)|", iv, time);
+
 smooth_iv = zeros(size(iv));
 [~, second_dim, third_dim] = size(iv);
 for i = 1:second_dim
@@ -13,4 +15,3 @@ for i = 1:second_dim
 end
 
 end
-
