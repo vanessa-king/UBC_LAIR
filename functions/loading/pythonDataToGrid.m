@@ -10,7 +10,22 @@
 %        'forward' or 'backward'
 % Output:grid = 1x1 structure containing x,y,I,V,x_img,y_img,z_img
 
-function grid = pythonDataToGrid(gridFileName, topoFileName, topoDirection)
+function [grid, comment] = pythonDataToGrid(gridFileName, topoFileName, topoDirection)
+
+arguments
+    gridFileName    {mustBeText}
+    topoFileName    {mustBeText}
+    topoDirection   {mustBeText}
+end
+
+%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
+%Never plot data (e.g. the whole gird) in the comment, only plot the values
+%('=<VARn_value>') of variables that decide/affect how the function
+%processes data (e.g. order of fit, ...) 
+%Note convert all <VARn_value> to strings; 
+comment = sprintf("pythonDataToGrid(gridFileName=%s, topoFileName=%s, topoDirection=%s)|", gridFileName, topoFileName, topoDirection);
+
+%regular function processing:
 
 pythonScript_and_fileName = strcat("read_grid_data.py ",gridFileName, " ",topoFileName, " ", topoDirection);
 
