@@ -6,4 +6,3 @@ function [time] = getTimeAxis(pointsPerSweep, Traster)
 time = (0:pointsPerSweep-1)*Traster;
 
 end
-
