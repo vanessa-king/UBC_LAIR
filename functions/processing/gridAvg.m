@@ -8,7 +8,7 @@
 %   V size: number_bias_layer x 1
 %
 
-function [avg_I] = gridAvg(I, V, plotBool)
+function [avg_I, comment] = gridAvg(I, V, plotBool)
 
 %setting default value for plotBool; further specifications for arguments
 %could be made here, e.g.: I {mustBe...}
@@ -17,6 +17,15 @@ arguments
     V
     plotBool = 0
 end
+
+%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
+%Never plot data (e.g. the whole gird) in the comment, only plot the values
+%('=<VARn_value>') of variables that decide/affect how the function
+%processes data (e.g. order of fit, ...) 
+%Note convert all <VARn_value> to strings;
+comment = sprintf("gridAvg(I, V, plotBool=%s)|", mat2str(plotBool));
+
+
 
 %
 % size(V) returns a row vector whose elements are the lengths of the corresponding dimensions of V

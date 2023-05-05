@@ -9,15 +9,21 @@
     % topo: Outputs a single z matrix with the plane subtracted.
 
 
-function topo = topoPlaneSub(image,n,plot)
+    function [topo,comment] = topoPlaneSub(image,n,plot)
 
-% select mode of operation
-if nargin == 1
-    n = 200; plot = 0;
-elseif nargin == 2
-    plot = 0;
+arguments 
+image
+n       {mustBeNumeric}=200
+plot    {mustBeNumeric}=0
 end
     
+%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
+%Never plot data (e.g. the whole gird) in the comment, only plot the values
+%('=<VARn_value>') of variables that decide/affect how the function
+%processes data (e.g. order of fit, ...) 
+%Note convert all <VARn_value> to strings;
+comment = sprintf("topoPlaneSub(image, n=%s, plot=%s)|", num2str(n), num2str(plot));
+
 % subtract a plane
 xsample = round(rand(n,1)*(numel(image.x_img)-1))+1;
 ysample = round(rand(n,1)*(numel(image.y_img)-1))+1;
