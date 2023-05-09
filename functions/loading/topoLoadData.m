@@ -1,4 +1,4 @@
-function [topo] = topoLoadData(fld,stamp_project,img_nbr)
+function [topo, comment] = topoLoadData(fld,stamp_project,img_nbr)
 %TOPOLOADDATA Load topography files from Omicron (z_flat).
 %   fld - folder where flat files are stored (string)
 %   stamp_project - name of the project (string)
@@ -8,6 +8,15 @@ function [topo] = topoLoadData(fld,stamp_project,img_nbr)
 %     x_img - the x axis of image
 %     y_img - the y axis of image
 %     z_img - the actual topographic heights
+
+%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
+%Never plot data (e.g. the whole gird) in the comment, only plot the values
+%('=<VARn_value>') of variables that decide/affect how the function
+%processes data (e.g. order of fit, ...) 
+%Note convert all <VARn_value> to strings; 
+comment = sprintf("topoLoadData(fld=%s, stamp_project=%s, img_nbr=%s)|", fld, stamp_project, img_nbr);
+
+%regular function processing:
 
 z_file = [stamp_project img_nbr '.Z_flat'];
 

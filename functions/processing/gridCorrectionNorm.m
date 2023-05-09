@@ -1,10 +1,23 @@
-%   Description 
+%%   Description 
 % This function generate normalized and smoothed(optional) didv data set(use it only when you want to normalize the data). 
 %   Parameters 
-%%  Input parameters: grid (1x1 structure): grid data as output from gridLoadData, C(float): normalization parameter , smooth(bool): True/False
+%%  Input parameters: 
+%   grid (1x1 structure): grid data as output from gridLoadData, 
+%   C(float): normalization parameter , 
+%   smooth(bool): True/False
+%%  Output parameters: 
 
 
-function [didv, norm_didv, I_correction, V_reduced, I_offset] = gridCorrectionNorm(grid, C, smooth, normalize)
+function [didv, norm_didv, I_correction, V_reduced, I_offset, comment] = gridCorrectionNorm(grid, C, smooth, normalize)
+
+%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
+%Never plot data (e.g. the whole gird) in the comment, only plot the values
+%('=<VARn_value>') of variables that decide/affect how the function
+%processes data (e.g. order of fit, ...) 
+%Note convert all <VARn_value> to strings; 
+comment = sprintf("gridCorrectionNorm(C=%s, smooth=%s, normalize=%s)|", C, smooth, normalize);
+
+%regular function processing:
 
 % if smooth = False no smoothing before treating data 
 % An example: gridCorrectionNorm(grid, 3E-10, 1), 1 means do the smooth part, if 0 means do not smooth current (or spatial)
