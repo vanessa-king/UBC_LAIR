@@ -1,4 +1,11 @@
 function [topo, comment] = topoLoadData(fld,stamp_project,img_nbr)
+
+arguments
+    fld             {mustBeFolder}
+    stamp_project   {mustBeText}
+    img_nbr         {mustBeText}
+end
+
 %TOPOLOADDATA Load topography files from Omicron (z_flat).
 %   fld - folder where flat files are stored (string)
 %   stamp_project - name of the project (string)
