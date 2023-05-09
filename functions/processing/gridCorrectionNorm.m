@@ -5,17 +5,26 @@
 %   grid (1x1 structure): grid data as output from gridLoadData, 
 %   C(float): normalization parameter , 
 %   smooth(bool): True/False
+%   normalize(bool): True/False
 %%  Output parameters: 
 
 
 function [didv, norm_didv, I_correction, V_reduced, I_offset, comment] = gridCorrectionNorm(grid, C, smooth, normalize)
+
+arguments
+    grid
+    C    {mustBeFloat}
+    smooth {mustBeNumericOrLogical}=0
+    normalize {mustBeNumericOrLogical}=0
+end
+
 
 %output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
 %Never plot data (e.g. the whole gird) in the comment, only plot the values
 %('=<VARn_value>') of variables that decide/affect how the function
 %processes data (e.g. order of fit, ...) 
 %Note convert all <VARn_value> to strings; 
-comment = sprintf("gridCorrectionNorm(C=%s, smooth=%s, normalize=%s)|", C, smooth, normalize);
+comment = sprintf("gridCorrectionNorm(grid, C=%s, smooth=%s, normalize=%s)|", C, smooth, normalize);
 
 %regular function processing:
 

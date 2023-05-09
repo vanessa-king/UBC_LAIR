@@ -1,6 +1,6 @@
 % Requirements:
 % Matlab 2021B or newer - 'pyrunfile' does not exist in older versions
-% python 3.8 or 3.9. Type 'pyenv' in Matlab to see which python version Matlab recognizes
+% python 3.8 or newer. Type 'pyenv' in Matlab to see which python version Matlab recognizes
 
 % Description:
 % Reads Nanonis python-processed gridmap data and returns as grid structure
