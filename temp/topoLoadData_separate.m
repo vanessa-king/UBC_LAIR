@@ -8,6 +8,12 @@
 
 function topo = topoLoadData_separate(folder,stamp_project,img_number)
 
+arguments
+    folder          {mustBeFolder}
+    stamp_project   {mustBeText}
+    img_number      {mustBeText}
+end
+
 
 Z_file = [stamp_project img_number '.Z_flat'];
 
