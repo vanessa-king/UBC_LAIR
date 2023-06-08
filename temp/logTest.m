@@ -156,3 +156,5 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01B", LOGcomment ,0);
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "average_IV+average_dIdV+foreward_vs_backward_IV");
 
 %% NEW BLOCK TEST 
+
+
