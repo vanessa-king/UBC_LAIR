@@ -89,7 +89,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG00B", LOGcomment ,0);
 %functions! This should not be the regular case! (I just don't want to
 %change all functions now!)
 
-time = getTimeAxis(pointsPerSweep, Traster);
+[time,LOGcomment] = getTimeAxis(pointsPerSweep, Traster);
 
 grid.I = gridSmooth(grid.I,time); % requires curve fitting toolbox
 LOGcomment = strcat(LOGcomment,"gridSmooth_Var=","grid.I","|","time","|"); %logging values is not useful here?
@@ -117,7 +117,7 @@ if (~avg_forward_and_backward)
     [didv_backward, ~, ~, ~] = gridCorrectionNorm(gridBackward, 3E-10, 0,1);
    LOGcomment = strcat(LOGcomment,"gridCorrectionNorm_Var=","gridBackward","|",num2str(3E-10),"|",num2str(0),"|",num2str(1),"|");
 end    
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01B", LOGcomment ,0);
+%LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01B", LOGcomment ,0);
 %% VP01A Visualize-Plot-01-A;
 %(4) This section of code takes the average of the I(V) data (e.g., the whole
 % grid) and plots both "I versus V" and "dI/dV versus V"
