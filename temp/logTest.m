@@ -154,3 +154,4 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01B", LOGcomment ,0);
 
 %create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "average_IV+average_dIdV+foreward_vs_backward_IV");
+%% New block
