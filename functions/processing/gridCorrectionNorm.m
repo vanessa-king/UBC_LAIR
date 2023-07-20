@@ -50,7 +50,7 @@ if find(diff(sign(V))) % This "if" statement looks for a sign change in V.
     end
 else
 
-I_correction = I
+I_correction = I;
 
 if smooth
     I_correction = smoothdata(I_correction, 1, 'gaussian', 10); % "10" here is the window size 

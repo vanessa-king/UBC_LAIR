@@ -3,7 +3,7 @@
 %Parameters:
 %%Input Parameters:
 % grid : 1x1 structure, the matrix-style data
-% C : normalization parameter
+% C : normalization parameter, float
 % smooth : True/False for whether to smooth or not
 % normalize : True/False for whether to normalize or not
 %%Output Parameters:
@@ -18,7 +18,12 @@
 % avg_dIdV: [numV] array, spatial average of dIdV, the nanonis style format
 % avg_IV: [numV] array, spatial average of IV, the nanonis style format
 
-function [IV, dIdV, label, elayer, xsize, ysize, emax, emin, avg_dIdV, avg_IV] = matrixToNanonis(grid, C, smooth, normalize)
+function [IV, dIdV, label, elayer, xsize, ysize, emax, emin, avg_dIdV, avg_IV, comment] = matrixToNanonis(grid, C, smooth, normalize)
+
+%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
+%Note convert all <VARn_value> to strings; 
+formatSpec="gridCorrectionNorm(grid=%s, C=%.3g, smooth=%d, normalize=%d)";
+comment = sprintf(formatSpec, grid, C, smooth, normalize);
 
 IV = permute(grid.I, [3,2,1]); % going from [numV, numx, numy] to [numx, numy, numV]
 
