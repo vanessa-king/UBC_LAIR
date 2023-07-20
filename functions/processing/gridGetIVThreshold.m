@@ -15,7 +15,7 @@
 %   I_threshold. These work for flipped I only.
 
 function [gridIVThresh] = gridGetIVThreshold(I, V, bias, nbins)
-
+ 
 % load colourmap
 color_scale_resolution = 1000; % 1000 evenly spaced colour points
 cm_viridis = viridis(color_scale_resolution); % Default matplotlib(for LAIR)

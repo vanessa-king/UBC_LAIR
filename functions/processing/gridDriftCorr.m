@@ -1,4 +1,4 @@
-function [grdcorr] = gridDriftCorr(grid, before, after, theta)
+function [grdcorr,comment] = gridDriftCorr(grid, before, after, theta)
 %GRIDDRIFTCORR Correct for drift over time in grid IV spectroscopy.
 %   Calculates the drift from before and after topography images and skews
 %   the iv grid to compensate. You can rotate by angle theta (deg) if you
@@ -15,6 +15,11 @@ function [grdcorr] = gridDriftCorr(grid, before, after, theta)
 %   Note that skew results in larger grid. Extra elements are left as 0.
 %   The x,y scale for the topography and grid are extended linearly to
 %   accomodate.
+
+%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)"  
+%Note convert all <VARn_value> to strings; 
+formatSpec = "gridDriftCorr(grid=%s, before=%s, after=%s, theta=%.3g)";
+comment = sprintf(formatSpec,grid, before, after, theta);
 
 % segment the image and track the motion
 level = graythresh(mat2gray(before.z_img));
