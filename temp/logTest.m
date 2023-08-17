@@ -31,7 +31,7 @@
 % data and scripts to the MATLAB path. 
 
 % load all necessary script directories
-folder = uigetdir('C:\Users\MarkusAdmin\OneDrive - UBC\MatlabProgramming\MATLAB_UBC\Test_Data');
+folder = uigetdir('C:\Users\ChenD\OneDrive - phas.ubc.ca\300科研主业\350 LAIR Hackathon\test_data');
 
 
 % stamp_project is the filename leader and takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--';
@@ -83,23 +83,28 @@ if (~avg_forward_and_backward)
 end
 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01A", LOGcomment ,0);
-%% PA01B Processing-Averaging-01-B;
-% (3b) This section of code will does some funny vertical shifting. Dong will talk to
-% Sarah about its purpose, as it's not clear that we need this.
+%% PC01B Processing-Correcting-01-B;
+% (3b) This section of code will does some funny vertical shifting.
 
-[didv, norm_didv, I_correction, V_reduced] = gridCorrectionNorm(grid, 3E-10, 0,1); 
-LOGcomment = strcat("gridCorrectionNorm_Var=","grid","|",num2str(3E-10),"|",num2str(0),"|",num2str(1),"|"); %note same as above, variables have to be adjustes maunally here! :(
+[didv, norm_didv, I_correction, V_reduced, I_offset, comment] = gridCorrectionNorm(grid, 3E-10, 0,1); 
+LOGcomment = comment; %note same as above, variables have to be adjustes maunally here! :(
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC01B", LOGcomment ,0);
 if (~avg_forward_and_backward)
     gridForward = grid;
     [gridForward.I] = gridForward.I_Forward;
-    [didv_forward, ~, ~, ~] = gridCorrectionNorm(gridForward, 3E-10, 0,1);
-    LOGcomment = strcat(LOGcomment,"gridCorrectionNorm_Var=","gridForward","|",num2str(3E-10),"|",num2str(0),"|",num2str(1),"|");
+    [didv_forward, ~, ~, ~, ~, ~] = gridCorrectionNorm(gridForward, 3E-10, 0,1);
+    LOGcomment = comment;
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "^", LOGcomment ,0);
     gridBackward = grid;
     [gridBackward.I] = gridForward.I_Backward;
-    [didv_backward, ~, ~, ~] = gridCorrectionNorm(gridBackward, 3E-10, 0,1);
-    LOGcomment = strcat(LOGcomment,"gridCorrectionNorm_Var=","gridBackward","|",num2str(3E-10),"|",num2str(0),"|",num2str(1),"|");
+    [didv_backward, ~, ~, ~, ~, ~] = gridCorrectionNorm(gridBackward, 3E-10, 0,1);
+    LOGcomment = strcat(LOGcomment,comment);
 end    
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01B", LOGcomment ,0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "^", LOGcomment ,0);
+%% PC02B Processing-Correcting-02-B;
+% this section will correct the grid with the drifting parameter given
+[grdcorr,comment] = gridDriftCorr(grid, grid.z_img, grid.z_img, 5);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02B", LOGcomment ,0);
 %% VP01A Visualize-Plot-01-A;
 %(4) This section of code takes the average of the I(V) data (e.g., the whole
 % grid) and plots both "I versus V" and "dI/dV versus V"

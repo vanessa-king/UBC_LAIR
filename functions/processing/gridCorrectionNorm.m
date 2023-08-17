@@ -24,7 +24,11 @@ end
 %('=<VARn_value>') of variables that decide/affect how the function
 %processes data (e.g. order of fit, ...) 
 %Note convert all <VARn_value> to strings; 
-comment = sprintf("gridCorrectionNorm(grid, C=%s, smooth=%s, normalize=%s)|", C, smooth, normalize);
+comment = sprintf("gridCorrectionNorm(grid:%s, C=%s, smooth=%d, normalize=%d)|", mat2str(size(grid)), C, smooth, normalize);
+% Modify: 
+    %1. How to differentiate grid_backward and forward in log 
+    %2. For the same function, how to change it to "^" in log 
+
 
 %regular function processing:
 

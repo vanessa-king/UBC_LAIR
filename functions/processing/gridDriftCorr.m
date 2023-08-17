@@ -18,7 +18,7 @@ function [grdcorr,comment] = gridDriftCorr(grid, before, after, theta)
 
 %output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)"  
 %Note convert all <VARn_value> to strings; 
-formatSpec = "gridDriftCorr(grid: %s, before: %s, after: %s, theta=%.3g)|";
+formatSpec = "gridDriftCorr(grid: %s, before: %s, after: %s, theta=%.3g degrees)|";
 comment = sprintf(formatSpec,mat2str(size(grid)), mat2str(size(before)), mat2str(size(after)), theta);
 
 % segment the image and track the motion
