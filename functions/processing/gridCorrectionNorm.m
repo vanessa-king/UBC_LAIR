@@ -14,8 +14,8 @@ function [didv, norm_didv, I_correction, V_reduced, I_offset, comment] = gridCor
 arguments
     grid
     C    {mustBeFloat}
-    smooth {mustBeNumericOrLogical}=0
-    normalize {mustBeNumericOrLogical}=0
+    smooth {mustBeNumericOrLogical} = false
+    normalize {mustBeNumericOrLogical} = false
 end
 
 
@@ -24,10 +24,9 @@ end
 %('=<VARn_value>') of variables that decide/affect how the function
 %processes data (e.g. order of fit, ...) 
 %Note convert all <VARn_value> to strings; 
-comment = sprintf("gridCorrectionNorm(grid:%s, C=%s, smooth=%d, normalize=%d)|", mat2str(size(grid)), C, smooth, normalize);
+comment = sprintf("gridCorrectionNorm(grid:%s, C=%s, smooth=%s, normalize=%s)|", mat2str(size(grid)), num2str(C), mat2str(smooth), mat2str(normalize));
 % Modify: 
     %1. How to differentiate grid_backward and forward in log 
-    %2. For the same function, how to change it to "^" in log 
 
 
 %regular function processing:

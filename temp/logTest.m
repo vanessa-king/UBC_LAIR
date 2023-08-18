@@ -108,18 +108,20 @@ end
 LOGcomment = strcat("gridCorrectionNorm_Var=","grid","|",num2str(3E-10),"|",num2str(0),"|",num2str(1),"|"); %note same as above, variables have to be adjustes maunally here! :(
 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01A", LOGcomment ,0);
-%% PC01B Processing-Correcting-01-B;
+%% PC01B Processing-Correcting-01-A;
 % (3b) This section of code will does some funny vertical shifting.
-
-[didv, norm_didv, I_correction, V_reduced, I_offset, comment] = gridCorrectionNorm(grid, 3E-10, 0,1); 
-LOGcomment = comment; %note same as above, variables have to be adjustes maunally here! :(
+C=3E-10;
+smooth=false;
+normalize=true;
+[didv, norm_didv, I_correction, V_reduced, I_offset, LOGcomment] = gridCorrectionNorm(grid, C, smooth, normalize); 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC01B", LOGcomment ,0);
+% why need the farward and backward 
 if (~avg_forward_and_backward)
     gridForward = grid;
     [gridForward.I] = gridForward.I_Forward;
-    [didv_forward, ~, ~, ~, ~, ~] = gridCorrectionNorm(gridForward, 3E-10, 0,1);
-    LOGcomment = comment;
-    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "^", LOGcomment ,0);
+    [didv_forward, ~, ~, ~, ~, LOGcomment] = gridCorrectionNorm(gridForward, 3E-10, 0,1);
+    LOGcomment = strcat("Forward_",LOGcomment);
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
     gridBackward = grid;
     [gridBackward.I] = gridForward.I_Backward;
     [didv_backward, ~, ~, ~] = gridCorrectionNorm(gridBackward, 3E-10, 0,1);
@@ -129,11 +131,15 @@ end
 
     [didv_backward, ~, ~, ~, ~, ~] = gridCorrectionNorm(gridBackward, 3E-10, 0,1);
     LOGcomment = strcat(LOGcomment,comment);
+    [didv_backward, ~, ~, ~, ~, LOGcomment] = gridCorrectionNorm(gridBackward, 3E-10, 0,1);
+    LOGcomment = strcat("Backward_",LOGcomment);
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 end    
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "^", LOGcomment ,0);
-%% PC02B Processing-Correcting-02-B;
-% this section will correct the grid with the drifting parameter given
-[grdcorr,comment] = gridDriftCorr(grid, grid.z_img, grid.z_img, 5);
+%% PC02B Processing-Correcting-02-A;
+% this section will correct the grid with the drifting parameter given. 
+
+% need to know the function, talk to Jisun 
+[grid,LOGcomment] = gridDriftCorr(grid, grid.z_img, grid.z_img, 5);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02B", LOGcomment ,0);
 
 %% VP01A Visualize-Plot-01-A;
