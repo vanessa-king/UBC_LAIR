@@ -84,7 +84,7 @@ end
 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01A", LOGcomment ,0);
 %% PC01B Processing-Correcting-01-A;
-% (3b) This section of code will does some funny vertical shifting.
+% (3b) This section of code will do a vertical shift that brings the current at zero bias to zero.
 C=3E-10;
 smooth=false;
 normalize=true;
