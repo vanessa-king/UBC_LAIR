@@ -1,5 +1,3 @@
-
-function [] = gridClickForSpectrum(didv, V_reduced, imageV, n, offset, xysmooth, vsmooth, grid)
 %Description:   
 %   creates a GUI window where you can select a point(s), then it plots the spectra from that point(s).
 %Parameters:
@@ -11,6 +9,29 @@ function [] = gridClickForSpectrum(didv, V_reduced, imageV, n, offset, xysmooth,
 %   xysmooth: float, the standard deviation of a Gaussian for smoothing xy pixels (0 is no smoothing)
 %   vsmooth: float, the standard deviation of a Gaussian for smoothing the voltage sweep points (0 is no smoothing)
 %   grid: 1*1 structure, output from gridLoadData, optional
+
+function [comment] = gridClickForSpectrum(didv, V_reduced, imageV, n, offset, xysmooth, vsmooth, grid)
+
+arguments
+    didv          
+    V_reduced   {mustBeVector}
+    imageV      {mustBeNumeric}
+    n           {mustBeNumericOrLogical}
+    offset
+    xysmooth    {mustBeNumeric}
+    vsmooth     {mustBeNumeric}
+    grid
+end
+
+%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
+%Never plot data (e.g. the whole grid) in the comment, only plot the values
+%('=<VARn_value>') of variables that decide/affect how the function
+%processes data (e.g. order of fit, ...) 
+%Note convert all <VARn_value> to strings; 
+formatSpec = "gridClickForSpectrum(didv: %s, V_reduced: %s, imageV=%s, n=%s, offset=%s, xysmooth=%s, vsmooth=%s, grid: %s)|";
+comment = sprintf(formatSpec, mat2str(size(didv)), mat2str(size(V_reduced)), num2str(imageV), num2str(n), num2str(offset), num2str(xysmooth), num2str(vsmooth), mat2str(size(grid)));
+
+%regular function processing:
 
 
 % smooth data if prompted
@@ -40,7 +61,7 @@ end
        
 %Plotting:
 %first plot: img, the grid for you to click on
-img = figure('Name', fig_name); imagesc(fig_plot); colormap('gray'); hold on
+img = figure('Name', fig_name); imagesc(fig_plot); colormap('gray'); hold on;
 axis image
 %second plot: spec, the spectra fo the points you clicked on
 spec = figure('Name', 'dI/dV at different points'); hold on;
