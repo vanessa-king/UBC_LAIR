@@ -1,6 +1,6 @@
-%Description: gridMaskPoint Create mask of radius R around clicked point
+%Description: gridMaskPoint create mask of radius R around clicked point
 
-function [mask, Num_in_mask] = gridMaskPoint(didv, V_reduced, imageV, radius)
+function [mask, Num_in_mask, comment] = gridMaskPoint(didv, V_reduced, imageV, radius)
 
 %Parameters
 %   didv: 3D Matrix with dI/dV data
@@ -22,7 +22,6 @@ didv_flip = flip(permute(didv,[1 3 2]),2);
 img = figure('Name', ['Image of states at ',num2str(imageV),' V']);
 clims = [0,3E-9];
 imagesc(squeeze(didv_flip(imN,:,:)),clims);
-% colormap('gray');
 colormap(cm_magma)
 hold on
 axis image
@@ -33,8 +32,8 @@ yy = sqrt(radius^2-xx.^2);
 %Drawing the mask(circle) on LDOS map at certain bias
 figure(img)
 pos = round(ginput(1)); %click for the first point
-plot(pos(1)+xx,pos(2)+yy,'r','LineWidth',0.6)
-plot(pos(1)+xx,pos(2)-yy,'r','LineWidth',0.6)
+plot(pos(1)+xx,pos(2)+yy,'g','LineWidth',0.6)
+plot(pos(1)+xx,pos(2)-yy,'g','LineWidth',0.6)
 
 % make the mask at point
 mask = zeros(size(didv,2),size(didv,3));
@@ -44,7 +43,9 @@ mask((-radius:radius)+pos(1),(-radius:radius)+(size(mask,2)-pos(2))) = logical(f
 [row, ~] = find(mask);
 Num_in_mask = length(row);
 
-% close(gcf);
+hold off
 
+% the x, y coordinate from the click are also included in the comment. 
+comment = sprintf("gridMaskPoint(didv:%s, V_reduced:%s, imageV=%s, radius=%s, x=%s, y=%s)|", mat2str(size(didv)), mat2str(size(V_reduced)), num2str(imageV), num2str(radius), num2str(pos(1)), num2str(pos(2)));
 end
 

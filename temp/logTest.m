@@ -121,30 +121,14 @@ if (~avg_forward_and_backward)
     [didv_forward, ~, ~, ~,  ~, LOGcomment] = gridCorrectionNorm(gridForward, 3E-10, smooth,normalize);
     LOGcomment = strcat("Forward_",LOGcomment);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+    
     gridBackward = grid;
     [gridBackward.I] = gridForward.I_Backward;
-    [didv_backward, ~, ~, ~] = gridCorrectionNorm(gridBackward, 3E-10, 0,1);
-   LOGcomment = strcat(LOGcomment,"gridCorrectionNorm_Var=","gridBackward","|",num2str(3E-10),"|",num2str(0),"|",num2str(1),"|");
-end    
-%LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01B", LOGcomment ,0);
-
-    [didv_backward, ~, ~, ~, ~, ~] = gridCorrectionNorm(gridBackward, 3E-10, 0,1);
-    LOGcomment = strcat(LOGcomment,comment);
-    [didv_backward, ~, ~, ~, ~, LOGcomment] = gridCorrectionNorm(gridBackward, 3E-10, 0,1);
     [didv_backward, ~, ~, ~, ~, LOGcomment] = gridCorrectionNorm(gridBackward, 3E-10, smooth,normalize);
     LOGcomment = strcat("Backward_",LOGcomment);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 end    
-%% PC02A Processing-Correcting-02-A;
-% this section will correct the grid with the drifting parameter given. 
 
-% need to know the function, talk to Jisun 
-[grid,LOGcomment] = gridDriftCorr(grid, grid.z_img, grid.z_img, 5);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02B", LOGcomment ,0);
-    [didv_backward, ~, ~, ~, ~, LOGcomment] = gridCorrectionNorm(gridBackward, 3E-10, smooth,normalize);
-    LOGcomment = strcat("Backward_",LOGcomment);
-    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-end    
 %% PC02A Processing-Correcting-02-A;
 % this section will correct the grid with the drifting parameter given. 
 
@@ -152,6 +136,7 @@ end
 % need to modify. 
 %[grid,LOGcomment] = gridDriftCorr(grid, grid.z_img, grid.z_img, 5);
 %LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02A", LOGcomment ,0);
+
 %% VP01A Visualize-Plot-01-A;
 %(4) This section of code takes the average of the I(V) data (e.g., the whole
 % grid) and plots both "I versus V" and "dI/dV versus V"
@@ -162,47 +147,100 @@ end
 [number_bias_layer, ~] = size(V_reduced);
 
 % This makes the averaged "I versus V" plot
-avg_iv = gridAvg(grid.I, grid.V, 1);
-ylabel('I(V) (nA)')
+[avg_iv, f1, LOGcomment] = gridAvg(grid.I, grid.V, 1);
+xlabel('V','fontsize', 20)
+ylabel('I(V) (nA)','fontsize', 20)
 
-savefig(strcat(LOGpath,"/average_IV.fig"))
-
-LOGcomment = strcat("girdAvg_Var=","grid.I","|","grid.V","|",num2str(1),"|","plotAdjusted","|");
+if f1 == []
+else
+    savefig(f1, strcat(LOGpath,"/average_IV.fig"))
+end
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VP01A", LOGcomment ,0);
 
 % This makes the averaged "dI/dV versus V" plot
-
-avg_didv = gridAvg(didv, V_reduced,1);
-ylabel('dI/dV [a.u.]','fontsize', 20)
+[avg_didv, f2, LOGcomment] = gridAvg(didv, V_reduced,1);
 xlabel('V','fontsize', 20)
+ylabel('dI/dV [a.u.]','fontsize', 20)
 xticks([-0.04 -0.02 0 0.02 0.04])
 xlim([-0.02 0.02])
 ylim([0 3e-9])
 set(gca,'fontsize',20)
 
+
 savefig(strcat(LOGpath,"/average_dIdV.fig"))
+
 
 LOGcomment = strcat(LOGcomment,"gridAvg_Var=","didv","|","V_reduced","|",num2str(1),"|","plotAdjusted","|");
 
 
-% This makes the averaged "I versus V" plot for forward and backward sweeps separately
-avg_iv_forward = gridAvg(grid.I_Forward, grid.V);
-gridAvg(grid.I_Backward, grid.V,1);
-hold on
-plot(grid.V,avg_iv_forward)
-hold off
-legend('bwd', 'fwd');
-ylabel('I(V) (nA)');
-title("Avg I(V) for bwd and fwd");
 
-savefig(strcat(LOGpath,"/foreward_vs_backward_IV.fig"))
+if f2 == []
+else
+    savefig(f2, strcat(LOGpath,"/average_dIdV.fig"))
+end
+
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
+
+% This makes the averaged "I versus V" plot for forward and backward sweeps separately
+[avg_iv_forward, f3, LOGcomment] = gridAvg(grid.I_Forward, grid.V);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+if f3 == []
+    clear f3
+else
+    %close f3;
+end
+
+
+[avg_iv_backward, f4, LOGcomment] = gridAvg(grid.I_Backward, grid.V,1);
+if f4 == []
+else
+    hold on
+    plot(grid.V,avg_iv_forward)
+    hold off
+    legend('bwd', 'fwd');
+    xlabel('V','fontsize', 20)
+    ylabel('I(V) (nA)','fontsize', 20);
+    title("Avg I(V) for bwd and fwd");
+
+    savefig(strcat(LOGpath,"/foreward_vs_backward_IV.fig"))
+end
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
 
 LOGcomment = strcat(LOGcomment,"gridAvg_Var=","grid.I_Forward","|","grid.V","|","girdAvg_Var=","grid.I_Backward","|","grid.V","|",num2str(1),"|","plotAdjusted","|");
 
+%% PM01A Processing-Masking-01-A; circular masking
+% (12) This section of code creates a circular mask of radius R around a
+% clicked point. It then plots the average dI/dV on that point. The user may toggle R and energy slice.
+%
+% THIS SECTION IS CURRENTLY STRUCTURED FOR DONOR AND ACCEPTOR ENERGIES, SO
+% WE WILL WANT TO MODIFY THIS ACCORDINGLY.
 
 
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01B", LOGcomment ,0);
+% plots di/dv at the specified energy (thrid input) and allows user to
+% click on a point with a mask of radius R (fourth input)
+imageV = 0.0055;
+radius = 3;
+[circular_mask, Num_in_mask, LOGcomment] = gridMaskPoint(didv, V_reduced, imageV, radius);
 
-%save the created figures here 
+savefig(strcat(LOGpath,"/circular_mask_position.fig"))
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PM01A", LOGcomment ,0);
+
+% takes the average of the dI/dV spectra in the selected area
+[~, mask_averaged_didv, LOGcomment] = gridAvgMask(didv, circular_mask);
+
+% plots the spectra at the spots where the masks were applied
+figure; 
+set(gca,'DefaultLineLineWidth',2)
+set(gca,'FontSize',20)
+plot(V_reduced, mask_averaged_didv,'b');  
+ylabel('dI/dV [a.u.]','fontsize', 20)
+xlabel('V','fontsize', 20)
+xticks([-0.04 -0.02 0 0.02 0.04])
+xlim([-0.05, 0.05])
+ylim([0, 4E-9])
+
 
 %create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "average_IV+average_dIdV+foreward_vs_backward_IV");
@@ -261,3 +299,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PS00A", LOGcomment ,0);
 
 %create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "gridPlotSlices");
+
+savefig(strcat(LOGpath,"/circular_mask_average_dIdV.fig"))
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
