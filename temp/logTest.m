@@ -82,30 +82,29 @@ avg_forward_and_backward = true;
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG00B", LOGcomment ,0);
 
 %% PA01A Processing-Averaging-01-A; Moving average
-% (3a) This section of code first gets a time axis to plot against I(v) or di/dv.
+% (3a) This section of code first gets a time axis, to eventually plot against I(v) or di/dv.
 % Second, it applies moving-average smoothing to the di/dv data vs time.
 
-%in this section the comment is created maually instead of by altering the
-%functions! This should not be the regular case! (I just don't want to
-%change all functions now!)
-
 [time,LOGcomment] = getTimeAxis(pointsPerSweep, Traster);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01A", LOGcomment ,0);
 
-grid.I = gridSmooth(grid.I,time); % requires curve fitting toolbox
-LOGcomment = strcat(LOGcomment,"gridSmooth_Var=","grid.I","|","time","|"); %logging values is not useful here?
+[grid.I, LOGcomment] = gridSmooth(grid.I, time, 'grid.I', 'time'); % requires curve fitting toolbox
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
 if (~avg_forward_and_backward)
-    grid.I_Forward = gridSmooth(grid.I_Forward,time); 
-    LOGcomment = strcat(LOGcomment,"gridSmooth_Var=","grid.I_Forward","|","time","|"); %logging values is not useful here? _Forward?  requires individual logging to see if statement was used or not...
-    grid.I_Backward = gridSmooth(grid.I_Backward,time);
-    LOGcomment = strcat(LOGcomment,"gridSmooth_Var=","grid.I_Backward","|","time","|"); %logging values is not useful here? _Backward?
+    [grid.I_Forward,LOGcomment] = gridSmooth(grid.I_Forward,time,'grid.I_Forward', 'time');
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0); 
+    [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,time,'grid.I_Backward', 'time');
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+   
 end
 
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01A", LOGcomment ,0);
 %% PA01B Processing-Averaging-01-B;
 % (3b) This section of code will does some funny vertical shifting. Dong will talk to
 % Sarah about its purpose, as it's not clear that we need this.
 
 [didv, norm_didv, I_correction, V_reduced] = gridCorrectionNorm(grid, 3E-10, 0,1); 
+
 LOGcomment = strcat("gridCorrectionNorm_Var=","grid","|",num2str(3E-10),"|",num2str(0),"|",num2str(1),"|"); %note same as above, variables have to be adjustes maunally here! :(
 if (~avg_forward_and_backward)
     gridForward = grid;
@@ -174,6 +173,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01B", LOGcomment ,0);
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "average_IV+average_dIdV+foreward_vs_backward_IV");
 
 
+
 %% VP01B Visualize-Plot-01-B;
 %(4.1) This section of the code opens a GUI that allows you to click
 %point(s) on a grid and plot the spectra
@@ -204,3 +204,25 @@ savefig(strcat(LOGpath,"/",plotname,".fig"))
 %create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plotname);
 clear plotname;
+
+%% PS00A Processing-Saving-00-A;
+% (6) This section of code takes a slice of dI/dV at certain bias,defined by the user, and saves it.
+
+% Ask the user to enter the bias of interest and plot name
+bias_of_interest = input("Enter the bias of interest: ");
+plot_name = input("Enter the plot name: ", 's');
+
+% Convert the plot name to a cell array
+plot_name_cell = {plot_name};
+
+[Biases,LOGcomment] = gridPlotSlices(didv, V_reduced, bias_of_interest, plot_name_cell);
+
+%savefig(strcat(LOGpath,"/grid_fullCaPt10-4-8_',stamp_project,'I(V)_32.fig"))
+%WHAT SHOULD WE CALL THIS FIGURE?
+filename = sprintf('%s/grid_fullCaPt10-4-8_%s_grid_%s.fig', LOGpath, stamp_project, grid_number);
+savefig(filename);
+
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PS00A", LOGcomment ,0);
+
+%create copy of the log corresponding to the saved figures
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "gridPlotSlices");

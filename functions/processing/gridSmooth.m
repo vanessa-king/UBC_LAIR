@@ -1,16 +1,26 @@
-function [smooth_iv,comment] = gridSmooth(iv,time)
-%GRIDSMOOTH Applies moving-average smoothin on didv data vs. time.
-%   iv = grid of iv data (3d matrix). Size n x length(time) x
-%   length(time)
-%   time = independent variable axis to plot didv against
+function [smoothed_data, comment] = gridSmooth(data, time, data_name, time_name)
+% GRIDSMOOTH Applies moving-average smoothing on data vs. time.
+%   data = data to be smoothed (3D matrix). Size n x length(time) x length(time)
+%   time = independent variable axis to plot data against
+%   data_name = a string indicating the name of the data (e.g., 'grid.I')
+%   time_name = a string indicating the name of the time variable (e.g., 'time')
 
-comment = sprintf("smooth_iv(iv, time=%s)|", time);
+% No default values needed here.
+arguments
+   data
+   time
+   data_name
+   time_name
+end
 
-smooth_iv = zeros(size(iv));
-[~, second_dim, third_dim] = size(iv);
+% Generate the comment
+comment = sprintf("gridsmooth(%s: %s, %s: %s)|", data_name, mat2str(size(data)), time_name, mat2str(size(time)));
+
+smoothed_data = zeros(size(data));
+[~, second_dim, third_dim] = size(data);
 for i = 1:second_dim
     for j = 1:third_dim
-        smooth_iv(:,i,j) = smooth(time, iv(:,i, j));
+        smoothed_data(:, i, j) = smooth(time, data(:, i, j));
     end
 end
 
