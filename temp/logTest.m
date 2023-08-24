@@ -106,7 +106,6 @@ end
 [didv, norm_didv, I_correction, V_reduced] = gridCorrectionNorm(grid, 3E-10, 0,1); 
 
 LOGcomment = strcat("gridCorrectionNorm_Var=","grid","|",num2str(3E-10),"|",num2str(0),"|",num2str(1),"|"); %note same as above, variables have to be adjustes maunally here! :(
-
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01A", LOGcomment ,0);
 %% PC01A Processing-Correcting-01-A;
 % (3b) This section of code will do a vertical shift that brings the current at zero bias to zero.
@@ -142,6 +141,12 @@ end
 % need to know the function, talk to Jisun 
 [grid,LOGcomment] = gridDriftCorr(grid, grid.z_img, grid.z_img, 5);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02B", LOGcomment ,0);
+    [didv_backward, ~, ~, ~, ~, LOGcomment] = gridCorrectionNorm(gridBackward, 3E-10, smooth,normalize);
+    LOGcomment = strcat("Backward_",LOGcomment);
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+end    
+%% PC02A Processing-Correcting-02-A;
+% this section will correct the grid with the drifting parameter given. 
 
 % need to know the function, talk to Jisun/Jiabin
 % need to modify. 
