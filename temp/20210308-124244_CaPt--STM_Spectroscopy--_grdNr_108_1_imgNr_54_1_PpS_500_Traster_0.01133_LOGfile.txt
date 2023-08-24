@@ -1,0 +1,14 @@
+DATE and TIME         BLOCK   COMMENT
+24-Aug-2023 15:49:42  LI00A   Initializing log file
+24-Aug-2023 15:49:47  LG00A   gridLoadDataUpward_separate(folder=C:\Users\jskim5\Documents\GitHub\UBC_LAIR\temp, stamp_project=20210308-124244_CaPt--STM_Spectroscopy--, img_number=54_1, grid_number=108_1, average_forward_and_backward=false)|
+24-Aug-2023 15:49:51  PA01A   gridSmooth_Var=grid.I|time|gridSmooth_Var=grid.I_Forward|time|gridSmooth_Var=grid.I_Backward|time|
+24-Aug-2023 15:49:56  PA01B   gridCorrectionNorm_Var=grid|3e-10|0|1|gridCorrectionNorm_Var=gridForward|3e-10|0|1|gridCorrectionNorm_Var=gridBackward|3e-10|0|1|
+24-Aug-2023 15:51:11  VP01A   gridAvg(I:[500 57 57], V:[500 1], plotBool=1)|
+24-Aug-2023 15:51:12    ^     gridAvg(I:[499 57 57], V:[499 1], plotBool=1)|
+24-Aug-2023 15:51:12    ^     gridAvg(I:[500 57 57], V:[500 1], plotBool=0)|
+24-Aug-2023 15:53:37  VP01A   gridAvg(I:[500 57 57], V:[500 1], plotBool=1)|
+24-Aug-2023 15:53:37    ^     gridAvg(I:[499 57 57], V:[499 1], plotBool=1)|
+24-Aug-2023 15:53:38    ^     gridAvg(I:[500 57 57], V:[500 1], plotBool=0)|
+24-Aug-2023 15:53:39    ^     gridAvg(I:[500 57 57], V:[500 1], plotBool=1)|
+24-Aug-2023 15:53:55  PM01A   gridMaskPoint(didv:[499 57 57], V_reduced:[499 1], imageV=0.0055, radius=3, x=38, y=29)|
+24-Aug-2023 15:53:55    ^     gridAvgMask(didv:[499 57 57], mask:[57 57])|

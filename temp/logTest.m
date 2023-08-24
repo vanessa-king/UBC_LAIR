@@ -147,15 +147,18 @@ end
 [number_bias_layer, ~] = size(V_reduced);
 
 % This makes the averaged "I versus V" plot
-[avg_iv, LOGcomment] = gridAvg(grid.I, grid.V, 1);
+[avg_iv, f1, LOGcomment] = gridAvg(grid.I, grid.V, 1);
 xlabel('V','fontsize', 20)
 ylabel('I(V) (nA)','fontsize', 20)
 
-savefig(strcat(LOGpath,"/average_IV.fig"))
+if f1 == []
+else
+    savefig(f1, strcat(LOGpath,"/average_IV.fig"))
+end
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VP01A", LOGcomment ,0);
 
 % This makes the averaged "dI/dV versus V" plot
-[avg_didv, LOGcomment] = gridAvg(didv, V_reduced,1);
+[avg_didv, f2, LOGcomment] = gridAvg(didv, V_reduced,1);
 xlabel('V','fontsize', 20)
 ylabel('dI/dV [a.u.]','fontsize', 20)
 xticks([-0.04 -0.02 0 0.02 0.04])
@@ -163,27 +166,45 @@ xlim([-0.02 0.02])
 ylim([0 3e-9])
 set(gca,'fontsize',20)
 
+
 savefig(strcat(LOGpath,"/average_dIdV.fig"))
 
 
 LOGcomment = strcat(LOGcomment,"gridAvg_Var=","didv","|","V_reduced","|",num2str(1),"|","plotAdjusted","|");
 
 
+
+if f2 == []
+else
+    savefig(f2, strcat(LOGpath,"/average_dIdV.fig"))
+end
+
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 
 % This makes the averaged "I versus V" plot for forward and backward sweeps separately
-[avg_iv_forward, ~] = gridAvg(grid.I_Forward, grid.V);
-[avg_iv_backward, LOGcomment] = gridAvg(grid.I_Backward, grid.V,1);
-hold on
-plot(grid.V,avg_iv_forward)
-hold off
-legend('bwd', 'fwd');
-xlabel('V','fontsize', 20)
-ylabel('I(V) (nA)','fontsize', 20);
-title("Avg I(V) for bwd and fwd");
+[avg_iv_forward, f3, LOGcomment] = gridAvg(grid.I_Forward, grid.V);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+if f3 == []
+    clear f3
+else
+    %close f3;
+end
 
-savefig(strcat(LOGpath,"/foreward_vs_backward_IV.fig"))
+
+[avg_iv_backward, f4, LOGcomment] = gridAvg(grid.I_Backward, grid.V,1);
+if f4 == []
+else
+    hold on
+    plot(grid.V,avg_iv_forward)
+    hold off
+    legend('bwd', 'fwd');
+    xlabel('V','fontsize', 20)
+    ylabel('I(V) (nA)','fontsize', 20);
+    title("Avg I(V) for bwd and fwd");
+
+    savefig(strcat(LOGpath,"/foreward_vs_backward_IV.fig"))
+end
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 

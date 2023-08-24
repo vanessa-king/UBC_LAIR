@@ -8,7 +8,7 @@
 %   V size: number_bias_layer x 1
 %
 
-function [avg_I, comment] = gridAvg(I, V, plotBool)
+function [avg_I, f, comment] = gridAvg(I, V, plotBool)
 
 %setting default value for plotBool; further specifications for arguments
 %could be made here, e.g.: I {mustBe...}
@@ -30,9 +30,10 @@ avg_I = mean(I, [3 2]);
 %
 % A figure of the average iv data is made.
 %
+f = [];
 if plotBool == 1
-  figure();
-  plot(V,reshape(avg_I(:),number_bias_layer,1))
+    f = figure();
+    plot(V,reshape(avg_I(:),number_bias_layer,1));
   
 end
 end
