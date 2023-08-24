@@ -1,4 +1,0 @@
-DATE and TIME         BLOCK   COMMENT
-27-Apr-2023 16:38:09  LI00A   Initializing log file
-27-Apr-2023 16:38:50  LG00A   gridLoadDataUpward_separate(folder=C:\Users\jamesday\Documents\GitHub\UBC_LAIR, stamp_project=20210308-124244_CaPt--STM_Spectroscopy--, img_number=54_1, grid_number=108_1, average_forward_and_backward=false)|
-27-Apr-2023 16:39:11  PA01A   gridSmooth_Var=grid.I|time|gridSmooth_Var=grid.I_Forward|time|gridSmooth_Var=grid.I_Backward|time|

@@ -1,42 +1,48 @@
-%        Description
-% This function makes dIdV slice at a given bias. 
-%        Parameters
-% I: 3D array(x*y*energy), raw I(V) data, e.g.: grid.I
-% V: Vector, the meaured biases of the I(V) e.g: Vred output of gridCorrNorm
-% Biases: Vector(a scalar if it is 1D), the biases that you want to use e.g: [0.1], [0.1, 0.198].Remark: with bias range(-0.2V,0.2V), don't use 0.2V 
-% plotname: Vector of strings(same dimension as Biases), the plot names of the output plots: ["name one"] or ["name one","name two"], etc.
+function [Biases,comment] = gridPlotSlices(I, V, Biases, plotname)
+% GRIDPLOTSLICES Takes a slice of dI/dV at certain biases and saves them as separate plots.
+%   I = 3D array (x*y*energy), raw I(V) data, e.g., grid.I
+%   V = Vector, the measured biases of the I(V), e.g., Vred output of gridCorrNorm
+%   Biases = Vector (or scalar if it is 1D), the biases that you want to use, e.g., [0.1], [0.1, 0.198]. Remark: with bias range (-0.2V, 0.2V), don't use 0.2V 
+%   plotname = Vector of strings (same dimension as Biases), the plot names of the output plots, e.g., ["name one"] or ["name one", "name two"], etc.
 
-function [] = gridPlotSlices(I,V,Biases,plotname)
+% No default values needed here.
+arguments
+   I
+   V
+   Biases
+   plotname
+end
 
-% load colourmap
-color_scale_resolution = 1000; % 1000 evenly spaced colour points
-cm_viridis = viridis(color_scale_resolution); % Default matplotlib(for LAIR)
-cm_inferno = inferno(color_scale_resolution);
-cm_magma = magma(color_scale_resolution);
-cm_plasma = plasma(color_scale_resolution);
+comment = sprintf("gridPlotSlices(bias=%.5f)|", Biases);
 
-% Homework
-% I is to process the data, will be different for Createc
-I = flip(permute(I,[1 3 2]),2);
+    % load colourmap
+    color_scale_resolution = 1000; % 1000 evenly spaced colour points
+    cm_magma = magma(color_scale_resolution);
 
-% NegRamp is to determine if V is inverted, True if inverted.
-NegRamp = V(length(V))-V(1) < 0;
+    I = flip(permute(I, [1, 3, 2]), 2);
 
-% Homework: To add position to plot to manually adjust the size.
-% Plot the biases selected, if there is no such bias exist in the function V, then choose the one which is closest(round-up)
-for i = 1:size(plotname,2)
-    figure('Name', plotname(i))
+    N = length(Biases);
+
+    % NegRamp is to determine if V is inverted, True if inverted.
+    NegRamp = V(length(V)) - V(1) < 0;
+
+    % Plot the biases selected, if there is no such bias exist in the function V, then choose the one which is closest (round-up)
+    for k = 1:N
         if NegRamp
-             temp_ind = find(V < Biases(i),1);
+            temp_ind = find(V < Biases(k), 1);
         else
-             temp_ind = find(V > Biases(i),1);
+            temp_ind = find(V > Biases(k), 1);
         end
-    clims = [0,3E-9];   
-    imagesc(squeeze(I(temp_ind,:,:)),clims)
-    colorbar
-    colormap(cm_magma)
-        axis image
-        title([num2str(V(temp_ind)),' V'])
+
+        % Create a new figure for each plot
+        figure('Name', plotname{k});
+
+        clims = [0, 3E-9];   
+        imagesc(squeeze(I(temp_ind, :, :)), clims);
+        colorbar;
+        colormap(cm_magma);
+        axis image;
+        title([num2str(V(temp_ind)), ' V']);
+    end
 end
 
-end
