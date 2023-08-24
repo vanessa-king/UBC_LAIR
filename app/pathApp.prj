@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="1700410118" file="C:\Users\MarkusAdmin\OneDrive - UBC\MatlabProgramming\MATLAB_UBC\UBC_LAIR\pathApp.prj" location="C:\Users\MarkusAdmin\OneDrive - UBC\MatlabProgramming\MATLAB_UBC\UBC_LAIR" name="pathApp" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="601300530" file="C:\Users\MarkusAdmin\OneDrive - UBC\MatlabProgramming\MATLAB_UBC\UBC_LAIR\app\pathApp.prj" location="C:\Users\MarkusAdmin\OneDrive - UBC\MatlabProgramming\MATLAB_UBC\UBC_LAIR\app" name="pathApp" target="target.mlapps" target-name="Package App">
     <param.appname>pathApp</param.appname>
     <param.authnamewatermark>Markus Altthaler</param.authnamewatermark>
     <param.email>markus.altthaler@ubc.ca</param.email>
@@ -17,8 +17,8 @@
 -selecting the current folder in MATLAB.
 
 Subsequently, this exact folder, or the folder including all sub folders can be added (removed) from the MATLAB path by pushing the corresponding green (red) button.</param.description>
-    <param.screenshot>C:\Users\MarkusAdmin\AppData\Local\Temp\tp8af6c541_a45d_4fa6_b7a3_dfa3533389d5.png</param.screenshot>
-    <param.version>1.0</param.version>
+    <param.screenshot>C:\Users\MarkusAdmin\AppData\Local\Temp\tpd8da67a7_98ad_448c_b97d_0cd36fca87f0.png</param.screenshot>
+    <param.version>1.4</param.version>
     <param.products.name />
     <param.products.id />
     <param.products.version />
@@ -26,7 +26,6 @@ Subsequently, this exact folder, or the folder including all sub folders can be 
     <param.output>${PROJECT_ROOT}</param.output>
     <param.guid>654a2163-6286-43fb-a7d1-d6eef3cd87d9</param.guid>
     <unset>
-      <param.version />
       <param.products.name />
       <param.products.id />
       <param.products.version />
@@ -40,11 +39,11 @@ Subsequently, this exact folder, or the folder including all sub folders can be 
     <fileset.resources />
     <fileset.package />
     <build-deliverables>
-      <file location="C:\Users\MarkusAdmin\OneDrive - UBC\MatlabProgramming\MATLAB_UBC" name="UBC_LAIR" optional="false">C:\Users\MarkusAdmin\OneDrive - UBC\MatlabProgramming\MATLAB_UBC\UBC_LAIR</file>
+      <file location="C:\Users\MarkusAdmin\OneDrive - UBC\MatlabProgramming\MATLAB_UBC\UBC_LAIR" name="app" optional="false">C:\Users\MarkusAdmin\OneDrive - UBC\MatlabProgramming\MATLAB_UBC\UBC_LAIR\app</file>
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>C:\Program Files\MATLAB\R2022a</root>
+      <root>C:\Program Files\MATLAB\R2023a</root>
       <toolboxes>
         <toolbox name="matlabcoder" />
         <toolbox name="embeddedcoder" />
