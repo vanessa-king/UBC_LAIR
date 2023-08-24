@@ -7,27 +7,25 @@
 %   smooth(bool): True/False
 %   normalize(bool): True/False
 %%  Output parameters: 
-
-
 function [didv, norm_didv, I_correction, V_reduced, I_offset, comment] = gridCorrectionNorm(grid, C, smooth, normalize)
 
 arguments
     grid
     C    {mustBeFloat}
-    smooth {mustBeNumericOrLogical}=0
-    normalize {mustBeNumericOrLogical}=0
+    smooth {mustBeNumericOrLogical} = false
+    normalize {mustBeNumericOrLogical} = false
 end
-
 
 %output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
 %Never plot data (e.g. the whole gird) in the comment, only plot the values
 %('=<VARn_value>') of variables that decide/affect how the function
 %processes data (e.g. order of fit, ...) 
 %Note convert all <VARn_value> to strings; 
-comment = sprintf("gridCorrectionNorm(grid, C=%s, smooth=%s, normalize=%s)|", C, smooth, normalize);
+comment = sprintf("gridCorrectionNorm(grid:%s, C=%s, smooth=%s, normalize=%s)|", mat2str(size(grid)), num2str(C), mat2str(smooth), mat2str(normalize));
+% Modify: 
+    %1. How to differentiate grid_backward and forward in log 
 
 %regular function processing:
-
 % if smooth = False no smoothing before treating data 
 % An example: gridCorrectionNorm(grid, 3E-10, 1), 1 means do the smooth part, if 0 means do not smooth current (or spatial)
 
@@ -50,7 +48,7 @@ if find(diff(sign(V))) % This "if" statement looks for a sign change in V.
     end
 else
 
-I_correction = I
+I_correction = I;
 
 if smooth
     I_correction = smoothdata(I_correction, 1, 'gaussian', 10); % "10" here is the window size 

@@ -99,6 +99,7 @@ if (~avg_forward_and_backward)
    
 end
 
+<<<<<<< HEAD
 %% PA01B Processing-Averaging-01-B;
 % (3b) This section of code will does some funny vertical shifting. Dong will talk to
 % Sarah about its purpose, as it's not clear that we need this.
@@ -106,6 +107,9 @@ end
 [didv, norm_didv, I_correction, V_reduced] = gridCorrectionNorm(grid, 3E-10, 0,1); 
 
 LOGcomment = strcat("gridCorrectionNorm_Var=","grid","|",num2str(3E-10),"|",num2str(0),"|",num2str(1),"|"); %note same as above, variables have to be adjustes maunally here! :(
+
+=======
+>>>>>>> 9fa3d3efece1c4a1481f753e0153c789b26f30b1
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01A", LOGcomment ,0);
 %% PC01A Processing-Correcting-01-A;
 % (3b) This section of code will do a vertical shift that brings the current at zero bias to zero.
@@ -123,6 +127,7 @@ if (~avg_forward_and_backward)
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
     gridBackward = grid;
     [gridBackward.I] = gridForward.I_Backward;
+<<<<<<< HEAD
     [didv_backward, ~, ~, ~] = gridCorrectionNorm(gridBackward, 3E-10, 0,1);
    LOGcomment = strcat(LOGcomment,"gridCorrectionNorm_Var=","gridBackward","|",num2str(3E-10),"|",num2str(0),"|",num2str(1),"|");
 end    
@@ -141,6 +146,8 @@ end
 % need to know the function, talk to Jisun 
 [grid,LOGcomment] = gridDriftCorr(grid, grid.z_img, grid.z_img, 5);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02B", LOGcomment ,0);
+
+=======
     [didv_backward, ~, ~, ~, ~, LOGcomment] = gridCorrectionNorm(gridBackward, 3E-10, smooth,normalize);
     LOGcomment = strcat("Backward_",LOGcomment);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
@@ -148,6 +155,7 @@ end
 %% PC02A Processing-Correcting-02-A;
 % this section will correct the grid with the drifting parameter given. 
 
+>>>>>>> 9fa3d3efece1c4a1481f753e0153c789b26f30b1
 % need to know the function, talk to Jisun/Jiabin
 % need to modify. 
 %[grid,LOGcomment] = gridDriftCorr(grid, grid.z_img, grid.z_img, 5);
@@ -207,6 +215,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01B", LOGcomment ,0);
 %create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "average_IV+average_dIdV+foreward_vs_backward_IV");
 
+<<<<<<< HEAD
 
 
 %% VP01B Visualize-Plot-01-B;
@@ -261,3 +270,5 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PS00A", LOGcomment ,0);
 
 %create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "gridPlotSlices");
+=======
+>>>>>>> 9fa3d3efece1c4a1481f753e0153c789b26f30b1
