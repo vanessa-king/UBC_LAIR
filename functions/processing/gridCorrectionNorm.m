@@ -7,8 +7,6 @@
 %   smooth(bool): True/False
 %   normalize(bool): True/False
 %%  Output parameters: 
-
-
 function [didv, norm_didv, I_correction, V_reduced, I_offset, comment] = gridCorrectionNorm(grid, C, smooth, normalize)
 
 arguments
@@ -17,7 +15,6 @@ arguments
     smooth {mustBeNumericOrLogical} = false
     normalize {mustBeNumericOrLogical} = false
 end
-
 
 %output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
 %Never plot data (e.g. the whole gird) in the comment, only plot the values
@@ -28,9 +25,7 @@ comment = sprintf("gridCorrectionNorm(grid:%s, C=%s, smooth=%s, normalize=%s)|",
 % Modify: 
     %1. How to differentiate grid_backward and forward in log 
 
-
 %regular function processing:
-
 % if smooth = False no smoothing before treating data 
 % An example: gridCorrectionNorm(grid, 3E-10, 1), 1 means do the smooth part, if 0 means do not smooth current (or spatial)
 
