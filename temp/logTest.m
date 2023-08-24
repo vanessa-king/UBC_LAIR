@@ -17,6 +17,15 @@
     % updating all functions to return a string of their name and
     % parameters used allows the comment to log the exact functions and
     % parameters used in every block.
+%% Block List
+    % LI00A Load-Initialize-00-A; Initializing the log file and choosing the data
+    % LG00A Load-Grid-00-A; load grid 
+    % LG00B Load-Grid-00-B; load grid and topo from Nanonis
+    % PA01A Processing-Averaging-01-A; Moving average
+    % PA01B Processing-Averaging-01-B;
+    % VP01A Visualize-Plot-01-A;
+    % VP01B Visualize-Plot-01-B; 
+    
 
 
 %% LI00A Load-Initialize-00-A; Initializing the log file and choosing the data
@@ -35,12 +44,13 @@ folder = uigetdir('C:\Users\MarkusAdmin\OneDrive - UBC\MatlabProgramming\MATLAB_
 
 
 % stamp_project is the filename leader and takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--';
-stamp_project = '20210308-124244_CaPt--STM_Spectroscopy--'; 
+stamp_project = 'TestData'; 
+%stamp_project = 'Grid_Spectroscopy--NbIrPtTe';
 
 % set the grid I(V) file number
-grid_number = '108_1';
+grid_number = '007';
 % set the z-file (aka topo) image number
-img_number = '54_1'; 
+img_number = '222'; 
 % points/sweep used in the grid measurement
 pointsPerSweep = 500;
 % T-raster used in the grid measurement
@@ -57,11 +67,19 @@ LOGcomment = "Initializing log file";
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI00A", LOGcomment, 1);
 
 %% LG00A Load-Grid-00-A; load grid 
-% (2) This section of code loads the files called above (gird_number and img_number),
+% (2a) This section of code loads the files called above (grid_number and img_number),
 
 avg_forward_and_backward = false;
 [grid,LOGcomment] = gridLoadDataUpward_separate(folder,stamp_project,img_number,grid_number,avg_forward_and_backward); % Taking data Upward
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG00A", LOGcomment ,0);
+
+%% LG00B Load-Grid-00-B; load grid and topo from Nanonis
+% (2b) This section of code loads the files called above if they are Nanonis,
+
+topoDirection='forward';
+avg_forward_and_backward = true;
+[grid,LOGcomment] = pythonDataToGrid(folder, stamp_project, grid_number, img_number, topoDirection);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG00B", LOGcomment ,0);
 
 %% PA01A Processing-Averaging-01-A; Moving average
 % (3a) This section of code first gets a time axis to plot against I(v) or di/dv.
@@ -97,7 +115,7 @@ if (~avg_forward_and_backward)
     gridBackward = grid;
     [gridBackward.I] = gridForward.I_Backward;
     [didv_backward, ~, ~, ~] = gridCorrectionNorm(gridBackward, 3E-10, 0,1);
-    LOGcomment = strcat(LOGcomment,"gridCorrectionNorm_Var=","gridBackward","|",num2str(3E-10),"|",num2str(0),"|",num2str(1),"|");
+   LOGcomment = strcat(LOGcomment,"gridCorrectionNorm_Var=","gridBackward","|",num2str(3E-10),"|",num2str(0),"|",num2str(1),"|");
 end    
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01B", LOGcomment ,0);
 %% VP01A Visualize-Plot-01-A;
@@ -129,7 +147,7 @@ set(gca,'fontsize',20)
 
 savefig(strcat(LOGpath,"/average_dIdV.fig"))
 
-LOGcomment = strcat(LOGcomment,"girdAvg_Var=","didv","|","V_reduced","|",num2str(1),"|","plotAdjusted","|");
+LOGcomment = strcat(LOGcomment,"gridAvg_Var=","didv","|","V_reduced","|",num2str(1),"|","plotAdjusted","|");
 
 
 % This makes the averaged "I versus V" plot for forward and backward sweeps separately
@@ -144,7 +162,7 @@ title("Avg I(V) for bwd and fwd");
 
 savefig(strcat(LOGpath,"/foreward_vs_backward_IV.fig"))
 
-LOGcomment = strcat(LOGcomment,"girdAvg_Var=","grid.I_Forward","|","grid.V","|","girdAvg_Var=","grid.I_Backward","|","grid.V","|",num2str(1),"|","plotAdjusted","|");
+LOGcomment = strcat(LOGcomment,"gridAvg_Var=","grid.I_Forward","|","grid.V","|","girdAvg_Var=","grid.I_Backward","|","grid.V","|",num2str(1),"|","plotAdjusted","|");
 
 
 
@@ -155,7 +173,34 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01B", LOGcomment ,0);
 %create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "average_IV+average_dIdV+foreward_vs_backward_IV");
 
-%% Newer block 
 
-%% New block
+%% VP01B Visualize-Plot-01-B;
+%(4.1) This section of the code opens a GUI that allows you to click
+%point(s) on a grid and plot the spectra
+%
+% NOTE: IF I DON'T RUN PA01B, THIS SECTION DOESN'T RECOGNIZE V_reduced
 
+imageV = 0.6; %float, Voltage at which to display image
+n=1; %integer, Number of point spectra to plot
+offset=0; %Vertical offset for each point spectra 
+xysmooth=0.0; %float, the standard deviation of a Gaussian for smoothing xy pixels (0 is no smoothing)
+vsmooth=0.0; %float, the standard deviation of a Gaussian for smoothing the voltage sweep points (0 is no smoothing)
+
+
+LOGcomment = gridClickForSpectrum(didv, V_reduced, imageV, n, offset, xysmooth, vsmooth, grid);
+
+%ask for plotname:
+plotname = input("Save plot as: ","s");
+if isempty(plotname)
+    plotname = 'clickedSpectrum';
+end
+
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plotname));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VP01B", LOGcomment ,0);
+
+%save the created figures here:
+savefig(strcat(LOGpath,"/",plotname,".fig"))
+
+%create copy of the log corresponding to the saved figures
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plotname);
+clear plotname;

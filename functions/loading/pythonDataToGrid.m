@@ -4,17 +4,21 @@
 
 % Description:
 % Reads Nanonis python-processed gridmap data and returns as grid structure
-% Input: gridFileName = string of full path and 3ds file name, ie: '/Users/vanessa/Desktop/UBC/Lab/Generic_Data_Processing_Code/Grid_Spectroscopy--NbIrPtTe001.3ds'
-%        topoFileName = string of full path and sxm file name, ie: '/Users/vanessa/Desktop/UBC/Lab/Generic_Data_Processing_Code/NbIrTe4-0012.sxm'
+% Input: folder = string of folder containing data
+%        stamp_project = the filename leader, takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--'
+%        grid_number = string of 3ds file number, ie: 'NbIrPtTe001'
+%        img_number = string of sxm file number, ie: '0012'
 %        topoDirection = string of desired topo z scan direction, either
 %        'forward' or 'backward'
 % Output:grid = 1x1 structure containing x,y,I,V,x_img,y_img,z_img
 
-function [grid, comment] = pythonDataToGrid(gridFileName, topoFileName, topoDirection)
+function [grid, comment] = pythonDataToGrid(folder, stamp_project, grid_number, img_number, topoDirection)
 
 arguments
-    gridFileName    {mustBeText}
-    topoFileName    {mustBeText}
+    folder          {mustBeText}
+    stamp_project   {mustBeText}
+    grid_number     {mustBeText}
+    img_number      {mustBeText}
     topoDirection   {mustBeText}
 end
 
@@ -23,9 +27,12 @@ end
 %('=<VARn_value>') of variables that decide/affect how the function
 %processes data (e.g. order of fit, ...) 
 %Note convert all <VARn_value> to strings; 
-comment = sprintf("pythonDataToGrid(gridFileName=%s, topoFileName=%s, topoDirection=%s)|", gridFileName, topoFileName, topoDirection);
+comment = sprintf("pythonDataToGrid(folder=%s, stamp_project=%s, grid_number=%s, topo_number=%s, topoDirection=%s)|", folder, stamp_project, grid_number, img_number, topoDirection);
 
 %regular function processing:
+
+gridFileName = strcat(folder,"/",stamp_project,grid_number,".3ds");
+topoFileName = strcat(folder,"/",stamp_project,img_number,".sxm");
 
 pythonScript_and_fileName = strcat("read_grid_data.py ",gridFileName, " ",topoFileName, " ", topoDirection);
 
