@@ -83,32 +83,33 @@ if (~avg_forward_and_backward)
 end
 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01A", LOGcomment ,0);
-%% PC01B Processing-Correcting-01-A;
+%% PC01A Processing-Correcting-01-A;
 % (3b) This section of code will do a vertical shift that brings the current at zero bias to zero.
 C=3E-10;
 smooth=false;
 normalize=true;
 [didv, norm_didv, I_correction, V_reduced, I_offset, LOGcomment] = gridCorrectionNorm(grid, C, smooth, normalize); 
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC01B", LOGcomment ,0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC01A", LOGcomment ,0);
 % why need the farward and backward 
 if (~avg_forward_and_backward)
     gridForward = grid;
     [gridForward.I] = gridForward.I_Forward;
-    [didv_forward, ~, ~, ~, ~, LOGcomment] = gridCorrectionNorm(gridForward, 3E-10, 0,1);
+    [didv_forward, ~, ~, ~,  ~, LOGcomment] = gridCorrectionNorm(gridForward, 3E-10, smooth,normalize);
     LOGcomment = strcat("Forward_",LOGcomment);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
     gridBackward = grid;
     [gridBackward.I] = gridForward.I_Backward;
-    [didv_backward, ~, ~, ~, ~, LOGcomment] = gridCorrectionNorm(gridBackward, 3E-10, 0,1);
+    [didv_backward, ~, ~, ~, ~, LOGcomment] = gridCorrectionNorm(gridBackward, 3E-10, smooth,normalize);
     LOGcomment = strcat("Backward_",LOGcomment);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 end    
-%% PC02B Processing-Correcting-02-A;
+%% PC02A Processing-Correcting-02-A;
 % this section will correct the grid with the drifting parameter given. 
 
-% need to know the function, talk to Jisun 
-[grid,LOGcomment] = gridDriftCorr(grid, grid.z_img, grid.z_img, 5);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02B", LOGcomment ,0);
+% need to know the function, talk to Jisun/Jiabin
+% need to modify. 
+%[grid,LOGcomment] = gridDriftCorr(grid, grid.z_img, grid.z_img, 5);
+%LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02A", LOGcomment ,0);
 %% VP01A Visualize-Plot-01-A;
 %(4) This section of code takes the average of the I(V) data (e.g., the whole
 % grid) and plots both "I versus V" and "dI/dV versus V"
@@ -163,8 +164,4 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01B", LOGcomment ,0);
 
 %create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "average_IV+average_dIdV+foreward_vs_backward_IV");
-
-%% Newer block 
-
-%% New block
 

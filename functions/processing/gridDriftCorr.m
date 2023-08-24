@@ -16,6 +16,9 @@ function [grdcorr,comment] = gridDriftCorr(grid, before, after, theta)
 %   The x,y scale for the topography and grid are extended linearly to
 %   accomodate.
 
+% To be edited: make before and after topo images, instead of grid
+% structures 
+
 %output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)"  
 %Note convert all <VARn_value> to strings; 
 formatSpec = "gridDriftCorr(grid: %s, before: %s, after: %s, theta=%.3g degrees)|";
