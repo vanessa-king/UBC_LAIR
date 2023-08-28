@@ -42,7 +42,7 @@
 % data and scripts to the MATLAB path. 
 
 % load all necessary script directories
-folder = uigetdir('C:\Users\ChenD\OneDrive - phas.ubc.ca\300科研主业\350 LAIR Hackathon\test_data');
+folder = uigetdir();
 
 
 % stamp_project is the filename leader and takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--';
