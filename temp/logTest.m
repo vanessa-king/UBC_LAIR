@@ -161,24 +161,21 @@ xlim([-0.02 0.02])
 ylim([0 3e-9])
 set(gca,'fontsize',20)
 
-savefig(strcat(LOGpath,"/average_dIdV.fig"))
-LOGcomment = strcat(LOGcomment,"gridAvg_Var=","didv","|","V_reduced","|",num2str(1),"|","plotAdjusted","|");
-
 if f2 == []
 else
     savefig(f2, strcat(LOGpath,"/average_dIdV.fig"))
 end
-
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 % This makes the averaged "I versus V" plot for forward and backward sweeps separately
 [avg_iv_forward, f3, LOGcomment] = gridAvg(grid.I_Forward, grid.V);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
 if f3 == []
     clear f3
 else
     %close f3;
 end
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 [avg_iv_backward, f4, LOGcomment] = gridAvg(grid.I_Backward, grid.V,1);
 if f4 == []
@@ -195,7 +192,8 @@ else
 end
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
-LOGcomment = strcat(LOGcomment,"gridAvg_Var=","grid.I_Forward","|","grid.V","|","girdAvg_Var=","grid.I_Backward","|","grid.V","|",num2str(1),"|","plotAdjusted","|");
+%create copy of the log corresponding to the saved figures
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "average_IV+average_dIdV+foreward_vs_backward_IV");
 
 %% VP01B Visualize-Plot-01-B;
 %(4b) This section of the code opens a GUI that allows you to click
@@ -285,7 +283,8 @@ xticks([-0.04 -0.02 0 0.02 0.04])
 xlim([-0.05, 0.05])
 ylim([0, 4E-9])
 
+savefig(strcat(LOGpath,"/mask_averaged_didv.fig"))
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 %create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "average_IV+average_dIdV+foreward_vs_backward_IV");
-
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "circular_mask_position+mask_averaged_didv");
