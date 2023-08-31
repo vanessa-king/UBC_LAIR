@@ -1,0 +1,19 @@
+DATE and TIME         BLOCK   COMMENT
+31-Aug-2023 14:23:57  LI00A   Initializing log file
+31-Aug-2023 14:24:02  LG00A   gridLoadDataUpward_separate(folder=C:\Users\jskim5\Documents\GitHub\UBC_LAIR\data, stamp_project=20210308-124244_CaPt--STM_Spectroscopy--, img_number=54_1, grid_number=108_1, average_forward_and_backward=false)|
+31-Aug-2023 14:24:45  PA01A   getTimeAxis(pointsPerSweep=500, Traster=0.011330)|
+31-Aug-2023 14:24:46    ^     gridsmooth(grid.I: [500 57 57], time: [1 500])|
+31-Aug-2023 14:24:46    ^     gridsmooth(grid.I_Forward: [500 57 57], time: [1 500])|
+31-Aug-2023 14:24:46    ^     gridsmooth(grid.I_Backward: [500 57 57], time: [1 500])|
+31-Aug-2023 14:24:53  PC01A   gridCorrectionNorm(grid:[1 1], C=3e-10, smooth=false, normalize=true)|
+31-Aug-2023 14:24:53    ^     Forward_gridCorrectionNorm(grid:[1 1], C=3e-10, smooth=false, normalize=true)|
+31-Aug-2023 14:24:53    ^     Backward_gridCorrectionNorm(grid:[1 1], C=3e-10, smooth=false, normalize=true)|
+31-Aug-2023 14:25:03  VP01A   gridAvg(I or dIdV:[500 57 57], V:[500 1], plotBool=1)|
+31-Aug-2023 14:25:05    ^     gridAvg(I or dIdV:[499 57 57], V:[499 1], plotBool=1)|
+31-Aug-2023 14:25:05    ^     gridAvg(I or dIdV:[500 57 57], V:[500 1], plotBool=0)|
+31-Aug-2023 14:25:07    ^     gridAvg(I or dIdV:[500 57 57], V:[500 1], plotBool=1)|
+31-Aug-2023 14:26:15  VP01B   gridClickForSpectrum(didv: [499 57 57], V_reduced: [499 1], imageV=0.6, n=1, offset=0, xysmooth=0, vsmooth=0, grid: [1 1])|, plotname=clickedSpectrum
+31-Aug-2023 14:26:58  PS00A   gridPlotSlices(bias=0.01500)|
+31-Aug-2023 14:26:58    ^     
+31-Aug-2023 14:27:29  PM01A   gridMaskPoint(didv:[499 57 57], V_reduced:[499 1], imageV=0.0055, radius=3, x=26, y=36)|
+31-Aug-2023 14:27:30    ^     gridAvgMask(didv:[499 57 57], mask:[57 57])|

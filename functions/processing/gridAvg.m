@@ -18,7 +18,7 @@ arguments
     plotBool = 0
 end
 
-comment = sprintf("gridAvg(I:%s, V:%s, plotBool=%s)|", mat2str(size(I)), mat2str(size(V)), num2str(plotBool));
+comment = sprintf("gridAvg(I or dIdV:%s, V:%s, plotBool=%s)|", mat2str(size(I)), mat2str(size(V)), num2str(plotBool));
 
 
 % size(V) returns a row vector whose elements are the lengths of the corresponding dimensions of V

@@ -7,7 +7,7 @@
     % Format:   ABXXZ
     %      A:   L = loading, P = processing, V = visulalizing
     %      B:   subidentifiers (e.g. A = averaging, P = plot, M = masking, ...) TBD! 
-    %     XX:   0, 1, 2, 3, ..., 99 (running number for consecutive blocks)
+    %     XX:   1, 2, 3, ..., 99 (running number for consecutive blocks)
     %      Z:   a, b, c, ... (alternate abc for either or blocks)
 
     % a full list of all 'codes' TBD, ideally name blocks as in this
@@ -18,21 +18,21 @@
     % parameters used allows the comment to log the exact functions and
     % parameters used in every block.
 %% Block List
-    % LI00A Load-Initialize-00-A; Initializing the log file and choosing the data
-    % LG00A Load-Grid-00-A; load grid 
-    % LG00B Load-Grid-00-B; load grid and topo from Nanonis
+    % LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
+    % LG01A Load-Grid-01-A; load grid 
+    % LG01B Load-Grid-01-B; load grid and topo from Nanonis
     % PA01A Processing-Averaging-01-A; moving average
     % PC01A Processing-Correcting-01-A;
     % PC02A Processing-Correcting-02-A
-    % VP01A Visualize-Plot-01-A; average I-V & dI/dV and plot them
-    % VP01B Visualize-Plot-01-B; 
-    % PS00A Processing-Saving-00-A;
-    % PM01A Processing-Masking-01-A; circular masking
+    % VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them
+    % VS02A Visualize-Spectrum-02-A;     
+    % VS03A Visualize-Spectrum-03-A; circular masking
+    % VT01A Visualize-Topo-01-A
 
 
-%% LI00A Load-Initialize-00-A; Initializing the log file and choosing the data
+%% LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
 
-% (1) This section of code specifies the data paths, and files to be  
+% This section of code specifies the data paths, and files to be  
 % analyzed. The log file is initialized based on the given values. 
 
 % Potentially to be merged with (2) if grid load upwards is updated
@@ -42,7 +42,7 @@
 % data and scripts to the MATLAB path. 
 
 % load all necessary script directories
-folder = uigetdir('C:\Users\ChenD\OneDrive - phas.ubc.ca\300科研主业\350 LAIR Hackathon\test_data');
+folder = uigetdir();
 
 
 % stamp_project is the filename leader and takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--';
@@ -66,25 +66,25 @@ Traster = 11.33 * 10^(-3);
 LOGpath = folder;
 LOGfile = strcat(stamp_project,"_grdNr_",grid_number,"_imgNr_",img_number,"_PpS_",num2str(pointsPerSweep),"_Traster_",num2str(Traster));
 LOGcomment = "Initializing log file";
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI00A", LOGcomment, 1);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01A", LOGcomment, 1);
 
-%% LG00A Load-Grid-00-A; load grid 
-% (2a) This section of code loads the files called above (grid_number and img_number),
+%% LG01A Load-Grid-01-A; load grid 
+% This section of code loads the files called above (grid_number and img_number),
 
 avg_forward_and_backward = false;
 [grid,LOGcomment] = gridLoadDataUpward_separate(folder,stamp_project,img_number,grid_number,avg_forward_and_backward); % Taking data Upward
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG00A", LOGcomment ,0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01A", LOGcomment ,0);
 
-%% LG00B Load-Grid-00-B; load grid and topo from Nanonis
-% (2b) This section of code loads the files called above if they are Nanonis,
+%% LG01B Load-Grid-01-B; load grid and topo from Nanonis
+% This section of code loads the files called above if they are Nanonis,
 
 topoDirection='forward';
 avg_forward_and_backward = true;
 [grid,LOGcomment] = pythonDataToGrid(folder, stamp_project, grid_number, img_number, topoDirection);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG00B", LOGcomment ,0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01B", LOGcomment ,0);
 
 %% PA01A Processing-Averaging-01-A; moving average
-% (3a) This section of code first gets a time axis, to eventually plot against I(v) or di/dv.
+% This section of code first gets a time axis, to eventually plot against I(v) or di/dv.
 % Second, it applies moving-average smoothing to the di/dv data vs time.
 
 [time,LOGcomment] = getTimeAxis(pointsPerSweep, Traster);
@@ -103,7 +103,7 @@ end
 
 
 %% PC01A Processing-Correcting-01-A;
-% (3) This section of code will do a vertical shift that brings the current at zero bias to zero.
+% This section of code will do a vertical shift that brings the current at zero bias to zero.
 C=3E-10;
 smooth=false;
 normalize=true;
@@ -125,18 +125,18 @@ if (~avg_forward_and_backward)
 end    
 
 %% PC02A Processing-Correcting-02-A;
-% this section will correct the grid with the drifting parameter given. 
+% This section will correct the grid with the drifting parameter given. 
 
 % need to know the function, talk to Jisun/Jiabin
 % need to modify. 
 %[grid,LOGcomment] = gridDriftCorr(grid, grid.z_img, grid.z_img, 5);
 %LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02A", LOGcomment ,0);
 
-%% VP01A Visualize-Plot-01-A; average I-V & dI/dV and plot them
-%(4a) This section of code takes the average of the I(V) data (e.g., the whole
+%% VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them
+% This section of code takes the average of the I(V) data (e.g., the whole
 % grid) and plots both "I versus V" and "dI/dV versus V"
 %
-% NOTE: IF I DON'T RUN THE SECTION ABOVE, THIS SECTION DOESN'T RECOGNIZE
+% NOTE: IF I DON'T RUN PC01A, THIS SECTION DOESN'T RECOGNIZE
 % V_reduced
 
 [number_bias_layer, ~] = size(V_reduced);
@@ -150,7 +150,7 @@ if f1 == []
 else
     savefig(f1, strcat(LOGpath,"/average_IV.fig"))
 end
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VP01A", LOGcomment ,0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01A", LOGcomment ,0);
 
 % This makes the averaged "dI/dV versus V" plot
 [avg_didv, f2, LOGcomment] = gridAvg(didv, V_reduced,1);
@@ -195,9 +195,9 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 %create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "average_IV+average_dIdV+foreward_vs_backward_IV");
 
-%% VP01B Visualize-Plot-01-B;
-%(4b) This section of the code opens a GUI that allows you to click
-%point(s) on a grid and plot the spectra
+%% VS02A Visualize-Spectrum-02-A;
+% This section of the code opens a GUI that allows you to click
+% point(s) on a grid and plot the spectra
 %
 % NOTE: IF I DON'T RUN PC01A, THIS SECTION DOESN'T RECOGNIZE V_reduced
 
@@ -217,7 +217,7 @@ if isempty(plotname)
 end
 
 LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plotname));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VP01B", LOGcomment ,0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment ,0);
 
 %save the created figures here:
 savefig(strcat(LOGpath,"/",plotname,".fig"))
@@ -226,8 +226,25 @@ savefig(strcat(LOGpath,"/",plotname,".fig"))
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plotname);
 clear plotname;
 
-%% PS00A Processing-Saving-00-A;
-% (5) This section of code takes a slice of dI/dV at certain bias,defined by the user, and saves it.
+%% VS03A Visualize-Spectrum-03-A; circular masking
+% This section of code creates a circular mask of radius R around a
+% clicked point. It then plots the average dI/dV on that point. The user may toggle R and energy slice.
+%
+% THIS SECTION IS CURRENTLY STRUCTURED FOR DONOR AND ACCEPTOR ENERGIES, SO
+% WE WILL WANT TO MODIFY THIS ACCORDINGLY.
+
+
+% plots di/dv at the specified energy (thrid input) and allows user to
+% click on a point with a mask of radius R (fourth input)
+imageV = 0.0055;
+radius = 3;
+[circular_mask, Num_in_mask, LOGcomment] = gridMaskPoint(didv, V_reduced, imageV, radius);
+
+savefig(strcat(LOGpath,"/circular_mask_position.fig"))
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
+
+%% VT01A Visualize-Topo-01-A;
+% This section of code takes a slice of dI/dV at certain bias,defined by the user, and saves it.
 
 % Ask the user to enter the bias of interest and plot name
 bias_of_interest = input("Enter the bias of interest: ");
@@ -243,31 +260,13 @@ plot_name_cell = {plot_name};
 filename = sprintf('%s/grid_fullCaPt10-4-8_%s_grid_%s.fig', LOGpath, stamp_project, grid_number);
 savefig(filename);
 
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PS00A", LOGcomment ,0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT01A", LOGcomment ,0);
 
 %create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "gridPlotSlices");
 
 savefig(strcat(LOGpath,"/circular_mask_average_dIdV.fig"))
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-
-%% PM01A Processing-Masking-01-A; circular masking
-% (6) This section of code creates a circular mask of radius R around a
-% clicked point. It then plots the average dI/dV on that point. The user may toggle R and energy slice.
-%
-% THIS SECTION IS CURRENTLY STRUCTURED FOR DONOR AND ACCEPTOR ENERGIES, SO
-% WE WILL WANT TO MODIFY THIS ACCORDINGLY.
-
-
-% plots di/dv at the specified energy (thrid input) and allows user to
-% click on a point with a mask of radius R (fourth input)
-imageV = 0.0055;
-radius = 3;
-[circular_mask, Num_in_mask, LOGcomment] = gridMaskPoint(didv, V_reduced, imageV, radius);
-
-savefig(strcat(LOGpath,"/circular_mask_position.fig"))
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PM01A", LOGcomment ,0);
 
 % takes the average of the dI/dV spectra in the selected area
 [~, mask_averaged_didv, LOGcomment] = gridAvgMask(didv, circular_mask);
