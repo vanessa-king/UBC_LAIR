@@ -84,6 +84,7 @@ avg_forward_and_backward = true;
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01B", LOGcomment ,0);
 
 %% PA01A Processing-Averaging-01-A; moving average
+% James is working on this, needs to save plot names in the log file
 % This section of code first gets a time axis, to eventually plot against I(v) or di/dv.
 % Second, it applies moving-average smoothing to the di/dv data vs time.
 
