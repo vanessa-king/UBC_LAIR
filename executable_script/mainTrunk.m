@@ -46,13 +46,12 @@ folder = uigetdir();
 
 
 % stamp_project is the filename leader and takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--';
-stamp_project = '20210308-124244_CaPt--STM_Spectroscopy--'; 
-%stamp_project = 'Grid_Spectroscopy--NbIrPtTe';
+stamp_project = 'TestData'; 
 
 % set the grid I(V) file number
-grid_number = '108_1';
+grid_number = '007';
 % set the z-file (aka topo) image number
-img_number = '54_1'; 
+img_number = '222'; 
 % points/sweep used in the grid measurement
 pointsPerSweep = 500;
 % T-raster used in the grid measurement
