@@ -18,6 +18,11 @@ function [grdcorr,comment] = gridDriftCorr(grid, before, after, theta)
 
 % To be edited: make before and after topo images, instead of grid
 % structures 
+% Answer: before and after are structures, but topo structure from topoload
+% data but not grid structure. 
+
+%% Questions: 
+% 1. why do we need theta, and what does the theta do(ask Jiabin) 
 
 %output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)"  
 %Note convert all <VARn_value> to strings; 
