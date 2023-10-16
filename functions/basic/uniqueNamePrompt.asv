@@ -82,8 +82,13 @@ while checkname == 0
     end
 
     if fileExists
+        % File exists.
+        % if check if it ends on _XXX
+            %set counter to _XXX+1
+        %else
             testNameString = strcat(nameString,"_",sprintf("%03d",n));
             n = n+1;
+        %end
     else
         % File does not exist.
         % i.e. the assigned testNameString is a unique file name in the directory and will be returned by the function
