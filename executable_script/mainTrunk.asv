@@ -34,10 +34,8 @@
     % altered in between (e.g. the same function is called multiple times
     % with different parameters) every instace must be logged and saved!
     % E.g. if funA and funB create a plot but alter the data:
-    % funA() -> logUsedBlocks(... funA ...) -> saveUsedBlocksLog(... FigA)
-    % funB() -> logUsedBlocks(... funB ...) -> saveUsedBlocksLog(... FigB)
-
-    % ToDo name plots using uniqueNamePrompt.m
+    % funA -> logUsedBlocks(... funA ...) -> saveUsedBlocksLog(... FigA)
+    % funB -> logUsedBlocks(... funB ...) -> saveUsedBlocksLog(... FigB)
 %% Block List
     % LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
     % LG01A Load-Grid-01-A; load grid 
