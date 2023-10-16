@@ -82,7 +82,7 @@ while checkname == 0
     end
 
     if fileExists
-        %file exists
+        % File exists.
         testNameString = strcat(nameString,"_",sprintf("%03d",n));
         n = n+1;
     else
