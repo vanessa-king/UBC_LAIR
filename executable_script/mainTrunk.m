@@ -67,12 +67,12 @@ folder = uigetdir();
 
 
 % stamp_project is the filename leader and takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--';
-stamp_project = 'TestData'; 
+stamp_project = '20210308-124244_CaPt--STM_Spectroscopy--'; 
 
 % set the grid I(V) file number
-grid_number = '007';
+grid_number = '108_1';
 % set the z-file (aka topo) image number
-img_number = '222'; 
+img_number = '54_1'; 
 % points/sweep used in the grid measurement
 pointsPerSweep = 500;
 % T-raster used in the grid measurement
@@ -153,7 +153,8 @@ end
 %[grid,LOGcomment] = gridDriftCorr(grid, grid.z_img, grid.z_img, 5);
 %LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02A", LOGcomment ,0);
 
-%% VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them
+%% VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them;
+% Edited by Jisun Kim Oct 2023
 % This section of code takes the average of the I(V) data (e.g., the whole
 % grid) and plots both "I versus V" and "dI/dV versus V"
 %
@@ -169,7 +170,8 @@ ylabel('I(V) (nA)','fontsize', 20)
 
 if f1 == []
 else
-    savefig(f1, strcat(LOGpath,"/average_IV.fig"))
+    plot_name_1 = uniqueNamePrompt("average_IV","",LOGpath);
+    savefig(f1, strcat(LOGpath,"/",plot_name_1,".fig"))
 end
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01A", LOGcomment ,0);
 
@@ -184,7 +186,8 @@ set(gca,'fontsize',20)
 
 if f2 == []
 else
-    savefig(f2, strcat(LOGpath,"/average_dIdV.fig"))
+    plot_name_2 = uniqueNamePrompt("average_dIdV","",LOGpath);
+    savefig(f2, strcat(LOGpath,"/",plot_name_2,".fig"))
 end
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
@@ -208,13 +211,15 @@ else
     xlabel('V','fontsize', 20)
     ylabel('I(V) (nA)','fontsize', 20);
     title("Avg I(V) for bwd and fwd");
-
-    savefig(strcat(LOGpath,"/foreward_vs_backward_IV.fig"))
+    
+    plot_name_3 = uniqueNamePrompt("foreward_vs_backward_IV","",LOGpath);
+    savefig(strcat(LOGpath,"/",plot_name_3,".fig"))
 end
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 %create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "average_IV+average_dIdV+foreward_vs_backward_IV");
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2, "+", plot_name_3));
+clear plot_name_1 plot_name_2 plot_name_3;
 
 %% VS02A Visualize-Spectrum-02-A;
 % This section of the code opens a GUI that allows you to click
@@ -247,7 +252,8 @@ savefig(strcat(LOGpath,"/",plotname,".fig"))
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plotname);
 clear plotname;
 
-%% VS03A Visualize-Spectrum-03-A; circular masking
+%% VS03A Visualize-Spectrum-03-A; circular masking; 
+% Edited by Jisun Kim Oct 2023
 % This section of code creates a circular mask of radius R around a
 % clicked point. It then plots the average dI/dV on that point. The user may toggle R and energy slice.
 %
@@ -261,8 +267,11 @@ imageV = 0.0055;
 radius = 3;
 [circular_mask, Num_in_mask, LOGcomment] = gridMaskPoint(didv, V_reduced, imageV, radius);
 
-savefig(strcat(LOGpath,"/circular_mask_position.fig"))
+plot_name = uniqueNamePrompt("circular_mask_position","a",LOGpath);
+savefig(strcat(LOGpath,"/",plot_name,".fig"))
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+clear plot_name;
 
 %% VT01A Visualize-Topo-01-A;
 % This section of code takes a slice of dI/dV at certain bias,defined by the user, and saves it.
