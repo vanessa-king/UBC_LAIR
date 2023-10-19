@@ -70,12 +70,12 @@ folder = uigetdir();
 
 
 % stamp_project is the filename leader and takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--';
-stamp_project = '20210308-124244_CaPt--STM_Spectroscopy--'; 
+stamp_project = 'test'; 
 
 % set the grid I(V) file number
-grid_number = '108_1';
+grid_number = '002';
 % set the z-file (aka topo) image number
-img_number = '54_1'; 
+img_number = '311'; 
 % points/sweep used in the grid measurement
 pointsPerSweep = 500;
 % T-raster used in the grid measurement
@@ -92,7 +92,7 @@ LOGcomment = "Initializing log file";
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01A", LOGcomment, 1);
 
 %% LG01A Load-Grid-01-A; load grid 
-% This section of code loads the files called above (grid_number and img_number),
+% This section of code loads the files called above (grid_number and img_number)
 
 avg_forward_and_backward = false;
 [grid,LOGcomment] = gridLoadDataUpward_separate(folder,stamp_project,img_number,grid_number,avg_forward_and_backward); % Taking data Upward
@@ -127,8 +127,11 @@ if (~avg_forward_and_backward)
     [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,time,'grid.I_Backward', 'time');
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 end
-%% PC01A Processing-Correcting-01-A;
-% This section of code will do a vertical shift that brings the current at zero bias to zero.
+%% PC01A Processing-Correcting-01-A;choose to smooth or normalize the IV data. 
+% Edited by: Dong October 2023 
+
+% This section of code will do a vertical shift that brings the current at zero bias to zero, you could also smooth the IV.
+
 C=3E-10;
 smooth=false;
 normalize=true;
