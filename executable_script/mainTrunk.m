@@ -37,7 +37,10 @@
     % funA() -> logUsedBlocks(... funA ...) -> saveUsedBlocksLog(... FigA)
     % funB() -> logUsedBlocks(... funB ...) -> saveUsedBlocksLog(... FigB)
 
-    % ToDo name plots using uniqueNamePrompt.m
+    % If a figure, ... is supposed to be saved use the uniqueNamePrompt()
+    % function to give it a default name. It automatically allows the user
+    % to overwrite the name by the response to the promtp. If a file of the
+    % same name already exists a 3 digit running number is appended.
 %% Block List
     % LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
     % LG01A Load-Grid-01-A; load grid 
