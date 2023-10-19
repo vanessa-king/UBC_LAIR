@@ -45,13 +45,13 @@
     % LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
     % LG01A Load-Grid-01-A; load grid 
     % LG01B Load-Grid-01-B; load grid and topo from Nanonis
-    % PA01A Processing-Averaging-01-A; moving average
+    % PA01A Processing-Averaging-01-A; generates time axis and applies moving-average smoothing to dI/dV
     % PC01A Processing-Correcting-01-A;
     % PC02A Processing-Correcting-02-A
     % VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them
     % VS02A Visualize-Spectrum-02-A;     
     % VS03A Visualize-Spectrum-03-A; circular masking
-    % VT01A Visualize-Topo-01-A
+    % VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
 
 
 %% LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
@@ -106,15 +106,19 @@ avg_forward_and_backward = true;
 [grid,LOGcomment] = pythonDataToGrid(folder, stamp_project, grid_number, img_number, topoDirection);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01B", LOGcomment ,0);
 
-%% PA01A Processing-Averaging-01-A; moving average
-% James is working on this, needs to save plot names in the log file
-% This section of code first gets a time axis, to eventually plot against I(v) or di/dv.
-% Second, it applies moving-average smoothing to the di/dv data vs time.
+%% PA01A Processing-Averaging-01-A; generates time axis and applies moving-average smoothing to dI/dV
+%Edited by James October 2023
 
+% This section carries out two primary tasks:
+% 1. Computes a time axis to enable plotting against I(V) or dI/dV.
+% 2. Applies moving-average smoothing to the dI/dV data with respect to time.
+
+%1. Compute a time axis to enable plotting against I(V) or dI/dV.
 [time,LOGcomment] = getTimeAxis(pointsPerSweep, Traster);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01A", LOGcomment ,0);
 
-[grid.I, LOGcomment] = gridSmooth(grid.I, time, 'grid.I', 'time'); % requires curve fitting toolbox
+%2. Apply moving-average smoothing to the dI/dV data with respect to time.
+[grid.I, LOGcomment] = gridSmooth(grid.I, time, 'grid.I', 'time');
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 if (~avg_forward_and_backward)
@@ -122,10 +126,7 @@ if (~avg_forward_and_backward)
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0); 
     [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,time,'grid.I_Backward', 'time');
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-   
 end
-
-
 %% PC01A Processing-Correcting-01-A;
 % This section of code will do a vertical shift that brings the current at zero bias to zero.
 C=3E-10;
@@ -276,8 +277,18 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
 clear plot_name;
 
-%% VT01A Visualize-Topo-01-A;
-% This section of code takes a slice of dI/dV at certain bias,defined by the user, and saves it.
+%% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
+%Edited by James October 2023
+
+% This section of code takes a slice of dI/dV at certain bias, defined by the user, and saves it.
+
+% This section visualizes a slice of dI/dV data at a user-defined bias and saves it. It also provides functionality to:
+% 1. Prompt the user for the bias of interest and a name for the generated plot.
+% 2. Convert the provided plot name to a cell array format for further processing.
+% 3. Generate and save the slice plot, naming it based on the user input and other metadata.
+% 4. Log the actions taken using the provided log blocks.
+% 5. Compute the average of the dI/dV spectra within a designated area, specified by a circular mask.
+% 6. Plot and save the averaged dI/dV spectra, and update the logs accordingly.
 
 % Ask the user to enter the bias of interest and plot name
 bias_of_interest = input("Enter the bias of interest: ");
