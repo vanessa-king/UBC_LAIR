@@ -91,6 +91,48 @@ LOGfile = strcat(stamp_project,"_grdNr_",grid_number,"_imgNr_",img_number,"_PpS_
 LOGcomment = "Initializing log file";
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01A", LOGcomment, 1);
 
+%% LI01B Load-Initialize-01-B; Initializing the log file and choosing the data
+
+% This section of code specifies the data paths, and files to be  
+% analyzed. The log file is initialized based on the given values. 
+
+% Markus work in progress!
+
+%select data
+[filePath, fileName, fileExt] = selectData();
+
+%section on getting file specific parameters
+%   not sure how to do this! 
+%   might be read out of header when the file is loaded?
+
+
+
+% everything below covers logging the selected data and 
+
+%select LOG file location
+LOGpath = setLOGpath(filePath,1);
+%set log file name
+LOGfile = fileName; %Note logUsedBlocks() appends '_LOGfile.txt' 
+
+%initialize LOG file & log name and directory
+LOGcomment = "Initializing log file";
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01A", LOGcomment, 1);
+LOGcomment = strcat("LOGfile = ", LOGfile,"_LOGfile.txt");
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+LOGcomment = strcat("LOGpath = ", LOGpath);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+%log selected data
+LOGcomment = "Selected data file:";
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+LOGcomment = strcat("filePath = ", filePath);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+LOGcomment = strcat("fileName = ", fileName);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+LOGcomment = strcat("fileExt = ", fileExt);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+
 %% LG01A Load-Grid-01-A; load grid 
 % This section of code loads the files called above (grid_number and img_number)
 
