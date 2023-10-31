@@ -73,16 +73,9 @@ stamp_project = '20210308-124244_CaPt--STM_Spectroscopy--';
 
 % set the grid I(V) file number
 grid_number = '108_1';
+
 % set the z-file (aka topo) image number
-
-img_number = '54_1';
-% points/sweep used in the grid measurement
-pointsPerSweep = 500;
-% T-raster used in the grid measurement
-Traster = 11.33 * 10^(-3); 
-
 img_number = '54_1'; 
-
 
 %set LOGfolder and LOGfile 
 %*must not be changed during an iteration of data processing!
@@ -315,15 +308,37 @@ clear plotname;
 % plots di/dv at the specified energy (thrid input) and allows user to
 % click on a point with a mask of radius R (fourth input)
 imageV = 0.0055;
-radius = 3;
+radius = 2;
 [circular_mask, Num_in_mask, LOGcomment] = gridMaskPoint(didv, V_reduced, imageV, radius);
 
-plot_name = uniqueNamePrompt("circular_mask_position","",LOGpath);
-savefig(strcat(LOGpath,"/",plot_name,".fig"))
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
+plot_name_1 = uniqueNamePrompt("circular_mask_position","",LOGpath);
+savefig(strcat(LOGpath,"/",plot_name_1,".fig"))
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_1));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
-clear plot_name;
+
+% Compute the average dI/dV spectra in the selected area
+[~, mask_averaged_didv, LOGcomment] = gridAvgMask(didv, circular_mask);
+
+% Generate the plot
+figure; 
+set(gca,'DefaultLineLineWidth',2)
+set(gca,'FontSize',20)
+plot(V_reduced, mask_averaged_didv,'b');  
+ylabel('dI/dV [a.u.]','fontsize', 20)
+xlabel('V','fontsize', 20)
+xticks([-0.04 -0.02 0 0.02 0.04])
+xlim([-0.05, 0.05])
+ylim([0, 4E-9])
+
+% Naming and saving the second figure
+plot_name_2 = uniqueNamePrompt("mask_averaged_didv", "", LOGpath);
+savefig(strcat(LOGpath, "/", plot_name_2, ".fig"));
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_2));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+% Create copy of the log corresponding to the saved figures
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2));
+clear plot_name_1 plot_name_2;
 
 %% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
 % Edited by James October 2023
@@ -333,8 +348,6 @@ clear plot_name;
 % 1. Prompt the user for the bias of interest.
 % 2. Generate and save the slice plot with appropriate naming.
 % 3. Log actions using provided log blocks.
-% 4. Compute average dI/dV spectra within a designated area (circular mask).
-% 5. Plot and save the averaged dI/dV spectra, updating logs accordingly.
 
 % Ask the user to enter the bias of interest
 bias_of_interest = input("Enter the bias of interest: ");
@@ -349,27 +362,9 @@ plot_name_cell = {uniqueNamePrompt("bias_slice_" + bias_str, "", LOGpath)};
 % Naming and saving the first figure
 filename = sprintf('%s/%s.fig', LOGpath, plot_name_cell{1});
 savefig(filename);
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_cell{1}));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT01A", LOGcomment, 0);
 
-% Compute the average dI/dV spectra in the selected area
-[~, mask_averaged_didv, LOGcomment] = gridAvgMask(didv, circular_mask);
-
-% Generate the second plot
-figure; 
-set(gca,'DefaultLineLineWidth',2)
-set(gca,'FontSize',20)
-plot(V_reduced, mask_averaged_didv,'b');  
-ylabel('dI/dV [a.u.]','fontsize', 20)
-xlabel('V','fontsize', 20)
-xticks([-0.04 -0.02 0 0.02 0.04])
-xlim([-0.05, 0.05])
-ylim([0, 4E-9])
-
-% Naming and saving the second figure
-plot_name_2 = uniqueNamePrompt("mask_averaged_didv", "", LOGpath);
-savefig(strcat(LOGpath, "/", plot_name_2, ".fig"));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
-
 % Create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_cell{1}, "+", plot_name_2));
-clear plot_name_cell plot_name_2;
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name_cell{1});
+clear plot_name_cell;
