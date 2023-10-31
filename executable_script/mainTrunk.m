@@ -45,7 +45,7 @@
     % LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
     % LG01A Load-Grid-01-A; load grid 
     % LG01B Load-Grid-01-B; load grid and topo from Nanonis
-    % PA01A Processing-Averaging-01-A; generates time axis and applies moving-average smoothing to dI/dV
+    % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
     % PC01A Processing-Correcting-01-A;
     % PC02A Processing-Correcting-02-A
     % VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them
@@ -74,11 +74,15 @@ stamp_project = '20210308-124244_CaPt--STM_Spectroscopy--';
 % set the grid I(V) file number
 grid_number = '108_1';
 % set the z-file (aka topo) image number
+
 img_number = '54_1';
 % points/sweep used in the grid measurement
 pointsPerSweep = 500;
 % T-raster used in the grid measurement
 Traster = 11.33 * 10^(-3); 
+
+img_number = '54_1'; 
+
 
 %set LOGfolder and LOGfile 
 %*must not be changed during an iteration of data processing!
@@ -86,7 +90,7 @@ Traster = 11.33 * 10^(-3);
 %only one topo file with uigetfile it automatically appends '_LOGfile' to the
 %fiel name given.
 LOGpath = folder;
-LOGfile = strcat(stamp_project,"_grdNr_",grid_number,"_imgNr_",img_number,"_PpS_",num2str(pointsPerSweep),"_Traster_",num2str(Traster));
+LOGfile = strcat(stamp_project,"_grdNr_",grid_number,"_imgNr_",img_number,"_PpS_");
 LOGcomment = "Initializing log file";
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01A", LOGcomment, 1);
 
@@ -147,25 +151,21 @@ avg_forward_and_backward = true;
 [grid,LOGcomment] = pythonDataToGrid(folder, stamp_project, grid_number, img_number, topoDirection);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01B", LOGcomment ,0);
 
-%% PA01A Processing-Averaging-01-A; generates time axis and applies moving-average smoothing to dI/dV
-%Edited by James October 2023
+%% PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
+%Edited by James October 2023; Jisun October 2023
 
-% This section carries out two primary tasks:
-% 1. Computes a time axis to enable plotting against I(V) or dI/dV.
-% 2. Applies moving-average smoothing to the dI/dV data with respect to time.
+% This section of code applies moving-average smoothing to the I-V data of the grid. 
 
-%1. Compute a time axis to enable plotting against I(V) or dI/dV.
-[time,LOGcomment] = getTimeAxis(pointsPerSweep, Traster);
+% span is the size of the moving window. For example, 3 is for nearest neighbor
+% averaging; 5 is for next nearast neighbor averaging.
+span = 3;
+[grid.I, LOGcomment] = gridSmooth(grid.I,'grid.I',span);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01A", LOGcomment ,0);
 
-%2. Apply moving-average smoothing to the dI/dV data with respect to time.
-[grid.I, LOGcomment] = gridSmooth(grid.I, time, 'grid.I', 'time');
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
 if (~avg_forward_and_backward)
-    [grid.I_Forward,LOGcomment] = gridSmooth(grid.I_Forward,time,'grid.I_Forward', 'time');
+    [grid.I_Forward,LOGcomment] = gridSmooth(grid.I_Forward,'grid.I_Forward',span);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0); 
-    [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,time,'grid.I_Backward', 'time');
+    [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,'grid.I_Backward',span);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 end
 %% PC01A Processing-Correcting-01-A;choose to smooth or normalize the IV data. 
@@ -221,6 +221,7 @@ else
     plot_name_1 = uniqueNamePrompt("average_IV","",LOGpath);
     savefig(f1, strcat(LOGpath,"/",plot_name_1,".fig"))
 end
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_1));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01A", LOGcomment ,0);
 
 % This makes the averaged "dI/dV versus V" plot
@@ -237,6 +238,7 @@ else
     plot_name_2 = uniqueNamePrompt("average_dIdV","",LOGpath);
     savefig(f2, strcat(LOGpath,"/",plot_name_2,".fig"))
 end
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_2));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 % This makes the averaged "I versus V" plot for forward and backward sweeps separately
@@ -263,6 +265,7 @@ else
     plot_name_3 = uniqueNamePrompt("forward_vs_backward_IV","",LOGpath);
     savefig(strcat(LOGpath,"/",plot_name_3,".fig"))
 end
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_3));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 %create copy of the log corresponding to the saved figures
@@ -315,8 +318,9 @@ imageV = 0.0055;
 radius = 3;
 [circular_mask, Num_in_mask, LOGcomment] = gridMaskPoint(didv, V_reduced, imageV, radius);
 
-plot_name = uniqueNamePrompt("circular_mask_position","a",LOGpath);
+plot_name = uniqueNamePrompt("circular_mask_position","",LOGpath);
 savefig(strcat(LOGpath,"/",plot_name,".fig"))
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
 clear plot_name;

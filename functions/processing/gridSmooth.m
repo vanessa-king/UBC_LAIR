@@ -1,26 +1,28 @@
-function [smoothed_data, comment] = gridSmooth(data, time, data_name, time_name)
-% GRIDSMOOTH Applies moving-average smoothing on data vs. time.
-%   data = data to be smoothed (3D matrix). Size n x length(time) x length(time)
-%   time = independent variable axis to plot data against
+function [smoothed_data, comment] = gridSmooth(data, data_name, span)
+%GRIDSMOOTH Applies moving-average smoothing on data.
+%   data = data to be smoothed (3D matrix). 
 %   data_name = a string indicating the name of the data (e.g., 'grid.I')
-%   time_name = a string indicating the name of the time variable (e.g., 'time')
+%   span = the number of data points for calculating the smoothed value
+%   (i.e.the size of the moving window). It needs to be an odd integer. Deafult is 3 (nearest neighbor
+%   averaging) but you can use 5 for next nearest neighbor averaging. Or
+%   higher, if necessary. 
+
 
 % No default values needed here.
 arguments
    data
-   time
-   data_name
-   time_name
+   data_name    {mustBeText}
+   span         =3   
 end
 
 % Generate the comment
-comment = sprintf("gridsmooth(%s: %s, %s: %s)|", data_name, mat2str(size(data)), time_name, mat2str(size(time)));
+comment = sprintf("gridsmooth(%s, %s, %s)|", data_name, mat2str(size(data)),mat2str(span));
 
 smoothed_data = zeros(size(data));
 [~, second_dim, third_dim] = size(data);
 for i = 1:second_dim
     for j = 1:third_dim
-        smoothed_data(:, i, j) = smooth(time, data(:, i, j));
+        smoothed_data(:, i, j) = smooth(data(:, i, j), span);
     end
 end
 
