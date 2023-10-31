@@ -68,14 +68,13 @@
 % load all necessary script directories
 folder = uigetdir();
 
-
 % stamp_project is the filename leader and takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--';
-stamp_project = 'test'; 
+stamp_project = '20210308-124244_CaPt--STM_Spectroscopy--'; 
 
 % set the grid I(V) file number
-grid_number = '002';
+grid_number = '108_1';
 % set the z-file (aka topo) image number
-img_number = '311'; 
+img_number = '54_1';
 % points/sweep used in the grid measurement
 pointsPerSweep = 500;
 % T-raster used in the grid measurement
@@ -137,7 +136,7 @@ smooth=false;
 normalize=true;
 [didv, norm_didv, I_correction, V_reduced, I_offset, LOGcomment] = gridCorrectionNorm(grid, C, smooth, normalize); 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC01A", LOGcomment ,0);
-% why need the farward and backward 
+% why need the forward and backward 
 if (~avg_forward_and_backward)
     gridForward = grid;
     [gridForward.I] = gridForward.I_Forward;
@@ -219,7 +218,7 @@ else
     ylabel('I(V) (nA)','fontsize', 20);
     title("Avg I(V) for bwd and fwd");
     
-    plot_name_3 = uniqueNamePrompt("foreward_vs_backward_IV","",LOGpath);
+    plot_name_3 = uniqueNamePrompt("forward_vs_backward_IV","",LOGpath);
     savefig(strcat(LOGpath,"/",plot_name_3,".fig"))
 end
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
@@ -281,44 +280,35 @@ saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
 clear plot_name;
 
 %% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
-%Edited by James October 2023
+% Edited by James October 2023
 
-% This section of code takes a slice of dI/dV at certain bias, defined by the user, and saves it.
+% This section visualizes a slice of dI/dV data at a user-defined bias. 
+% Features:
+% 1. Prompt the user for the bias of interest.
+% 2. Generate and save the slice plot with appropriate naming.
+% 3. Log actions using provided log blocks.
+% 4. Compute average dI/dV spectra within a designated area (circular mask).
+% 5. Plot and save the averaged dI/dV spectra, updating logs accordingly.
 
-% This section visualizes a slice of dI/dV data at a user-defined bias and saves it. It also provides functionality to:
-% 1. Prompt the user for the bias of interest and a name for the generated plot.
-% 2. Convert the provided plot name to a cell array format for further processing.
-% 3. Generate and save the slice plot, naming it based on the user input and other metadata.
-% 4. Log the actions taken using the provided log blocks.
-% 5. Compute the average of the dI/dV spectra within a designated area, specified by a circular mask.
-% 6. Plot and save the averaged dI/dV spectra, and update the logs accordingly.
-
-% Ask the user to enter the bias of interest and plot name
+% Ask the user to enter the bias of interest
 bias_of_interest = input("Enter the bias of interest: ");
-plot_name = input("Enter the plot name: ", 's');
 
-% Convert the plot name to a cell array
-plot_name_cell = {plot_name};
+% Convert the bias_of_interest to string if it's a number
+bias_str = num2str(bias_of_interest);
 
+% Generate the first plot and return a LOGcomment
+plot_name_cell = {uniqueNamePrompt("bias_slice_" + bias_str, "", LOGpath)};
 [Biases,LOGcomment] = gridPlotSlices(didv, V_reduced, bias_of_interest, plot_name_cell);
 
-%savefig(strcat(LOGpath,"/grid_fullCaPt10-4-8_',stamp_project,'I(V)_32.fig"))
-%WHAT SHOULD WE CALL THIS FIGURE?
-filename = sprintf('%s/grid_fullCaPt10-4-8_%s_grid_%s.fig', LOGpath, stamp_project, grid_number);
+% Naming and saving the first figure
+filename = sprintf('%s/%s.fig', LOGpath, plot_name_cell{1});
 savefig(filename);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT01A", LOGcomment, 0);
 
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT01A", LOGcomment ,0);
-
-%create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "gridPlotSlices");
-
-savefig(strcat(LOGpath,"/circular_mask_average_dIdV.fig"))
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-% takes the average of the dI/dV spectra in the selected area
+% Compute the average dI/dV spectra in the selected area
 [~, mask_averaged_didv, LOGcomment] = gridAvgMask(didv, circular_mask);
 
-% plots the spectra at the spots where the masks were applied
+% Generate the second plot
 figure; 
 set(gca,'DefaultLineLineWidth',2)
 set(gca,'FontSize',20)
@@ -329,8 +319,11 @@ xticks([-0.04 -0.02 0 0.02 0.04])
 xlim([-0.05, 0.05])
 ylim([0, 4E-9])
 
-savefig(strcat(LOGpath,"/mask_averaged_didv.fig"))
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+% Naming and saving the second figure
+plot_name_2 = uniqueNamePrompt("mask_averaged_didv", "", LOGpath);
+savefig(strcat(LOGpath, "/", plot_name_2, ".fig"));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
-%create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "circular_mask_position+mask_averaged_didv");
+% Create copy of the log corresponding to the saved figures
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_cell{1}, "+", plot_name_2));
+clear plot_name_cell plot_name_2;
