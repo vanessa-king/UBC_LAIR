@@ -335,18 +335,12 @@ saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
 clear plot_name;
 
 %% VS03A Visualize-Spectrum-03-A; circular masking; 
-% Edited by Jisun Kim Oct 2023
+% Edited by Jisun Oct 2023
 % This section of code creates a circular mask of radius R around a
 % clicked point. It then plots the average dI/dV on that point. The user may toggle R and energy slice.
-%
-% THIS SECTION IS CURRENTLY STRUCTURED FOR DONOR AND ACCEPTOR ENERGIES, SO
-% WE WILL WANT TO MODIFY THIS ACCORDINGLY.
 
-
-% plots di/dv at the specified energy (thrid input) and allows user to
-% click on a point with a mask of radius R (fourth input)
 imageV = 0.0055;
-radius = 2;
+radius = 3;
 [circular_mask, Num_in_mask, LOGcomment] = gridMaskPoint(didv, V_reduced, imageV, radius);
 
 plot_name_1 = uniqueNamePrompt("circular_mask_position","",LOGpath);
