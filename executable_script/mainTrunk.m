@@ -221,6 +221,7 @@ else
     plot_name_1 = uniqueNamePrompt("average_IV","",LOGpath);
     savefig(f1, strcat(LOGpath,"/",plot_name_1,".fig"))
 end
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_1));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01A", LOGcomment ,0);
 
 % This makes the averaged "dI/dV versus V" plot
@@ -237,6 +238,7 @@ else
     plot_name_2 = uniqueNamePrompt("average_dIdV","",LOGpath);
     savefig(f2, strcat(LOGpath,"/",plot_name_2,".fig"))
 end
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_2));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 % This makes the averaged "I versus V" plot for forward and backward sweeps separately
@@ -263,6 +265,7 @@ else
     plot_name_3 = uniqueNamePrompt("forward_vs_backward_IV","",LOGpath);
     savefig(strcat(LOGpath,"/",plot_name_3,".fig"))
 end
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_3));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 %create copy of the log corresponding to the saved figures
@@ -315,8 +318,9 @@ imageV = 0.0055;
 radius = 3;
 [circular_mask, Num_in_mask, LOGcomment] = gridMaskPoint(didv, V_reduced, imageV, radius);
 
-plot_name = uniqueNamePrompt("circular_mask_position","a",LOGpath);
+plot_name = uniqueNamePrompt("circular_mask_position","",LOGpath);
 savefig(strcat(LOGpath,"/",plot_name,".fig"))
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
 clear plot_name;
