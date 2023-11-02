@@ -47,9 +47,9 @@
     % LG01B Load-Grid-01-B; load grid and topo from Nanonis
     % PA01A Processing-Averaging-01-A; generates time axis and applies moving-average smoothing to dI/dV
     % PC01A Processing-Correcting-01-A;
-    % PC02A Processing-Correcting-02-A
+    % PC02A Processing-Correcting-02-A; correct the grid for drift 
     % VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them
-    % VS02A Visualize-Spectrum-02-A;     
+    % VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
     % VS03A Visualize-Spectrum-03-A; circular masking
     % VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
 
@@ -141,6 +141,7 @@ avg_forward_and_backward = false;
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01A", LOGcomment ,0);
 
 %% LG01B Load-Grid-01-B; load grid and topo from Nanonis
+%Edited by Vanessa summer 2023
 % This section of code loads the files called above if they are Nanonis,
 
 topoDirection='forward';
@@ -194,13 +195,28 @@ if (~avg_forward_and_backward)
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 end    
 
-%% PC02A Processing-Correcting-02-A;
-% This section will correct the grid with the drifting parameter given. 
+%% PC02A Processing-Correcting-02-A; correct the grid for drift 
+% Edited by Vanessa Nov 2023
+% TO DO: have it actually take in two different topos. Make a new block
+% just for loading individual topos without a corresponding grid? 
 
-% need to know the function, talk to Jisun/Jiabin
-% need to modify. 
-%[grid,LOGcomment] = gridDriftCorr(grid, grid.z_img, grid.z_img, 5);
-%LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02A", LOGcomment ,0);
+before = grid.z_img;
+after = grid.z_img;
+theta = 0;
+[grid,LOGcomment] = gridDriftCorrection(grid, before, after, theta);
+
+%ask for plotname:
+plot_name = uniqueNamePrompt("driftCorrected","",LOGpath);
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02A", LOGcomment ,0);
+
+%save the created figures here:
+savefig(strcat(LOGpath,"/",plot_name,".fig"))
+
+%create copy of the log corresponding to the saved figures
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+clear plot_name;
+
 
 %% VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them;
 % Edited by Jisun Kim Oct 2023
@@ -270,13 +286,14 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2, "+", plot_name_3));
 clear plot_name_1 plot_name_2 plot_name_3;
 
-%% VS02A Visualize-Spectrum-02-A;
+%% VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
+% Edited by Vanessa October 2023
 % This section of the code opens a GUI that allows you to click
 % point(s) on a grid and plot the spectra
 %
 % NOTE: IF I DON'T RUN PC01A, THIS SECTION DOESN'T RECOGNIZE V_reduced
 
-imageV = 0.6; %float, Voltage at which to display image
+imageV = 0.6; %float, Voltage at which to display grid slice in no topo is provided
 n=1; %integer, Number of point spectra to plot
 offset=0; %Vertical offset for each point spectra 
 xysmooth=0.0; %float, the standard deviation of a Gaussian for smoothing xy pixels (0 is no smoothing)
@@ -286,20 +303,16 @@ vsmooth=0.0; %float, the standard deviation of a Gaussian for smoothing the volt
 LOGcomment = gridClickForSpectrum(didv, V_reduced, imageV, n, offset, xysmooth, vsmooth, grid);
 
 %ask for plotname:
-plotname = input("Save plot as: ","s");
-if isempty(plotname)
-    plotname = 'clickedSpectrum';
-end
-
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plotname));
+plot_name = uniqueNamePrompt("clickedSpectrum","",LOGpath);
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment ,0);
 
 %save the created figures here:
-savefig(strcat(LOGpath,"/",plotname,".fig"))
+savefig(strcat(LOGpath,"/",plot_name,".fig"))
 
 %create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plotname);
-clear plotname;
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+clear plot_name;
 
 %% VS03A Visualize-Spectrum-03-A; circular masking; 
 % Edited by Jisun Kim Oct 2023
