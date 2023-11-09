@@ -75,7 +75,7 @@ stamp_project = 'test';
 % set the grid I(V) file number
 grid_number = '002';
 % set the z-file (aka topo) image number
-img_number = '311'; 
+img_number = '341'; 
 % points/sweep used in the grid measurement
 pointsPerSweep = 500;
 % T-raster used in the grid measurement
