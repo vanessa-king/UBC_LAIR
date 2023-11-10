@@ -1,0 +1,35 @@
+%Description: 
+% This function generate a normalized didv data set, which requires an offset correction.
+
+function [norm_didv, I_correction, V_reduced, I_offset, comment] = gridNormDerivative(grid, C)
+
+arguments
+    grid
+    C    {mustBeFloat}
+end
+
+comment = sprintf("gridNormDerivative(grid:%s, C=%s)|", mat2str(size(grid)),num2str(C));
+
+V = grid.V; % pick array bias from grid 
+I = grid.I; % pick array I from grid
+V_reduced = V(1:end-1); % purpose: while performing dI/dV the data size get reduced by 1. 
+% You can change the reduced data points from the head or the tail here.
+
+% In any I-V curves, the current should be zero at bias=0 in most cases (there are some exceptions but rare). 
+% However, the real data can have a systematic offset from the instrument. For example, bias output can have a very small 
+% offset (i.e. the controller suppies some mV when the software is set to output 0 V. This can be
+% corrected in the software by carefully checking the output. But if it wasn't corrected before the measurement 
+% there could be an offset). For a proper calculation for a normalized didv this needs to be corrected. 
+I_offset = NaN([size(I,2),size(I,3)]);
+if find(diff(sign(V))) % This "if" statement looks for a sign change in V. 
+    [~,ind] = min(abs(V)); % Here only shows the index position of the minimum value
+    I_correction = NaN(size(I)); % Build up a NaN matrix (201 120 120)
+    for kx = 1:size(I,2) %here kx=1:120
+        for ky = 1:size(I,3) %here ky=1:120
+            I_correction(:,kx,ky) = I(:,kx,ky)-I(ind,kx,ky); %here to find the minimum array of V
+            I_offset(kx,ky) = I(ind,kx,ky);
+        end
+    end
+else
+
+I_correction = I;
