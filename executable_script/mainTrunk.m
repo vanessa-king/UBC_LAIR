@@ -43,6 +43,7 @@
     % same name already exists a 3 digit running number is appended.
 %% Block List
     % LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
+    % LI01B Load-Initialize-01-B; Initializing the log file and UI select data
     % LG01A Load-Grid-01-A; load grid 
     % LG01B Load-Grid-01-B; load grid and topo from Nanonis
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
@@ -55,6 +56,8 @@
 
 
 %% LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
+
+%   Edited by Markus, August 2023
 
 % This section of code specifies the data paths, and files to be  
 % analyzed. The log file is initialized based on the given values. 
@@ -87,23 +90,45 @@ LOGfile = strcat(stamp_project,"_grdNr_",grid_number,"_imgNr_",img_number,"_PpS_
 LOGcomment = "Initializing log file";
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01A", LOGcomment, 1);
 
-%% LI01B Load-Initialize-01-B; Initializing the log file and choosing the data
+%% LI01B Load-Initialize-01-B; Initialize log file, UI select data, load data
 
-% This section of code specifies the data paths, and files to be  
-% analyzed. The log file is initialized based on the given values. 
+%   Edited by Markus, October 2023
 
-% Markus work in progress!
+% This section of code specifies the data paths, and files to be analyzed. 
+% The log file is initialized based on the given file names and paths.
+% Based on the file extension the appropriate load function is used. 
+
+% work in progress!
 
 %select data
 [filePath, fileName, fileExt] = selectData();
 
-%section on getting file specific parameters
+%section on loading the files and getting file specific parameters 
 %   not sure how to do this! 
 %   might be read out of header when the file is loaded?
 
+switch fileExt
+    case '.flat'
+        %Load flat file -> Matrix 
+        %requires differentiating tyoe of data (IV grid, topo, ...)
+    case '.3ds'
+        %load 3ds file -> Nanonis grid
+    case '.sxm'
+        %load smx file -> Nanonis topo
+    case '.dat'
+        %load dat file -> Nanonis point spectrum
+    case '.mat'
+        %load .mat file -> Matlab workspace
+        load(strcat(filePath,fileName,fileExt));
+        %Note this option allows you to load a previously saved workspace.  
+        %Only use it if you saved a workspace created by loading data via
+        %this block before!
+    otherwise
+        disp("No file of appropriate data type selected")
+end
 
 
-% everything below covers logging the selected data and 
+% everything below covers logging the selected data
 
 %select LOG file location
 LOGpath = setLOGpath(filePath,1);
@@ -112,7 +137,7 @@ LOGfile = fileName; %Note logUsedBlocks() appends '_LOGfile.txt'
 
 %initialize LOG file & log name and directory
 LOGcomment = "Initializing log file";
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01A", LOGcomment, 1);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01B", LOGcomment, 1);
 LOGcomment = strcat("LOGfile = ", LOGfile,"_LOGfile.txt");
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 LOGcomment = strcat("LOGpath = ", LOGpath);
