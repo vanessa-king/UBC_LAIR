@@ -1,0 +1,2 @@
+DATE and TIME         BLOCK   COMMENT
+16-Nov-2023 14:34:00  LI01A   Initializing log file

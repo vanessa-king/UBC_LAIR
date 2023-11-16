@@ -77,7 +77,7 @@ grid_number = '002';
 % set the z-file (aka topo) image number
 img_number = '341'; 
 % points/sweep used in the grid measurement
-pointsPerSweep = 500;
+pointsPerSweep = 81;
 % T-raster used in the grid measurement
 Traster = 11.33 * 10^(-3); 
 
