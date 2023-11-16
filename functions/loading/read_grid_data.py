@@ -36,9 +36,11 @@ x_range_nm = x_range*1e9 # converting range from m to nm
 y_range_nm = y_range*1e9 # converting range from m to nm
 
 [x_resolution, y_resolution] = full_sxm.header['scan_pixels']
-
 x_img = np.linspace(0.0,x_range_nm, num=x_resolution)
 y_img = np.linspace(0.0,y_range_nm, num=y_resolution)
+
+# grabbing the center position of the sxm image 
+[x_position_img, y_position_img] = full_sxm.header['scan_offset']
 
 # making z_img. requires user input for whether to take forward or backward scan.
 topo_direction = sys.argv[3]
@@ -61,7 +63,7 @@ full_3ds = nap.read.Grid(sys.argv[1])
 #X(m) experimental parameter, shape (num_x, num_y)
 x = full_3ds.signals['params'][:, :, 2]
 #Convert from m to nm
-x = x*1e9
+x = x*1e9 
 
 #Y(m) experimental parameter, shape (num_x, num_y)
 y = full_3ds.signals['params'][:, :, 3]
@@ -75,4 +77,4 @@ V = full_3ds.signals['sweep_signal']
 I = full_3ds.signals[full_3ds.header['channels'][0]]
 I = I*1e9 #Not a unit conversion, but necessary for transfer into MATLAB due to memory issues.
 
-gridArrays = [x, y, V, I, x_img, y_img, z_img]
+gridArrays = [x, y, V, I, x_img, y_img, z_img, x_position_img, y_position_img]
