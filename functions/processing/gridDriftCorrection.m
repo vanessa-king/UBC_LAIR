@@ -1,4 +1,3 @@
-function [gridCorrected,comment] = gridDriftCorrection(grid, before, after, theta)
 %   Correct for drift over time in a grid map.
 %   Calculates the drift from before and after topography images and skews
 %   the iv grid to compensate. You can rotate by angle theta (deg) if you
@@ -12,33 +11,39 @@ function [gridCorrected,comment] = gridDriftCorrection(grid, before, after, thet
 %   Output:
 %   - gridCorrected: structure with same fields as grd, but with drift corrected
 %
-%   Note that skew results in larger grid. Extra elements are left as 0.
+%   Note that skew results in a larger grid. Extra elements are left as 0.
 %   The x,y scale for the topography and grid are extended linearly to
 %   accomodate.
 
 % To be edited: make before and after topo images, instead of grid
 % structures 
+function [gridCorrected,comment] = gridDriftCorrection(grid, before, after, theta)
 
-%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)"  
+arguments
+    grid          
+    before
+    after      
+    theta = 0
+end
+
+%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
+%Never plot data (e.g. the whole grid) in the comment, only plot the values
+%('=<VARn_value>') of variables that decide/affect how the function
+%processes data (e.g. order of fit, ...) 
 %Note convert all <VARn_value> to strings; 
-formatSpec = "gridDriftCorr(grid: %s, before: %s, after: %s, theta=%.3g degrees)|";
+formatSpec = "gridDriftCorrection(grid: %s, before: %s, after: %s, theta=%.3g degrees)|";
 comment = sprintf(formatSpec,mat2str(size(grid)), mat2str(size(before)), mat2str(size(after)), theta);
 
-% segment the image and track the motion
+%regular function processing:
+
+% segment the image
 level = graythresh(mat2gray(before.z_img));
-bef_img = double(imbinarize(mat2gray(before.z_img),level));
-aft_img = double(imbinarize(mat2gray(after.z_img),level));
+before_image = double(imbinarize(mat2gray(before.z_img),level));
+after_image = double(imbinarize(mat2gray(after.z_img),level));
 
-bef = regionprops(bef_img,'centroid');
-bef_c = bef.Centroid;
-aft = regionprops(aft_img,'centroid');
-aft_c = aft.Centroid;
-
-pdist = aft_c - bef_c; 
-t = deg2rad(theta);
-
+%blend the before and after image together and plot
 halphablend = vision.AlphaBlender;
-img12 = halphablend(aft_img,bef_img);
+img12 = halphablend(after_image,before_image);
 figure;
 hold on;
 title('Before and after scans, segmented')
@@ -47,18 +52,27 @@ axis image;
 axis xy;
 hold off;
 
-% linear shear to compensate drift
-z = grd.z_img;
-xshift = -pdist(1)/size(z,1);
-yshift = -pdist(2)/size(z,2);
-tform = affine2d([cos(t)-yshift*sin(t), sin(t)+yshift*cos(t), 0; ...
-    xshift*cos(t)-sin(t), xshift*sin(t)+cos(t), 0; ...
+%identify 'objects' in the images
+before = regionprops(before_image,'centroid');
+before_objects = before.Centroid;
+after = regionprops(after_image,'centroid');
+after_objects = after.Centroid;
+
+%calculate linear shear to compensate drift
+drift = after_objects - before_objects; 
+theta = deg2rad(theta);
+
+z = grid.z_img;
+x_drift = -drift(1)/size(z,1);
+y_drift = -drift(2)/size(z,2);
+transform = affine2d([cos(theta)-y_drift*sin(theta), sin(theta)+y_drift*cos(theta), 0; ...
+    x_drift*cos(theta)-sin(theta), x_drift*sin(theta)+cos(theta), 0; ...
     0, 0, 1]);
-z_img = imwarp(z,tform);
-temp = imwarp(squeeze(grid.iv(1,:,:)),tform);
+z_img = imwarp(z,transform);
+temp = imwarp(squeeze(grid.iv(1,:,:)),transform);
 iv = zeros(length(grid.V),size(temp,1), size(temp,2));
 for i = 1:length(grid.V)
-    iv(i,:,:) = imwarp(squeeze(grid.iv(i,:,:)),tform);
+    iv(i,:,:) = imwarp(squeeze(grid.iv(i,:,:)),transform);
 end
 
 % redefine x and y axis, distances should be preserved

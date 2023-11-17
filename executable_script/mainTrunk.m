@@ -43,18 +43,21 @@
     % same name already exists a 3 digit running number is appended.
 %% Block List
     % LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
+    % LI01B Load-Initialize-01-B; Initializing the log file and UI select data
     % LG01A Load-Grid-01-A; load grid 
     % LG01B Load-Grid-01-B; load grid and topo from Nanonis
-    % PA01A Processing-Averaging-01-A; generates time axis and applies moving-average smoothing to dI/dV
+    % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
     % PC01A Processing-Correcting-01-A;
-    % PC02A Processing-Correcting-02-A
+    % PC02A Processing-Correcting-02-A; correct the grid for drift 
     % VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them
-    % VS02A Visualize-Spectrum-02-A;     
+    % VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
     % VS03A Visualize-Spectrum-03-A; circular masking
     % VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
 
 
 %% LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
+
+%   Edited by Markus, August 2023
 
 % This section of code specifies the data paths, and files to be  
 % analyzed. The log file is initialized based on the given values. 
@@ -68,18 +71,14 @@
 % load all necessary script directories
 folder = uigetdir();
 
-
 % stamp_project is the filename leader and takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--';
-stamp_project = 'test'; 
+stamp_project = '20210308-124244_CaPt--STM_Spectroscopy--'; 
 
 % set the grid I(V) file number
-grid_number = '002';
+grid_number = '108_1';
+
 % set the z-file (aka topo) image number
-img_number = '341'; 
-% points/sweep used in the grid measurement
-pointsPerSweep = 81;
-% T-raster used in the grid measurement
-Traster = 11.33 * 10^(-3); 
+img_number = '54_1'; 
 
 %set LOGfolder and LOGfile 
 %*must not be changed during an iteration of data processing!
@@ -87,9 +86,73 @@ Traster = 11.33 * 10^(-3);
 %only one topo file with uigetfile it automatically appends '_LOGfile' to the
 %fiel name given.
 LOGpath = folder;
-LOGfile = strcat(stamp_project,"_grdNr_",grid_number,"_imgNr_",img_number,"_PpS_",num2str(pointsPerSweep),"_Traster_",num2str(Traster));
+LOGfile = strcat(stamp_project,"_grdNr_",grid_number,"_imgNr_",img_number,"_PpS_");
 LOGcomment = "Initializing log file";
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01A", LOGcomment, 1);
+
+%% LI01B Load-Initialize-01-B; Initialize log file, UI select data, load data
+
+%   Edited by Markus, October 2023
+
+% This section of code specifies the data paths, and files to be analyzed. 
+% The log file is initialized based on the given file names and paths.
+% Based on the file extension the appropriate load function is used. 
+
+% work in progress!
+
+%select data
+[filePath, fileName, fileExt] = selectData();
+
+%section on loading the files and getting file specific parameters 
+%   not sure how to do this! 
+%   might be read out of header when the file is loaded?
+
+switch fileExt
+    case '.flat'
+        %Load flat file -> Matrix 
+        %requires differentiating tyoe of data (IV grid, topo, ...)
+    case '.3ds'
+        %load 3ds file -> Nanonis grid
+    case '.sxm'
+        %load smx file -> Nanonis topo
+    case '.dat'
+        %load dat file -> Nanonis point spectrum
+    case '.mat'
+        %load .mat file -> Matlab workspace
+        load(strcat(filePath,fileName,fileExt));
+        %Note this option allows you to load a previously saved workspace.  
+        %Only use it if you saved a workspace created by loading data via
+        %this block before!
+    otherwise
+        disp("No file of appropriate data type selected")
+end
+
+
+% everything below covers logging the selected data
+
+%select LOG file location
+LOGpath = setLOGpath(filePath,1);
+%set log file name
+LOGfile = fileName; %Note logUsedBlocks() appends '_LOGfile.txt' 
+
+%initialize LOG file & log name and directory
+LOGcomment = "Initializing log file";
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01B", LOGcomment, 1);
+LOGcomment = strcat("LOGfile = ", LOGfile,"_LOGfile.txt");
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+LOGcomment = strcat("LOGpath = ", LOGpath);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+%log selected data
+LOGcomment = "Selected data file:";
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+LOGcomment = strcat("filePath = ", filePath);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+LOGcomment = strcat("fileName = ", fileName);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+LOGcomment = strcat("fileExt = ", fileExt);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
 
 %% LG01A Load-Grid-01-A; load grid 
 % This section of code loads the files called above (grid_number and img_number)
@@ -99,6 +162,7 @@ avg_forward_and_backward = false;
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01A", LOGcomment ,0);
 
 %% LG01B Load-Grid-01-B; load grid and topo from Nanonis
+%Edited by Vanessa summer 2023
 % This section of code loads the files called above if they are Nanonis,
 
 topoDirection='forward';
@@ -106,25 +170,21 @@ avg_forward_and_backward = true;
 [grid,LOGcomment] = pythonDataToGrid(folder, stamp_project, grid_number, img_number, topoDirection);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01B", LOGcomment ,0);
 
-%% PA01A Processing-Averaging-01-A; generates time axis and applies moving-average smoothing to dI/dV
-%Edited by James October 2023
+%% PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
+%Edited by James October 2023; Jisun October 2023
 
-% This section carries out two primary tasks:
-% 1. Computes a time axis to enable plotting against I(V) or dI/dV.
-% 2. Applies moving-average smoothing to the dI/dV data with respect to time.
+% This section of code applies moving-average smoothing to the I-V data of the grid. 
 
-%1. Compute a time axis to enable plotting against I(V) or dI/dV.
-[time,LOGcomment] = getTimeAxis(pointsPerSweep, Traster);
+% span is the size of the moving window. For example, 3 is for nearest neighbor
+% averaging; 5 is for next nearast neighbor averaging.
+span = 3;
+[grid.I, LOGcomment] = gridSmooth(grid.I,'grid.I',span);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01A", LOGcomment ,0);
 
-%2. Apply moving-average smoothing to the dI/dV data with respect to time.
-[grid.I, LOGcomment] = gridSmooth(grid.I, time, 'grid.I', 'time');
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
 if (~avg_forward_and_backward)
-    [grid.I_Forward,LOGcomment] = gridSmooth(grid.I_Forward,time,'grid.I_Forward', 'time');
+    [grid.I_Forward,LOGcomment] = gridSmooth(grid.I_Forward,'grid.I_Forward',span);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0); 
-    [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,time,'grid.I_Backward', 'time');
+    [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,'grid.I_Backward',span);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 end
 %% PC01A Processing-Correcting-01-A;choose to smooth or normalize the IV data. 
@@ -137,7 +197,7 @@ smooth=false;
 normalize=true;
 [didv, norm_didv, I_correction, V_reduced, I_offset, LOGcomment] = gridCorrectionNorm(grid, C, smooth, normalize); 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC01A", LOGcomment ,0);
-% why need the farward and backward 
+% why need the forward and backward 
 if (~avg_forward_and_backward)
     gridForward = grid;
     [gridForward.I] = gridForward.I_Forward;
@@ -152,13 +212,28 @@ if (~avg_forward_and_backward)
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 end    
 
-%% PC02A Processing-Correcting-02-A;
-% This section will correct the grid with the drifting parameter given. 
+%% PC02A Processing-Correcting-02-A; correct the grid for drift 
+% Edited by Vanessa Nov 2023
+% TO DO: have it actually take in two different topos. Make a new block
+% just for loading individual topos without a corresponding grid? 
 
-% need to know the function, talk to Jisun/Jiabin
-% need to modify. 
-%[grid,LOGcomment] = gridDriftCorr(grid, grid.z_img, grid.z_img, 5);
-%LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02A", LOGcomment ,0);
+before = grid.z_img;
+after = grid.z_img;
+theta = 0;
+[grid,LOGcomment] = gridDriftCorrection(grid, before, after, theta);
+
+%ask for plotname:
+plot_name = uniqueNamePrompt("driftCorrected","",LOGpath);
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02A", LOGcomment ,0);
+
+%save the created figures here:
+savefig(strcat(LOGpath,"/",plot_name,".fig"))
+
+%create copy of the log corresponding to the saved figures
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+clear plot_name;
+
 
 %% VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them;
 % Edited by Jisun Kim Oct 2023
@@ -180,6 +255,7 @@ else
     plot_name_1 = uniqueNamePrompt("average_IV","",LOGpath);
     savefig(f1, strcat(LOGpath,"/",plot_name_1,".fig"))
 end
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_1));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01A", LOGcomment ,0);
 
 % This makes the averaged "dI/dV versus V" plot
@@ -196,6 +272,7 @@ else
     plot_name_2 = uniqueNamePrompt("average_dIdV","",LOGpath);
     savefig(f2, strcat(LOGpath,"/",plot_name_2,".fig"))
 end
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_2));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 % This makes the averaged "I versus V" plot for forward and backward sweeps separately
@@ -219,22 +296,24 @@ else
     ylabel('I(V) (nA)','fontsize', 20);
     title("Avg I(V) for bwd and fwd");
     
-    plot_name_3 = uniqueNamePrompt("foreward_vs_backward_IV","",LOGpath);
+    plot_name_3 = uniqueNamePrompt("forward_vs_backward_IV","",LOGpath);
     savefig(strcat(LOGpath,"/",plot_name_3,".fig"))
 end
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_3));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 %create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2, "+", plot_name_3));
 clear plot_name_1 plot_name_2 plot_name_3;
 
-%% VS02A Visualize-Spectrum-02-A;
+%% VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
+% Edited by Vanessa October 2023
 % This section of the code opens a GUI that allows you to click
 % point(s) on a grid and plot the spectra
 %
 % NOTE: IF I DON'T RUN PC01A, THIS SECTION DOESN'T RECOGNIZE V_reduced
 
-imageV = 0.6; %float, Voltage at which to display image
+imageV = 0.6; %float, Voltage at which to display grid slice in no topo is provided
 n=1; %integer, Number of point spectra to plot
 offset=0; %Vertical offset for each point spectra 
 xysmooth=0.0; %float, the standard deviation of a Gaussian for smoothing xy pixels (0 is no smoothing)
@@ -244,20 +323,16 @@ vsmooth=0.0; %float, the standard deviation of a Gaussian for smoothing the volt
 LOGcomment = gridClickForSpectrum(didv, V_reduced, imageV, n, offset, xysmooth, vsmooth, grid);
 
 %ask for plotname:
-plotname = input("Save plot as: ","s");
-if isempty(plotname)
-    plotname = 'clickedSpectrum';
-end
-
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plotname));
+plot_name = uniqueNamePrompt("clickedSpectrum","",LOGpath);
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment ,0);
 
 %save the created figures here:
-savefig(strcat(LOGpath,"/",plotname,".fig"))
+savefig(strcat(LOGpath,"/",plot_name,".fig"))
 
 %create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plotname);
-clear plotname;
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+clear plot_name;
 
 %% VS03A Visualize-Spectrum-03-A; circular masking; 
 % Edited by Jisun Kim Oct 2023
@@ -271,54 +346,18 @@ clear plotname;
 % plots di/dv at the specified energy (thrid input) and allows user to
 % click on a point with a mask of radius R (fourth input)
 imageV = 0.0055;
-radius = 3;
+radius = 2;
 [circular_mask, Num_in_mask, LOGcomment] = gridMaskPoint(didv, V_reduced, imageV, radius);
 
-plot_name = uniqueNamePrompt("circular_mask_position","a",LOGpath);
-savefig(strcat(LOGpath,"/",plot_name,".fig"))
+plot_name_1 = uniqueNamePrompt("circular_mask_position","",LOGpath);
+savefig(strcat(LOGpath,"/",plot_name_1,".fig"))
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_1));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
-clear plot_name;
 
-%% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
-%Edited by James October 2023
-
-% This section of code takes a slice of dI/dV at certain bias, defined by the user, and saves it.
-
-% This section visualizes a slice of dI/dV data at a user-defined bias and saves it. It also provides functionality to:
-% 1. Prompt the user for the bias of interest and a name for the generated plot.
-% 2. Convert the provided plot name to a cell array format for further processing.
-% 3. Generate and save the slice plot, naming it based on the user input and other metadata.
-% 4. Log the actions taken using the provided log blocks.
-% 5. Compute the average of the dI/dV spectra within a designated area, specified by a circular mask.
-% 6. Plot and save the averaged dI/dV spectra, and update the logs accordingly.
-
-% Ask the user to enter the bias of interest and plot name
-bias_of_interest = input("Enter the bias of interest: ");
-plot_name = input("Enter the plot name: ", 's');
-
-% Convert the plot name to a cell array
-plot_name_cell = {plot_name};
-
-[Biases,LOGcomment] = gridPlotSlices(didv, V_reduced, bias_of_interest, plot_name_cell);
-
-%savefig(strcat(LOGpath,"/grid_fullCaPt10-4-8_',stamp_project,'I(V)_32.fig"))
-%WHAT SHOULD WE CALL THIS FIGURE?
-filename = sprintf('%s/grid_fullCaPt10-4-8_%s_grid_%s.fig', LOGpath, stamp_project, grid_number);
-savefig(filename);
-
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT01A", LOGcomment ,0);
-
-%create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "gridPlotSlices");
-
-savefig(strcat(LOGpath,"/circular_mask_average_dIdV.fig"))
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-% takes the average of the dI/dV spectra in the selected area
+% Compute the average dI/dV spectra in the selected area
 [~, mask_averaged_didv, LOGcomment] = gridAvgMask(didv, circular_mask);
 
-% plots the spectra at the spots where the masks were applied
+% Generate the plot
 figure; 
 set(gca,'DefaultLineLineWidth',2)
 set(gca,'FontSize',20)
@@ -329,8 +368,41 @@ xticks([-0.04 -0.02 0 0.02 0.04])
 xlim([-0.05, 0.05])
 ylim([0, 4E-9])
 
-savefig(strcat(LOGpath,"/mask_averaged_didv.fig"))
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+% Naming and saving the second figure
+plot_name_2 = uniqueNamePrompt("mask_averaged_didv", "", LOGpath);
+savefig(strcat(LOGpath, "/", plot_name_2, ".fig"));
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_2));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
-%create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "circular_mask_position+mask_averaged_didv");
+% Create copy of the log corresponding to the saved figures
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2));
+clear plot_name_1 plot_name_2;
+
+%% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
+% Edited by James October 2023
+
+% This section visualizes a slice of dI/dV data at a user-defined bias. 
+% Features:
+% 1. Prompt the user for the bias of interest.
+% 2. Generate and save the slice plot with appropriate naming.
+% 3. Log actions using provided log blocks.
+
+% Ask the user to enter the bias of interest
+bias_of_interest = input("Enter the bias of interest: ");
+
+% Convert the bias_of_interest to string if it's a number
+bias_str = num2str(bias_of_interest);
+
+% Generate the first plot and return a LOGcomment
+plot_name_cell = {uniqueNamePrompt("bias_slice_" + bias_str, "", LOGpath)};
+[Biases,LOGcomment] = gridPlotSlices(didv, V_reduced, bias_of_interest, plot_name_cell);
+
+% Naming and saving the first figure
+filename = sprintf('%s/%s.fig', LOGpath, plot_name_cell{1});
+savefig(filename);
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_cell{1}));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT01A", LOGcomment, 0);
+
+% Create copy of the log corresponding to the saved figures
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name_cell{1});
+clear plot_name_cell;
