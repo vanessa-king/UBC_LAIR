@@ -1,26 +1,17 @@
 # UBC_LAIR
 
 Collection of data reading and data analysis codes from all UBC LAIR STMs
+~~~~~~~~~~~Environment checklist~~~~~~~~~~~~~
 
-Sample function commenting format:
-
-% Description
-
-% what does the function do
-
-% Parameters
-
-%%  Input parameters: name(type)
-
-%%  Output parameters: name(type)
-
-function [output] = functionName(input)
-
-~~~~~~~~~~~function~~~~~~~~~~~~~
+% MATLAB 2023 or newer 
+% Python 3.8-3.9
+% Python package needed: nanonispy, numpy 
+% Python path in MATLAB, can check it by calling "pyenv" in MATLAB command window, more help on this: https://www.mathworks.com/help/matlab/matlab_external/install-supported-python-implementation.html
+% downgrade numpy 1.26 to numpy 1.20 with command pip install numpy ==1.20, otherwise error might pop when loading nanonis style of grid data 
 
 
+~~~~~~~~~~~~Parameter pool and directory~~~~~~~~~~
 
-Parameter pool and directory:
 x_num(size)/y_num(size): number of the x/y dimension size.
 average_forward_and_backward : True/False whether to average the forward and backward scan [gridLoadDataUpward.m]
 avg_I : mean of I data [gridAvg.m]

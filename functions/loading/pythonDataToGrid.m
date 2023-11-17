@@ -68,5 +68,9 @@ z_img = double(python_Data_cell{7}); %python array -> double array. Shape (num_x
 z_img = z_img* 1e-9; %Transforming back to original values
 grid.z_img = z_img;
 
+x_position_img = double(python_Data_cell{8});
+grid.x_position_img = x_position_img;
+y_position_img = double(python_Data_cell{9});
+grid.y_position_img = y_position_img;
 
 end

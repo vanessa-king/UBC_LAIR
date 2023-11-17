@@ -26,6 +26,7 @@ comment = sprintf("gridAvgMask(didv:%s, mask:%s)|", mat2str(size(data)), mat2str
 
 % data(I,x,y) -> data(x,y,I)
 data_masked = permute(data,[ 2 3 1 ]); 
+
 %apply mask
 data_masked = data_masked.*mask;
 
@@ -34,5 +35,6 @@ data_masked = permute(data_masked, [3 1 2]);
 
 %number of points per xy layer based on mask
 numPoints = sum(mask(:));
+
 %average: sum of all (= sum on nonzero elements per xy layer) divided by number of non zero points
 didv_avg = sum(data_masked, [2 3])./numPoints;
