@@ -1,7 +1,7 @@
 %Description: 
 % This function generate a normalized didv data set, which requires an offset correction.
 
-function [norm_didv, I_correction, V_reduced, I_offset, comment] = gridNormDerivative(grid, C)
+function [didv, I_correction, V_reduced, I_offset, comment] = gridNormDerivative(grid, C)
 
 arguments
     grid
@@ -21,7 +21,7 @@ V_reduced = V(1:end-1); % purpose: while performing dI/dV the data size get redu
 % corrected in the software by carefully checking the output. But if it wasn't corrected before the measurement 
 % there could be an offset). For a proper calculation for a normalized didv this needs to be corrected. 
 I_offset = NaN([size(I,2),size(I,3)]);
-find(diff(sign(V))) 
+find(diff(sign(V))); 
 [~,ind] = min(abs(V)); 
 I_correction = NaN(size(I)); 
 for kx = 1:size(I,2) 
@@ -31,13 +31,15 @@ for kx = 1:size(I,2)
     end
 end
 
+grid.I = I_correction;
+
 % Now calculate normalized didv: i.e. (dI/dV)/(I/V)
-norm_didv = NaN(length(V_reduced),size(I,2),size(I,3));
+[didv_corrected, ~, ~] = gridDerivative(grid);
+didv = NaN(length(V_reduced),size(I,2),size(I,3));
 for kx = 1:size(I,2)
     for ky = 1:size(I,3)
         normtemp = sqrt((I_correction(1:length(V_reduced),kx,ky)./V_reduced).^2+C^2);
         % C here is to deal with the diverging value at V=0 while normalizing.
-        didv(:,kx,ky) = diff(I_correction(:,kx,ky))./diff(V);
-        norm_didv(:,kx,ky) = didv(:,kx,ky)./normtemp; % normalised didv
+        didv(:,kx,ky) = didv_corrected(:,kx,ky)./normtemp; % didv here is normalized didv.
     end
 end

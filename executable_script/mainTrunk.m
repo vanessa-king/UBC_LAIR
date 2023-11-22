@@ -236,23 +236,25 @@ saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
 clear plot_name;
 
 %% PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V) for all I-V, and forward & backward separately. 
+% When you run this section, your didv becomes/means normalized didv 
+% and your grid.I becomes/means offset corrected I (see gridNormDerivative for details).
 % Edited by: Jisun November 2023
 
 % This section of code creates a normalized dIdV data from the grid. It will create dIdV for all I-V; foward only; backward only. 
 C=3E-10;
-[norm_didv, I_correction, V_reduced, I_offset, LOGcomment] = gridNormDerivative(grid, C);
+[didv, I_correction, V_reduced, I_offset, LOGcomment] = gridNormDerivative(grid, C);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PD02A", LOGcomment ,0);
 
 if (~avg_forward_and_backward)
     gridForward = grid;
     [gridForward.I] = gridForward.I_Forward;
-    [norm_didv_forward, ~, ~, ~, LOGcomment] = gridNormDerivative(gridForward, C);
+    [didv_forward, ~, ~, ~, LOGcomment] = gridNormDerivative(gridForward, C);
     LOGcomment = strcat("Forward_",LOGcomment);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
     
     gridBackward = grid;
     [gridBackward.I] = gridForward.I_Backward;
-    [norm_didv_backward, ~, ~, ~, LOGcomment] = gridNormDerivative(gridBackward, C);
+    [didv_backward, ~, ~, ~, LOGcomment] = gridNormDerivative(gridBackward, C);
     LOGcomment = strcat("Backward_",LOGcomment);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 end
@@ -282,9 +284,9 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01A", LOGcomment ,0);
 [avg_didv, f2, LOGcomment] = gridAvg(didv, V_reduced,1);
 xlabel('V','fontsize', 20)
 ylabel('dI/dV [a.u.]','fontsize', 20)
-xticks([-0.04 -0.02 0 0.02 0.04])
-xlim([-0.02 0.02])
-ylim([0 3e-9])
+%xticks([-0.04 -0.02 0 0.02 0.04])
+%xlim([-0.02 0.02])
+%ylim([0 3e-9])
 set(gca,'fontsize',20)
 
 if f2 == []
@@ -353,60 +355,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2, "+", plot_name_3,"+", plot_name_4));
 clear plot_name_1 plot_name_2 plot_name_3 plot_name_4;
 
-%% VS01B Visualize-Spectrum-01-B; average normalized dI/dV and plot it;
-% Edited by Jisun Kim Oct 2023
-% This section of code takes the average of the normalized dI/dV. 
-% Then it plots normalized dI/dV versus V for all I-V curves; forward and backward separately.
-% NOTE: IF I DON'T RUN PD01A or PD01B, THIS SECTION DOESN'T RECOGNIZE V_reduced
 
-[number_bias_layer, ~] = size(V_reduced);
-
-% This makes the averaged "normalized dI/dV versus V" plot
-[avg_norm_didv, f1, LOGcomment] = gridAvg(norm_didv, V_reduced,1);
-xlabel('V','fontsize', 20)
-ylabel('(dI/dV)/(I/V) [a.u.]','fontsize', 20)
-xticks([-0.04 -0.02 0 0.02 0.04])
-xlim([-0.02 0.02])
-set(gca,'fontsize',20)
-
-if f1 == []
-else
-    plot_name_1 = uniqueNamePrompt("normalized_dIdV","",LOGpath);
-    savefig(f1, strcat(LOGpath,"/",plot_name_1,".fig"))
-end
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_1));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-% This makes the averaged "normalized dI/dV versus V" plot for forward and backward sweeps separately
-[avg_norm_didv_forward, f2, LOGcomment] = gridAvg(norm_didv_forward, V_reduced);
-
-if f2 == []
-    clear f2
-else
-    %close f2;
-end
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-[avg_norm_didv_backward, f3, LOGcomment] = gridAvg(norm_didv_backward, V_reduced,1);
-if f3 == []
-else
-    hold on
-    plot(V_reduced,avg_norm_didv_forward)
-    hold off
-    legend('bwd', 'fwd');
-    xlabel('V','fontsize', 20)
-    ylabel('(dI/dV)/(I/V) [a.u.]','fontsize', 20);
-    title("Avg normalized dI/dV for bwd and fwd");
-    
-    plot_name_2 = uniqueNamePrompt("forward_vs_backward_norm_dIdV","",LOGpath);
-    savefig(strcat(LOGpath,"/",plot_name_2,".fig"))
-end
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_2));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-%create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2));
-clear plot_name_1 plot_name_2; 
 
 %% VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
 % Edited by Vanessa October 2023
