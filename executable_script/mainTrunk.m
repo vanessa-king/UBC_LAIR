@@ -205,7 +205,18 @@ C=3E-10;
 smooth=false;
 normalize=true;
 [didv, norm_didv, I_correction, V_reduced, I_offset, LOGcomment] = gridCorrectionNorm(grid, C, smooth, normalize); 
+
+% Plot the offset map in 3D mesh
+if normalize== true
+    I_offset=I_offset - mean(I_offset);
+    I_std=std(I_offset);
+    figure
+    mesh(I_offset)
+    title("mean offset is"+num2str(mean(I_offset,"all")))
+end
+
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC01A", LOGcomment ,0);
+
 % why need the forward and backward 
 if (~avg_forward_and_backward)
     gridForward = grid;

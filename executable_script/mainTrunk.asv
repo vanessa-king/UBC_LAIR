@@ -203,8 +203,13 @@ end
 
 C=3E-10;
 smooth=false;
-normalize=true;
+norm=true;
 [didv, norm_didv, I_correction, V_reduced, I_offset, LOGcomment] = gridCorrectionNorm(grid, C, smooth, normalize); 
+
+If normalize== true
+    imshow(I_offset)
+end
+
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC01A", LOGcomment ,0);
 % why need the forward and backward 
 if (~avg_forward_and_backward)
