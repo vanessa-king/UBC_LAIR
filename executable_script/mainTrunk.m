@@ -72,16 +72,16 @@
 folder = uigetdir();
 
 % stamp_project is the filename leader and takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--';
-stamp_project = '20210308-124244_CaPt--STM_Spectroscopy--'; 
+stamp_project = 'test'; 
 
 % set the grid I(V) file number
-grid_number = '108_1';
+grid_number = '002';
 
 % set the z-file (aka topo) image number
-img_number = '54_1'; 
+img_number = '310'; 
 
 % set the spectra number
-spectra_number = '432'; 
+spectra_number = '433'; 
 
 %set LOGfolder and LOGfile 
 %*must not be changed during an iteration of data processing!
@@ -176,8 +176,8 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01B", LOGcomment ,0);
 %% LS02A Load-Spectra-01-A; load grid and topo from Nanonis
 %Edited by Dong Nov 2023
 % This section of code loads the spectra.
-filename= "PtSn4_4K432.dat"; 
-[spec,LOGcomment] = specLoad(filename);
+
+[specdata,LOGcomment] = specLoad(folder, stamp_project, spectra_number);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LS02A", LOGcomment ,0);
 
 %% PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V

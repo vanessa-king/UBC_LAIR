@@ -1,14 +1,17 @@
-function [data, comment] = specLoad(spec)
+function [data, comment] = specLoad(folder, stamp_project, spectra_number)
 %This function loads spectrum. 
 arguments 
-    spec
+    folder
+    stamp_project
+    spectra_number
 end
 
-comment = sprintf("specLoad(spec=%s)|", spec);
+comment = sprintf("specLoad(folder=%s, stamp_project=%s, spectra_number=%s)|", folder, stamp_project, spectra_number);
 
-filename = spec;
+specfileName = strcat(folder,"/",stamp_project,spectra_number,".dat");
+
 % Read the file as a table
-opts = detectImportOptions(filename, 'Delimiter', '\t');
-data = readtable(filename, opts);
+opts = detectImportOptions(specfileName, 'Delimiter', '\t');
+data = readtable(specfileName, opts);
 
 end
