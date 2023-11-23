@@ -81,7 +81,7 @@ grid_number = '108_1';
 img_number = '54_1'; 
 
 % set the spectra number
-spectra_number = ''; 
+spectra_number = '432'; 
 
 %set LOGfolder and LOGfile 
 %*must not be changed during an iteration of data processing!
@@ -176,9 +176,10 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01B", LOGcomment ,0);
 %% LS02A Load-Spectra-01-A; load grid and topo from Nanonis
 %Edited by Dong Nov 2023
 % This section of code loads the spectra.
+filename= "PtSn4_4K432.dat"; 
+[spec,LOGcomment] = specLoad(filename);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LS02A", LOGcomment ,0);
 
-[spec,LOGcomment] = specLoad(folder, stamp_project, grid_number, img_number, topoDirection);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01B", LOGcomment ,0);
 %% PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
 %Edited by James October 2023; Jisun October 2023
 
