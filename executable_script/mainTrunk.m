@@ -51,6 +51,11 @@
     % PC02A Processing-Correcting-02-A; correct the grid for drift 
     % VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them
     % VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
+    % PD01A Porcessing-Derivative-01-A; create a regular dIdV for all I-V, and forward & backward separately.
+    % PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V) for all I-V, and forward & backward separately.
+    % VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them
+    % VS01B Visualize-Spectrum-01-B; average normalized dI/dV and plot it;
+    % VS02A Visualize-Spectrum-02-A;     
     % VS03A Visualize-Spectrum-03-A; circular masking
     % VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
 
@@ -187,30 +192,26 @@ if (~avg_forward_and_backward)
     [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,'grid.I_Backward',span);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 end
-%% PC01A Processing-Correcting-01-A;choose to smooth or normalize the IV data. 
-% Edited by: Dong October 2023 
+%% PD01A Porcessing-Derivative-01-A; create a regular dIdV for all I-V, and forward & backward separately. 
+% Edited by: Jisun November 2023
 
-% This section of code will do a vertical shift that brings the current at zero bias to zero, you could also smooth the IV.
+% This section of code creates a regular dIdV data from the grid. It will create dIdV for all I-V; foward only; backward only. 
+[didv, V_reduced, LOGcomment] = gridDerivative(grid);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PD01A", LOGcomment ,0);
 
-C=3E-10;
-smooth=false;
-normalize=true;
-[didv, norm_didv, I_correction, V_reduced, I_offset, LOGcomment] = gridCorrectionNorm(grid, C, smooth, normalize); 
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC01A", LOGcomment ,0);
-% why need the forward and backward 
 if (~avg_forward_and_backward)
     gridForward = grid;
     [gridForward.I] = gridForward.I_Forward;
-    [didv_forward, ~, ~, ~,  ~, LOGcomment] = gridCorrectionNorm(gridForward, 3E-10, smooth,normalize);
+    [didv_forward, ~, LOGcomment] = gridDerivative(gridForward);
     LOGcomment = strcat("Forward_",LOGcomment);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
     
     gridBackward = grid;
     [gridBackward.I] = gridForward.I_Backward;
-    [didv_backward, ~, ~, ~, ~, LOGcomment] = gridCorrectionNorm(gridBackward, 3E-10, smooth,normalize);
+    [didv_backward, ~, LOGcomment] = gridDerivative(gridBackward);
     LOGcomment = strcat("Backward_",LOGcomment);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-end    
+end
 
 %% PC02A Processing-Correcting-02-A; correct the grid for drift 
 % Edited by Vanessa Nov 2023
@@ -234,14 +235,35 @@ savefig(strcat(LOGpath,"/",plot_name,".fig"))
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
 clear plot_name;
 
+%% PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V) for all I-V, and forward & backward separately. 
+% When you run this section, your didv becomes/means normalized didv 
+% and your grid.I becomes/means offset corrected I (see gridNormDerivative for details).
+% Edited by: Jisun November 2023
+
+% This section of code creates a normalized dIdV data from the grid. It will create dIdV for all I-V; foward only; backward only. 
+C=3E-10;
+[didv, I_correction, V_reduced, I_offset, LOGcomment] = gridNormDerivative(grid, C);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PD02A", LOGcomment ,0);
+
+if (~avg_forward_and_backward)
+    gridForward = grid;
+    [gridForward.I] = gridForward.I_Forward;
+    [didv_forward, ~, ~, ~, LOGcomment] = gridNormDerivative(gridForward, C);
+    LOGcomment = strcat("Forward_",LOGcomment);
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+    
+    gridBackward = grid;
+    [gridBackward.I] = gridForward.I_Backward;
+    [didv_backward, ~, ~, ~, LOGcomment] = gridNormDerivative(gridBackward, C);
+    LOGcomment = strcat("Backward_",LOGcomment);
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+end
 
 %% VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them;
 % Edited by Jisun Kim Oct 2023
-% This section of code takes the average of the I(V) data (e.g., the whole
-% grid) and plots both "I versus V" and "dI/dV versus V"
-%
-% NOTE: IF I DON'T RUN PC01A, THIS SECTION DOESN'T RECOGNIZE
-% V_reduced
+% This section of code takes the average of the I-V and dI/dV. 
+% Then it plots I versus V, dI/dV versus V for all I-V curves; forward and backward separately.
+% NOTE: IF I DON'T RUN PD01A or PD01B, THIS SECTION DOESN'T RECOGNIZE V_reduced
 
 [number_bias_layer, ~] = size(V_reduced);
 
@@ -262,9 +284,9 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01A", LOGcomment ,0);
 [avg_didv, f2, LOGcomment] = gridAvg(didv, V_reduced,1);
 xlabel('V','fontsize', 20)
 ylabel('dI/dV [a.u.]','fontsize', 20)
-xticks([-0.04 -0.02 0 0.02 0.04])
-xlim([-0.02 0.02])
-ylim([0 3e-9])
+%xticks([-0.04 -0.02 0 0.02 0.04])
+%xlim([-0.02 0.02])
+%ylim([0 3e-9])
 set(gca,'fontsize',20)
 
 if f2 == []
@@ -302,9 +324,38 @@ end
 LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_3));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
+% This makes the averaged "dI/dV versus V" plot for forward and backward sweeps separately
+[avg_didv_forward, f5, LOGcomment] = gridAvg(didv_forward, V_reduced);
+
+if f5 == []
+    clear f5
+else
+    %close f5;
+end
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
+[avg_didv_backward, f6, LOGcomment] = gridAvg(didv_backward, V_reduced,1);
+if f6 == []
+else
+    hold on
+    plot(V_reduced,avg_didv_forward)
+    hold off
+    legend('bwd', 'fwd');
+    xlabel('V','fontsize', 20)
+    ylabel('dI/dV [a.u.]','fontsize', 20);
+    title("Avg dI/dV for bwd and fwd");
+    
+    plot_name_4 = uniqueNamePrompt("forward_vs_backward_dIdV","",LOGpath);
+    savefig(strcat(LOGpath,"/",plot_name_4,".fig"))
+end
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_4));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
 %create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2, "+", plot_name_3));
-clear plot_name_1 plot_name_2 plot_name_3;
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2, "+", plot_name_3,"+", plot_name_4));
+clear plot_name_1 plot_name_2 plot_name_3 plot_name_4;
+
+
 
 %% VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
 % Edited by Vanessa October 2023
@@ -335,18 +386,12 @@ saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
 clear plot_name;
 
 %% VS03A Visualize-Spectrum-03-A; circular masking; 
-% Edited by Jisun Kim Oct 2023
+% Edited by Jisun Oct 2023
 % This section of code creates a circular mask of radius R around a
 % clicked point. It then plots the average dI/dV on that point. The user may toggle R and energy slice.
-%
-% THIS SECTION IS CURRENTLY STRUCTURED FOR DONOR AND ACCEPTOR ENERGIES, SO
-% WE WILL WANT TO MODIFY THIS ACCORDINGLY.
 
-
-% plots di/dv at the specified energy (thrid input) and allows user to
-% click on a point with a mask of radius R (fourth input)
 imageV = 0.0055;
-radius = 2;
+radius = 3;
 [circular_mask, Num_in_mask, LOGcomment] = gridMaskPoint(didv, V_reduced, imageV, radius);
 
 plot_name_1 = uniqueNamePrompt("circular_mask_position","",LOGpath);
