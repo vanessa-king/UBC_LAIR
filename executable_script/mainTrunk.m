@@ -49,6 +49,7 @@
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
     % PC01A Processing-Correcting-01-A;
     % PC02A Processing-Correcting-02-A; correct the grid for drift 
+    % PF0A Processing-Flatten-01-A; Subtracts the plane in topography images;
     % VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them
     % VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
     % PD01A Porcessing-Derivative-01-A; create a regular dIdV for all I-V, and forward & backward separately.
@@ -259,6 +260,40 @@ if (~avg_forward_and_backward)
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 end
 
+%% PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
+%Edited by Rysa Greenwood Nov 2023
+%Need to run LI01A, LG01A first. Right now this can only handle topo images
+%from grid structure
+%arguments:
+% image (struct): the structure variable, either from loadDataUpward or from TopoLoadData
+% if there is a smarter way?
+% n(integer): number of points to sample, the default number is 200 
+% plot(boolean): choose to plot the process of plane sub, the is default is F
+
+
+image = grid; 
+n = 100;
+plot = 1; 
+
+[topo, LOGcomment] = topoPlaneSub(image, n, plot);
+
+if plot
+    %ask for plotname:
+    plot_name = uniqueNamePrompt("PlaneSub","",LOGpath);
+    LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PF01A", LOGcomment ,0);
+
+    %save the created figures here:
+    savefig(strcat(LOGpath,"/",plot_name,".fig"))
+
+    %create copy of the log corresponding to the saved figures
+    saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+    clear plot_name;
+
+else
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "", LOGcomment ,0);
+
+end
 %% VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them;
 % Edited by Jisun Kim Oct 2023
 % This section of code takes the average of the I-V and dI/dV. 
