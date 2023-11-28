@@ -228,13 +228,13 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PD02A", LOGcomment ,0);
 if (~avg_forward_and_backward)
     gridForward = grid;
     [gridForward.I] = gridForward.I_Forward;
-    [didv_forward, grid.I_Forward, ~, ~, LOGcomment] = gridNormDerivative(gridForward, C);
+    [didv_forward, ~, ~, ~, LOGcomment] = gridNormDerivative(gridForward, C);
     LOGcomment = strcat("Forward_",LOGcomment);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
     
     gridBackward = grid;
     [gridBackward.I] = gridForward.I_Backward;
-    [didv_backward, grid.I_Backward, ~, ~, LOGcomment] = gridNormDerivative(gridBackward, C);
+    [didv_backward, ~, ~, ~, LOGcomment] = gridNormDerivative(gridBackward, C);
     LOGcomment = strcat("Backward_",LOGcomment);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 end
@@ -307,7 +307,7 @@ end
 % This makes the averaged "I versus V" plot
 [avg_iv, f1, LOGcomment] = gridAvg(grid.I, grid.V, 1);
 xlabel('V','fontsize', 20)
-ylabel('I(V) [A]','fontsize', 20)
+ylabel('I(V) (A)','fontsize', 20)
 
 if f1 == []
 else
@@ -352,7 +352,7 @@ else
     hold off
     legend('bwd', 'fwd');
     xlabel('V','fontsize', 20)
-    ylabel('I(V) [A]','fontsize', 20);
+    ylabel('I(V) (A)','fontsize', 20);
     title("Avg I(V) for bwd and fwd");
     
     plot_name_3 = uniqueNamePrompt("forward_vs_backward_IV","",LOGpath);
