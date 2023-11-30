@@ -47,7 +47,8 @@
     % LG01A Load-Grid-01-A; load grid 
     % LG01B Load-Grid-01-B; load grid and topo from Nanonis
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
-    % PC01A Processing-Correcting-01-A;
+    % PD01A Porcessing-Derivative-01-A; create a regular dIdV for all I-V, and forward & backward separately
+    % PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V) for all I-V, and forward & backward separately
     % PC02A Processing-Correcting-02-A; correct the grid for drift 
     % PF0A Processing-Flatten-01-A; Subtracts the plane in topography images;
     % VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them
@@ -214,6 +215,30 @@ if (~avg_forward_and_backward)
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 end
 
+%% PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V) for all I-V, and forward & backward separately. 
+% When you run this section, your didv becomes/means normalized didv 
+% and your grid.I becomes/means offset corrected I (see gridNormDerivative for details).
+% Edited by: Jisun November 2023
+
+% This section of code creates a normalized dIdV data from the grid. It will create dIdV for all I-V; foward only; backward only. 
+C=3E-10;
+[didv, grid.I, V_reduced, I_offset, LOGcomment] = gridNormDerivative(grid, C);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PD02A", LOGcomment ,0);
+
+if (~avg_forward_and_backward)
+    gridForward = grid;
+    [gridForward.I] = gridForward.I_Forward;
+    [didv_forward, grid.I_Forward, ~, ~, LOGcomment] = gridNormDerivative(gridForward, C);
+    LOGcomment = strcat("Forward_",LOGcomment);
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+    
+    gridBackward = grid;
+    [gridBackward.I] = gridForward.I_Backward;
+    [didv_backward, grid.I_Backward, ~, ~, LOGcomment] = gridNormDerivative(gridBackward, C);
+    LOGcomment = strcat("Backward_",LOGcomment);
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+end
+
 %% PC02A Processing-Correcting-02-A; correct the grid for drift 
 % Edited by Vanessa Nov 2023
 % TO DO: have it actually take in two different topos. Make a new block
@@ -236,29 +261,6 @@ savefig(strcat(LOGpath,"/",plot_name,".fig"))
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
 clear plot_name;
 
-%% PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V) for all I-V, and forward & backward separately. 
-% When you run this section, your didv becomes/means normalized didv 
-% and your grid.I becomes/means offset corrected I (see gridNormDerivative for details).
-% Edited by: Jisun November 2023
-
-% This section of code creates a normalized dIdV data from the grid. It will create dIdV for all I-V; foward only; backward only. 
-C=3E-10;
-[didv, I_correction, V_reduced, I_offset, LOGcomment] = gridNormDerivative(grid, C);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PD02A", LOGcomment ,0);
-
-if (~avg_forward_and_backward)
-    gridForward = grid;
-    [gridForward.I] = gridForward.I_Forward;
-    [didv_forward, ~, ~, ~, LOGcomment] = gridNormDerivative(gridForward, C);
-    LOGcomment = strcat("Forward_",LOGcomment);
-    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-    
-    gridBackward = grid;
-    [gridBackward.I] = gridForward.I_Backward;
-    [didv_backward, ~, ~, ~, LOGcomment] = gridNormDerivative(gridBackward, C);
-    LOGcomment = strcat("Backward_",LOGcomment);
-    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-end
 
 %% PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
 %Edited by Rysa Greenwood Nov 2023
@@ -305,7 +307,7 @@ end
 % This makes the averaged "I versus V" plot
 [avg_iv, f1, LOGcomment] = gridAvg(grid.I, grid.V, 1);
 xlabel('V','fontsize', 20)
-ylabel('I(V) (nA)','fontsize', 20)
+ylabel('I(V) [A]','fontsize', 20)
 
 if f1 == []
 else
@@ -350,7 +352,7 @@ else
     hold off
     legend('bwd', 'fwd');
     xlabel('V','fontsize', 20)
-    ylabel('I(V) (nA)','fontsize', 20);
+    ylabel('I(V) [A]','fontsize', 20);
     title("Avg I(V) for bwd and fwd");
     
     plot_name_3 = uniqueNamePrompt("forward_vs_backward_IV","",LOGpath);
