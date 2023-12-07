@@ -492,72 +492,54 @@ clear plot_name_cell;
 clear plot_name_cell;
 
 %% PT01A Processing-Transforming-01-A; takes (Matrix) flat-style data and tranforms it to (Nanonis) array-style data
-% Edited by James November 2023
+% Edited by James December 2023
 
-[IV, dIdV, label, label_reduced, elayer, elayer_reduced, xsize, ysize, emax, emin, avg_dIdV, avg_IV] = matrixToNanonis(grid, 3E-10, 0);
+[IV_NanonisStyle, dIdV_NanonisStyle, avg_IV_NanonisStyle, avg_dIdV_NanonisStyle, comment] = matrixToNanonis(grid, didv);
 
 LOGcomment = strcat("Transform to Nanonis style data");
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PT01A", LOGcomment ,0);
 %% VS04A Visualize-Spectra-04-A: Plot All Spectra Faintly and Overlay the Average
-% Edited by James November 2023
+% Edited by James December 2023
 
 % Display grid dimensions to the user
-disp(['Grid dimensions: xsize = ', num2str(xsize), ', ysize = ', num2str(ysize)]);
+numx = size(IV_NanonisStyle, 1);
+numy = size(IV_NanonisStyle, 2);
+disp(['Grid dimensions: numx = ', num2str(numx), ', numy = ', num2str(numy)]);
 
-% Compute the average I/V and dI/dV values at each voltage point
-for n = 1:elayer
-    avg_IV(n) = mean(mean(IV(:,:,n)));  % Average I/V values
-end
-
-for k = 1:elayer - 1
-    avg_dIdV(k) = mean(mean(dIdV(:,:,k)));  % Average dI/dV values
-end
-
-% Data Visualization: Raw and Average I/V
-% Uncomment the block below to visualize individual I/V and dI/dV plots
-%{
-figure();
-plot(label, reshape(avg_IV, elayer, 1));
-ylim([1e-11, 10e-11]);
-figure();
-plot(label_reduced, reshape(avg_dIdV, elayer_reduced, 1));
-ylim([1e-11, 10e-11]);
-%}
-
-% Clean up workspace to free memory and reduce clutter
-clearvars -except elayer elayer_reduced label label_reduced avg_dIdV dIdV avg_IV IV emax emin xsize ysize
+label = grid.V; % Define 'label' for subsequent plotting
 
 % Set parameters for plot aesthetics: transparency, line width, and colors
 transp = 0.05;  % Transparency for individual spectra
 lwidth1 = 1.5;  % Line width for individual spectra
 lwidth2 = 2.5;  % Line width for average spectra
-% Common color codes for reference
-% Red [1, 0, 0], Green [0, 1, 0], Blue [0, 0, 1], Yellow [1, 1, 0], 
-% Magenta [1, 0, 1], Cyan [0, 1, 1], Black [0, 0, 0], White [1, 1, 1], Gray [0.5, 0.5, 0.5]
-pcolorb_raw = [0, 0, 1];  % color for raw data
-pcolorb_avg = [0, 0, 0];  % color for average spectra
+pcolorb_raw = [0, 0, 1];  % Blue color for raw data
+pcolorb_avg = [0, 0, 0];  % Black color for average spectra
 
 % User input for step size in I/V profile plotting
 step_size_IV = input('Enter the step size for plotting I/V profiles: ');
-if step_size_IV > xsize || step_size_IV > ysize || step_size_IV < 1
-    error('Step size for I/V must be between 1 and the minimum of xsize or ysize.');
+if step_size_IV > numx || step_size_IV > numy || step_size_IV < 1
+    error('Step size for I/V must be between 1 and the minimum of numx or numy.');
 end
 
 % Adjust loop limits based on actual array dimensions for I/V
-max_i = min(xsize, size(IV, 1));
-max_j = min(ysize, size(IV, 2));
+max_i = min(numx, size(IV_NanonisStyle, 1));
+max_j = min(numy, size(IV_NanonisStyle, 2));
+elayer = size(IV_NanonisStyle, 3);
 
 % Plot I/V profiles with user-defined step size
 figure();
 for i = 1:step_size_IV:max_i
     for j = 1:step_size_IV:max_j
-        plot1 = plot(label, reshape(IV(i, j, :), elayer, 1), 'color', pcolorb_raw, 'LineWidth', lwidth1);
+        plot1 = plot(label, reshape(IV_NanonisStyle(i, j, :), elayer, 1), 'color', pcolorb_raw, 'LineWidth', lwidth1);
         plot1.Color(4) = transp;  % Apply transparency to individual spectra
         hold on;
     end
 end
-plot(label, reshape(avg_IV, elayer, 1), 'color', pcolorb_avg, 'LineWidth', lwidth2);  % Overlay average I/V profile
-ylim([-2.0e-10, 2e-10]);
+
+% Correctly reshape avg_IV_NanonisStyle based on its size
+avg_IV_length = length(avg_IV_NanonisStyle);
+plot(label(1:avg_IV_length), avg_IV_NanonisStyle, 'color', pcolorb_avg, 'LineWidth', lwidth2);  % Overlay average I/V profile
+
 title('Average I/V Profile', 'fontsize', 12);
 xlabel('Bias Voltage [V]', 'fontsize', 12);
 ylabel('I/V [a.u.]', 'fontsize', 12);
@@ -566,27 +548,29 @@ axis square;
 
 % User input for step size in dI/dV profile plotting
 step_size_dIdV = input('Enter the step size for plotting dI/dV profiles: ');
-if step_size_dIdV > xsize || step_size_dIdV > ysize || step_size_dIdV < 1
-    error('Step size for dI/dV must be between 1 and the minimum of xsize or ysize.');
+if step_size_dIdV > numx || step_size_dIdV > numy || step_size_dIdV < 1
+    error('Step size for dI/dV must be between 1 and the minimum of numx or numy.');
 end
 
 % Adjust loop limits based on actual array dimensions for dI/dV
-max_i_dIdV = min(xsize, size(dIdV, 1));
-max_j_dIdV = min(ysize, size(dIdV, 2));
+max_i_dIdV = min(numx, size(dIdV_NanonisStyle, 1));
+max_j_dIdV = min(numy, size(dIdV_NanonisStyle, 2));
+elayer_reduced = size(dIdV_NanonisStyle, 3);
 
 % Plot dI/dV profiles with user-defined step size
 figure();
 for i = 1:step_size_dIdV:max_i_dIdV
     for j = 1:step_size_dIdV:max_j_dIdV
-        plot1 = plot(label_reduced, reshape(dIdV(i, j, :), elayer_reduced, 1), 'color', pcolorb_raw, 'LineWidth', lwidth1);
+        % Ensure the label array matches the length of the data being plotted
+        label_reduced = label(1:elayer_reduced);
+        plot1 = plot(label_reduced, reshape(dIdV_NanonisStyle(i, j, :), elayer_reduced, 1), 'color', pcolorb_raw, 'LineWidth', lwidth1);
         plot1.Color(4) = transp;  % Apply transparency to individual spectra
         hold on;
     end
 end
-plot(label_reduced, reshape(avg_dIdV, elayer_reduced, 1), 'color', pcolorb_avg, 'LineWidth', lwidth2);  % Overlay average dI/dV profile
+plot(label_reduced, reshape(avg_dIdV_NanonisStyle, elayer_reduced, 1), 'color', pcolorb_avg, 'LineWidth', lwidth2);  % Overlay average dI/dV profile
 ylim([0, 4e-9]);
 title('Average dI/dV Profile', 'fontsize', 12);
 xlabel('Bias Voltage [V]', 'fontsize', 12);
 ylabel('dI/dV [a.u.]', 'fontsize', 12);
 hold off;
-axis square;
