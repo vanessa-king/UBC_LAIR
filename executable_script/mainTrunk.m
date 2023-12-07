@@ -87,6 +87,9 @@ grid_number = '108_1';
 % set the z-file (aka topo) image number
 img_number = '54_1'; 
 
+% set the dat file (aka spec) number
+spec_number = '100'; 
+
 %set LOGfolder and LOGfile 
 %*must not be changed during an iteration of data processing!
 %*can be set automatically, e.g. when choosing
@@ -176,6 +179,13 @@ topoDirection='forward';
 avg_forward_and_backward = true;
 [grid,LOGcomment] = pythonDataToGrid(folder, stamp_project, grid_number, img_number, topoDirection);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01B", LOGcomment ,0);
+
+%% LS02A Load-Spectra-01-A; load grid and topo from Nanonis
+%Edited by Dong Nov 2023
+% This section of code loads the spectra.
+
+[header, data, channels, LOGcomment] = specLoad(folder,stamp_project,spec_number);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LS02A", LOGcomment ,0);
 
 %% PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
 %Edited by James October 2023; Jisun October 2023
