@@ -47,26 +47,40 @@ grid.x = transpose(x); %(1, num_x) -> (num_x, 1)
 
 
 y = double(python_Data_cell{2}); %python array -> double array. Shape (num_x, num_y)
-grid.y = y(:,1); %We only require one column, (num_x,num_y) -> (1, num_y)
+grid.y_all = y(:,1); %We only require one column, (num_x,num_y) -> (1, num_y)
 
 
 V = double(python_Data_cell{3}); %python array -> double array. Shape (1, num_V)
 grid.V = transpose(V); %(1, num_V) -> (num_V, 1)
 
 
-I = double(python_Data_cell{4}); %python array -> double array. Shape (num_x, num_y, num_V)
-I = I * 1e-9; %Transforming back to original values
-grid.I = permute(I, [3,1,2]); %to match matrix data orientation (num_x, num_y, num_V) -> (num_V, num_x, num_y)
-
 x_img = double(python_Data_cell{5}); %python array -> double array. Shape (1, num_x_img)
 grid.x_img = transpose(x_img); %(1, num_x_img) -> (num_x_img, 1)
 
-y_img = double(python_Data_cell{6}); %python array -> double array. Shape (1, num_y_img)
-grid.y_img = transpose(y_img); %(1, num_y_img) -> (num_y_img, 1)
 
 z_img = double(python_Data_cell{7}); %python array -> double array. Shape (num_x_img, num_y_img)
 z_img = z_img* 1e-9; %Transforming back to original values
-grid.z_img = z_img;
+grid.z_img_all = permute(z_img, [2,1]);
+% This section is to remove NaN values in a partial image. 
+% Note this wasn't necessary for x or V since they're always full
+grid.z_img = grid.z_img_all(:,all(~isnan(grid.z_img_all)));
+grid.reduced_topo_size = size(grid.z_img,2);
+
+y_img = double(python_Data_cell{6}); %python array -> double array. Shape (1, num_y_img)
+grid.y_img_all = transpose(y_img); %(1, num_y_img) -> (num_y_img, 1)
+grid.y_img = grid.y_img_all(1:grid.reduced_topo_size,1);
+
+
+
+I = double(python_Data_cell{4}); %python array -> double array. Shape (num_x, num_y, num_V)
+I = I * 1e-9; %Transforming back to original values
+grid.I = permute(I, [3,1,2]); %to match matrix data orientation (num_x, num_y, num_V) -> (num_V, num_x, num_y)
+% This section is to remove NaN values in a partial grid.
+ratio = grid.reduced_topo_size/size(grid.y_img_all,1);
+grid.reduced_grid_size = ceil(ratio*size(grid.y_all,1));
+grid.y = grid.y_all(1:grid.reduced_grid_size,1);
+grid.I = grid.I_all(:,:,1:grid.reduced_grid_size);
+
 
 x_position_img = double(python_Data_cell{8});
 grid.x_position_img = x_position_img;
