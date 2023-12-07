@@ -43,26 +43,23 @@ if vsmooth %then smooth along axes 1 which correspond to bias voltage
     didv = smoothdata(didv, 1, 'gaussian', vsmooth);
 end
 
-% rearrange data
-didv_flip = flip(permute(didv,[1 3 2]),2); % flip didv so that image (x,y) = (0,0) at the bottom left
-
 % use cases for different function arguments -> use dIdV at imageV, or use the topo
 switch nargin
     case 8 % grid data is provided, use the topology instead
-        topo = topoPlaneSub(grid,200,0); % subtract plane
+        z_img = topoPlaneSub(grid,200,0); % subtract plane
         fig_name = 'Topology associated with grid';
-        z_img = flip(permute(topo,[2 1]),1);
-        fig_plot = imresize(z_img, [size(didv_flip,2), size(didv_flip,3)]);
+
+        fig_plot = imresize(z_img, [size(didv,2), size(didv,3)]);
     case 7 % grid data not provided, use the didv slice at imageV
         fig_name = ['Image of states at ',num2str(imageV),' V'];
         [~,imN] = min(abs(V_reduced-imageV));
-        fig_plot = squeeze(didv_flip(imN,:,:));
+        fig_plot = squeeze(didv(imN,:,:));
 end
        
 %Plotting:
 %first plot: img, the grid for you to click on
 img = figure('Name', fig_name); imagesc(fig_plot); colormap('gray'); hold on;
-axis image
+axis xy; axis image;
 %second plot: spec, the spectra fo the points you clicked on
 spec = figure('Name', 'dI/dV at different points'); hold on;
 xlabel('Bias [V]'); ylabel('dI/dV a.u.')
@@ -81,5 +78,5 @@ for k = 1:n
     plot(position(1)+xx,position(2)-yy,colours(mod(k-1,7)+1))
    
     figure(spec)
-    plot(V_reduced,squeeze(didv_flip(:,position(2),position(1)))+(k-1)*offset,colours(mod(k-1,7)+1))
+    plot(V_reduced,squeeze(didv(:,position(2),position(1)))+(k-1)*offset,colours(mod(k-1,7)+1))
 end
