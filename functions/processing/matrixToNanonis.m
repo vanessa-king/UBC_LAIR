@@ -20,6 +20,9 @@ comment = sprintf(formatSpec, mat2str(size(grid)), mat2str(size(didv)));
 IV_NanonisStyle = permute(grid.I, [3,2,1]); % going from [numV, numx, numy] to [numx, numy, numV]
 dIdV_NanonisStyle = permute(didv, [3,2,1]); % going from [numV, numx, numy] to [numx, numy, numV]
 
+% Define elayer based on the size of IV_NanonisStyle or dIdV_NanonisStyle
+    elayer = size(IV_NanonisStyle, 3);
+
 for k=1:elayer-1 % calculating average arrays. Note that we have to use a reduced elayer because gridCorrectionNorm reduces numV by 1.
     avg_dIdV_NanonisStyle(k) = mean(mean(dIdV_NanonisStyle(:,:,k)));
     avg_IV_NanonisStyle(k) = mean(mean(IV_NanonisStyle(:,:,k)));
