@@ -1,7 +1,8 @@
-function [mask,comment] = createLineMask(imageSize, point1, point2)
-%create a mask representing a line between two points
-%   Returns a mask of imageSize which represents a line from point1 to
-%   point2 using Bresenham's line algorythm
+function [mask,comment] = createLineSegmentMask(imageSize, point1, point2)
+%create a mask representing a line segment between two points
+%   Returns a mask of imageSize which represents a line segment from point1 
+%   to point2 using Bresenham's line algorythm. The function does not
+%   accept point coordinates outside the limits of the image size.
 
 %arguments:
 %   imageSize   Size of the image [x_max, y_max]
@@ -24,7 +25,7 @@ end
 % LOG comment:
 comment=sprintf('createLineMask(imagesize = [%d,%d], point1 = [%d,%d],point2 = [%d,%d])',imageSize(1),imageSize(2),point1(1),point1(2),point2(1),point2(2));
 
-% check if the point coordinates fit inside the image:
+% check if the point coordinates are within the image size:
 if point1(1)>imageSize(1)||point1(2)>imageSize(2)||point2(1)>imageSize(1)||point2(2)>imageSize(2)
     disp('Coordinates of point(s) exceed image size.')
     mask=[];
