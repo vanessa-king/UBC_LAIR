@@ -60,7 +60,7 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
         line([startPoint(1),endPoint(1)],[startPoint(2),endPoint(2)],'Color','red','linewidth', 1.5);
         hold off
 
-        comment = sprintf('gridMaskLineSegment(topo: %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], endpoint[%d,%d];', size(topo, 1), startPoint(1), startPoint(2), endPoint(1), endPoint(2));
+        comment = sprintf('gridMaskLineSegment(topo: %d x %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], endpoint[%d,%d];', size(topo, 1), size(topo, 2), startPoint(1), startPoint(2), endPoint(1), endPoint(2));
     else
         % click on topo once, and input r and theta
 
@@ -148,7 +148,7 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
         line([startPoint(1),endPoint(1)],[startPoint(2),endPoint(2)],'Color','red', 'linewidth', 1.5);
         hold off
 
-        comment = sprintf('gridMaskLineSegment(topo: %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], r=%d, theta=%d;', size(topo, 1), startPoint(1), startPoint(2), radius, angle);
+        comment = sprintf('gridMaskLineSegment(topo: %d x %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], r=%d, theta=%d;', size(topo, 1), size(topo, 2), startPoint(1), startPoint(2), radius, angle);
     end
 
 elseif (~isempty(pointA) && ~isempty(pointB)) || (~isempty(pointA) && ~isempty(polcoord))
@@ -168,7 +168,7 @@ elseif (~isempty(pointA) && ~isempty(pointB)) || (~isempty(pointA) && ~isempty(p
             return;
          end
 
-        comment = sprintf('gridMaskLineSegment(topo: %d, point1=[%d,%d],point2=[%d,%d], polcoord=[])', size(topo, 1), pointA(1), pointA(2), pointB(1), pointB(2));
+        comment = sprintf('gridMaskLineSegment(topo: %d x %d, point1=[%d,%d],point2=[%d,%d], polcoord=[])', size(topo, 1), size(topo, 2), pointA(1), pointA(2), pointB(1), pointB(2));
     else 
         % use arguments point1 and polcoord
         startPoint=pointA;
@@ -183,7 +183,7 @@ elseif (~isempty(pointA) && ~isempty(pointB)) || (~isempty(pointA) && ~isempty(p
             endPoint= [];
             return;
          end
-        comment = sprintf('gridMaskLineSegment(topo: %d, point1=[%d,%d],point2=[], polcoord=[%d,%d])', size(topo, 1), pointA(1), pointA(2), polcoord(1), polcoord(2));
+        comment = sprintf('gridMaskLineSegment(topo: %d x %d, point1=[%d,%d],point2=[], polcoord=[%d,%d])', size(topo, 1), size(topo, 2), pointA(1), pointA(2), polcoord(1), polcoord(2));
     end
 else
     disp('the arguments are not properly defined');

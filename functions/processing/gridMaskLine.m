@@ -1,4 +1,4 @@
-function [mask, startPoint, endPoint, comment] = gridMaskLine(topo, pointA, pointB, polcoord)
+function [mask, comment] = gridMaskLine(topo, pointA, pointB, polcoord)
 %Returns a mask representing a line. 
 %   Creates a mask of matching size to the topo image. The line is defined
 %   by two points or relative polar coordinates. If the optional parameters
@@ -10,7 +10,7 @@ function [mask, startPoint, endPoint, comment] = gridMaskLine(topo, pointA, poin
 %   topo        topography image consistant with the grid map
 %   pointA      [x1,y1] absolute Carthesian coordinate of point 1 (optional)
 %   pointB      [x2,y2] absolute Carthesian coordinate of point 2 (optional)
-%   polcoord    [r,theta] polar coordinate of point 1 relative to point 2, theta is in degrees (optional)
+%   polcoord    [theta] angle of the line, theta is in degrees (optional)
 
 %Output
 %   mask        mask of selected area
@@ -22,144 +22,110 @@ function [mask, startPoint, endPoint, comment] = gridMaskLine(topo, pointA, poin
 %  add an argument validation
 arguments
     topo
-    pointA      {mustBeNumeric, mustBeInteger}=[]
-    pointB      {mustBeNumeric, mustBeInteger}=[]
-    polcoord    {mustBeNumeric, mustBePositive}=[]
+    pointA      {mustBeNumeric, mustBePositive}=[]
+    pointB      {mustBeNumeric, mustBePositive}=[]
+    polcoord    {mustBeNumeric}=[]
 end
-
 
 if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
     % define line via user input points/values
     disp('The line for the mask can be defined by:');
     disp('- a start and an end point, selected by clicking in the topo image');
-    disp('- a start point, selected by clicking in the topo image, and the lenght and angle of the line.')
+    disp('- a start point, selected by clicking in the topo image, and the angle of the line.')
     method=input('Define the line via two points? Y/N [Y]:', "s");
     if isempty(method)
         method = "Y";
     end
 
     if method == "Y" || method == "y"
-        % click on topo twice, get two points
-        % assign a start point  as startpoint and an end point as endpoint
-        % startpoint=[1,1];
-        % endpoint=size(topo);
+        %define line by two clicks on the image
 
-       
         % Display an topo image 
         figure()
         p1=image(topo,'CDataMapping','scaled'); 
         axis square
+        hold on
+
         selectedTwoPoints=ginput(2);
         % define the start point
         startPoint=round(selectedTwoPoints(1,:));
         % define the end point
         endPoint=round(selectedTwoPoints(2,:));
-        comment = sprintf('gridlinemask(topo: %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], endpoint[%d,%d];', size(topo, 1), startPoint(1), startPoint(2), endPoint(1), endPoint(2));
+
+        %draw line on plot
+        line([startPoint(1),endPoint(1)],[startPoint(2),endPoint(2)],'Color','red','linewidth', 1.5);
+        hold off
+
+        comment = sprintf('gridMaskLine(topo: %d x %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], endpoint[%d,%d];', size(topo, 1), size(topo,2), startPoint(1), startPoint(2), endPoint(1), endPoint(2));
     else
         % click on topo once, and input r and theta
-        % assign a start point as startpoint and radius as r, angle as theta
-        % startpoint=[1,1];
-        % r=size(topo, 1)/2;
+
         % theta=0; % horizontal line
         figure()
         p1=image(topo,'CDataMapping','scaled'); 
         axis square
+        hold on
+
         % define the start point
         startPoint=round(ginput(1));
-        % define the end point with proper r and theta
-        % prompt: ask the user to input proper argument 
-        radius=input('Please input the proper length of the line (but since here we are making a line instead of linesegment, you can type any number thats none-zero):');
+
+        % define the artificial end point with theta
         
-        if isempty(radius)
-            while isempty(radius)
-                radius=input('You miss an input value here!!!!! radius:');
-            end
-        end
-        if ~isnumeric(radius)
-            disp('This is not a numeric value!')
-            return;
-        end
-
-        if startPoint(1) < size(topo, 1)/2 && startPoint(2) < size(topo, 2)/2
-             % disp('Both x and y components of radius are in the (<n/2, <n/2) interval');
-             maxRadius = sqrt((size(topo, 1) - startPoint(1))^2 + (size(topo, 2) - startPoint(2))^2);
-        elseif startPoint(1) < size(topo, 1)/2 && startPoint(2) >= size(topo, 2)/2
-            % disp('x component is in the (<n/2, >=n/2) interval, y component is in the (>=n/2, >=n/2) interval');
-            maxRadius = sqrt((size(topo, 1) - startPoint(1))^2 + (startPoint(2))^2);
-        elseif startPoint(1) >= size(topo, 1)/2 && startPoint(2) < size(topo, 2)/2
-            % disp('x component is in the (>=n/2, <n/2) interval, y component is in the (<n/2, <n/2) interval');
-            maxRadius = sqrt((startPoint(1))^2 + (size(topo, 2) - startPoint(2))^2);
-        elseif startPoint(1) >= size(topo, 1)/2 && startPoint(2) >= size(topo, 2)/2
-            % disp('Both x and y components of radius are in the (>=n/2, >=n/2) interval');
-            maxRadius = sqrt((startPoint(1))^2 + (startPoint(2))^2);
-        else
-            disp('invalid start point');
-        end
-
-        
-        if radius > maxRadius
-            disp('The length of the line exceeds the max length you can choose');
-            return;
-        else
-        end 
-
+        % prompt: ask the user to input proper angle
         disp('Specify the angle of the line in degrees (0 is horizontal, 90  degrees is vertical)')
-        angle=input('Please input the angle in degree:');
+        angle=input('Please input the angle in degrees:');
+        %catch no input:
         if isempty(angle)
-            
             while isempty(angle)
-                angle=input('You miss an input value here!!!!! angle:');
+                disp('You missed an input!')
+                angle=input('Please input the angle in degrees:');
             end
         end
+        %check valid input
         if ~isnumeric(angle)
             disp('This is not a numeric value!')
             return;
         end
         
+        % give an artificial radius which is outside of the img 
+        radius = 1 + sqrt(size(topo,1)^2+size(topo,2)^2); 
+
+        %calcualte endpoint and chekc if the endpoint exceeds the image
         endPoint=calculateEndPoint(startPoint, radius, angle);
         
-        if endPoint(1) < 1 || endPoint(2) < 1 || endPoint(1) > size(topo, 1) || endPoint(2) > size(topo, 2)
-            disp('the endpoint chosed it beyond the limit of data range');
-            endPoint= [];
-            return;
-        end
 
-        comment = sprintf('gridlinemask(topo: %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], r=%d, theta=%d;', size(topo, 1), startPoint(1), startPoint(2), radius, angle);
+        comment = sprintf('gridMaskLine(topo: %d x %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], theta=%d;', size(topo, 1), size(topo, 2), startPoint(1), startPoint(2), angle);
     end
 
 elseif (~isempty(pointA) && ~isempty(pointB)) || (~isempty(pointA) && ~isempty(polcoord))
-    %   move to methods that start and end points are both predefined.
+    % cases of predefined start and end points (parsed values)
     if (~isempty(pointA) && ~isempty(pointB))
         % use arguments point1 and point2
         startPoint=pointA;
         endPoint=pointB;
-        % check if the startPoint and endPoint is within the size 
+        % check if the startPoint and endPoint is within the topo image
          if startPoint(1) < 1 || startPoint(2) < 1 || startPoint(1) > size(topo, 1) || startPoint(2) > size(topo, 2)
-            disp('the startpoint chosed it beyond the limit of data range');
+            disp('The startpoint lies beyond the limit of data range');
             startPoint= [];
             return;
          elseif endPoint(1) < 1 || endPoint(2) < 1 || endPoint(1) > size(topo, 1) || endPoint(2) > size(topo, 2)
-            disp('the endpoint chosed it beyond the limit of data range');
+            disp('The endpoint lies beyond the limit of data range');
             endPoint= [];
             return;
          end
 
-        comment = sprintf('gridlinemask(topo: %d, point1=[%d,%d],point2=[%d,%d], polcoord=[])', size(topo, 1), pointA(1), pointA(2), pointB(1), pointB(2));
+        comment = sprintf('gridMaskLine(topo: %d x %d, point1=[%d,%d],point2=[%d,%d], polcoord=[])', size(topo, 1), size(topo, 2),  pointA(1), pointA(2), pointB(1), pointB(2));
     else 
         % use arguments point1 and polcoord
         startPoint=pointA;
-        endPoint=calculateEndPoint(startPoint, polcoord(1), polcoord(2));
-        % check if the startPoint and endPoint is within the size 
-         if startPoint(1) < 1 || startPoint(2) < 1 || startPoint(1) > size(topo, 1) || startPoint(2) > size(topo, 2)
-            disp('the startpoint chosed it beyond the limit of data range');
-            startPoint= [];
-            return;
-         elseif endPoint(1) < 1 || endPoint(2) < 1 || endPoint(1) > size(topo, 1) || endPoint(2) > size(topo, 2)
-            disp('the endpoint chosed it beyond the limit of data range');
-            endPoint= [];
-            return;
-         end
-        comment = sprintf('gridlinemask(topo: %d, point1=[%d,%d],point2=[], polcoord=[%d,%d])', size(topo, 1), pointA(1), pointA(2), polcoord(1), polcoord(2));
+
+        % give an artificial radius which is outside of the img 
+        radius = 1 + sqrt(size(topo,1)^2+size(topo,2)^2);
+
+        % calculate the artificial endPoint
+        endPoint=calculateEndPoint(startPoint, radius, polcoord);
+
+        comment = sprintf('gridMaskLine(topo: %d x %d, point1=[%d,%d],point2=[], polcoord=[%d])', size(topo, 1), size(topo,2), pointA(1), pointA(2), polcoord);
     end
 else
     disp('the arguments are not properly defined');
@@ -201,9 +167,6 @@ mapshow(line_seg_x,line_seg_y,'Marker','+')
 mapshow(BoundaryPoints_x,BoundaryPoints_y,'DisplayType','point','Marker','o')
 
 % make the mask 
-[mask,~] =createLineMask(size(topo), BoundaryPoint1, BoundaryPoint2);
-
-
-
+[mask,~] =createLineSegmentMask(size(topo), BoundaryPoint1, BoundaryPoint2);
 
 end
