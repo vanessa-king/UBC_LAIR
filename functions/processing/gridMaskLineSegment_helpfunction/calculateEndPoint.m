@@ -22,7 +22,7 @@ function endPoint = calculateEndPoint(startPoint, r, phi)
 arguments
     startPoint  {mustBeNumeric,mustBePositive}
     r           {mustBeNumeric,mustBePositive}
-    phi         {mustBeNumeric,mustBeNonnegative}
+    phi         {mustBeNumeric}
 end
 
 % Calculate the coordinates of the end point
