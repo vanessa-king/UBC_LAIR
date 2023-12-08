@@ -1,8 +1,8 @@
-function [mask,comment] = gridMaskLine(topo,pointA, pointB, polcoord)
-%Returns a mask representing a line. 
-%   Creates a mask of matching size to the topo image. The line is defined
-%   by the start and end point or the start point and relative polar
-%   coordinates. If the optional parameters pointA, and pointB or polcoord 
+function [mask,comment] = gridMaskLineSegment(topo,pointA, pointB, polcoord)
+%Returns a mask representing a line segment. 
+%   Creates a mask of matching size to the topo image. The line segment is 
+%   defined by the start and end point, or the start point and relative polar
+%   coordinates. If the optional parameters pointA, and pointB, or polcoord 
 %   are parsed to the function, the parsed values define the line. If no
 %   defining values are parsed, the function assigns the values via
 %   (graphical) user input.
@@ -17,7 +17,8 @@ function [mask,comment] = gridMaskLine(topo,pointA, pointB, polcoord)
 %   mask        mask of selected area
 %   comment     log comment
 
-%   Nov, 2023   Jiabin Y.
+%   Nov. 2023   Jiabin Y., 
+%   edited Dec. 2023 Markus Altthaler
 
 
 %  add an argument validation
@@ -32,57 +33,70 @@ end
 
 if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
     % define line via user input points/values
-    disp('The line for the mask can be defined by:');
+    disp('The line segment for the mask can be defined by:');
     disp('- a start and an end point, selected by clicking in the topo image');
-    disp('- a start point, selected by clicking in the topo image, and the lenght and angle of the line.')
+    disp('- a start point, selected by clicking in the topo image, and the lenght and angle of the line segment.')
     method=input('Define the line via two points? Y/N [Y]:', "s");
     if isempty(method)
         method = "Y";
     end
 
     if method == "Y" || method == "y"
-        % click on topo twice, get two points
-        % assign a start point  as startpoint and an end point as endpoint
-        % startpoint=[1,1];
-        % endpoint=size(topo);
+        %define line by two clicks on the image
 
-       
         % Display an topo image 
         figure()
         p1=image(topo,'CDataMapping','scaled'); 
         axis square
+        hold on
+
         selectedTwoPoints=ginput(2);
         % define the start point
         startPoint=round(selectedTwoPoints(1,:));
         % define the end point
         endPoint=round(selectedTwoPoints(2,:));
-        comment = sprintf('gridlinemask(topo: %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], endpoint[%d,%d];', size(topo, 1), startPoint(1), startPoint(2), endPoint(1), endPoint(2));
+
+        %draw line on plot
+        line([startPoint(1),endPoint(1)],[startPoint(2),endPoint(2)],'Color','red','linewidth', 1.5);
+        hold off
+
+        comment = sprintf('gridMaskLineSegment(topo: %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], endpoint[%d,%d];', size(topo, 1), startPoint(1), startPoint(2), endPoint(1), endPoint(2));
     else
         % click on topo once, and input r and theta
-        % assign a start point as startpoint and radius as r, angle as theta
-        % startpoint=[1,1];
-        % r=size(topo, 1)/2;
+
         % theta=0; % horizontal line
         figure()
         p1=image(topo,'CDataMapping','scaled'); 
         axis square
+        hold on
+
         % define the start point
         startPoint=round(ginput(1));
+
         % define the end point with proper r and theta
-        % prompt: ask the user to input proper argument 
-        radius=input('Please input the proper length of the line:');
         
+        % prompt: ask the user to input proper radius & check validity of
+        % the vlaue
+        radius=input('Please input the value for the length of the line segment:');
+        %catch no input:
         if isempty(radius)
-            % disp('you need to ')
             while isempty(radius)
-                radius=input('You miss an input value here!!!!! radius:');
+                disp('You missed an input!')
+                radius=input('Please input a value for the length of the line segment:');
             end
         end
+        % check valid input:
         if ~isnumeric(radius)
             disp('This is not a numeric value!')
             return;
         end
-
+        if radius<=0 
+            disp('The length of a line must be positive!')
+            return;
+        end
+        
+        %check maximum valid length of line 
+        %note: that is the distance to the opposing cornor of the quadrant the point lies within 
         if startPoint(1) < size(topo, 1)/2 && startPoint(2) < size(topo, 2)/2
              % disp('Both x and y components of radius are in the (<n/2, <n/2) interval');
              maxRadius = sqrt((size(topo, 1) - startPoint(1))^2 + (size(topo, 2) - startPoint(2))^2);
@@ -103,51 +117,58 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
         if radius > maxRadius
             disp('The length of the line exceeds the max length you can choose');
             return;
-        else
         end 
-
+        
+        % prompt: ask the user to input proper angle
         disp('Specify the angle of the line in degrees (0 is horizontal, 90  degrees is vertical)')
-        angle=input('Please input the angle in degree:');
+        angle=input('Please input the angle in degrees:');
+        %catch no input:
         if isempty(angle)
-            
             while isempty(angle)
-                angle=input('You miss an input value here!!!!! angle:');
+                disp('You missed an input!')
+                angle=input('Please input the angle in degrees:');
             end
         end
+        %check valid input
         if ~isnumeric(angle)
             disp('This is not a numeric value!')
             return;
         end
-        
+
+        %calcualte endpoint and chekc if the endpoint exceeds the image
         endPoint=calculateEndPoint(startPoint, radius, angle);
         
         if endPoint(1) < 1 || endPoint(2) < 1 || endPoint(1) > size(topo, 1) || endPoint(2) > size(topo, 2)
-            disp('the endpoint chosed it beyond the limit of data range');
+            disp('The endpoint lies beyond the limit of data range');
             endPoint= [];
             return;
         end
+        
+        %draw line on plot
+        line([startPoint(1),endPoint(1)],[startPoint(2),endPoint(2)],'Color','red', 'linewidth', 1.5);
+        hold off
 
-        comment = sprintf('gridlinemask(topo: %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], r=%d, theta=%d;', size(topo, 1), startPoint(1), startPoint(2), radius, angle);
+        comment = sprintf('gridMaskLineSegment(topo: %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], r=%d, theta=%d;', size(topo, 1), startPoint(1), startPoint(2), radius, angle);
     end
 
 elseif (~isempty(pointA) && ~isempty(pointB)) || (~isempty(pointA) && ~isempty(polcoord))
-    %   move to methods that start and end points are both predefined.
+    % cases of predefined start and end points (parsed values)
     if (~isempty(pointA) && ~isempty(pointB))
         % use arguments point1 and point2
         startPoint=pointA;
         endPoint=pointB;
-        % check if the startPoint and endPoint is within the size 
+        % check if the startPoint and endPoint is within the topo image
          if startPoint(1) < 1 || startPoint(2) < 1 || startPoint(1) > size(topo, 1) || startPoint(2) > size(topo, 2)
-            disp('the startpoint chosed it beyond the limit of data range');
+            disp('The startpoint lies beyond the limit of data range');
             startPoint= [];
             return;
          elseif endPoint(1) < 1 || endPoint(2) < 1 || endPoint(1) > size(topo, 1) || endPoint(2) > size(topo, 2)
-            disp('the endpoint chosed it beyond the limit of data range');
+            disp('The endpoint lies beyond the limit of data range');
             endPoint= [];
             return;
          end
 
-        comment = sprintf('gridlinemask(topo: %d, point1=[%d,%d],point2=[%d,%d], polcoord=[])', size(topo, 1), pointA(1), pointA(2), pointB(1), pointB(2));
+        comment = sprintf('gridMaskLineSegment(topo: %d, point1=[%d,%d],point2=[%d,%d], polcoord=[])', size(topo, 1), pointA(1), pointA(2), pointB(1), pointB(2));
     else 
         % use arguments point1 and polcoord
         startPoint=pointA;
@@ -162,13 +183,16 @@ elseif (~isempty(pointA) && ~isempty(pointB)) || (~isempty(pointA) && ~isempty(p
             endPoint= [];
             return;
          end
-        comment = sprintf('gridlinemask(topo: %d, point1=[%d,%d],point2=[], polcoord=[%d,%d])', size(topo, 1), pointA(1), pointA(2), polcoord(1), polcoord(2));
+        comment = sprintf('gridMaskLineSegment(topo: %d, point1=[%d,%d],point2=[], polcoord=[%d,%d])', size(topo, 1), pointA(1), pointA(2), polcoord(1), polcoord(2));
     end
 else
     disp('the arguments are not properly defined');
 
 end
 
+%actually creating the mask; note: the returned lower level comment is 
+%omitted as the log comments that the function returns are assigned above
+%based on the use case
 [mask,~] =createLineMask(size(topo), startPoint,endPoint);
 
 

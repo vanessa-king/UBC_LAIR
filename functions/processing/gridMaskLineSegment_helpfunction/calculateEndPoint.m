@@ -3,8 +3,11 @@ function endPoint = calculateEndPoint(startPoint, r, phi)
 %   calculates the poisition [x2,y2], rounded to the next integer values, 
 %   of the end point based on the polar coordinates (r and phi) relative 
 %   to the given startPoint [x1,y1]. Note all point coordinates must be
-%   nonzero positive numbers adn will be rounded to the next integer.
-%   note: return  'invalid end point' e.g negnative values 
+%   nonzero positive numbers and will be rounded to the next neares integer.
+%   
+%   Note: the functions deliberatelty returns 'invalid' (e.g negnative 
+%   values) for endPoint, as these are used to treat expections in the top 
+%   level function gridMaskLineSegment()
 
 %arguments:
 %   startPoint  coordinates of the starting point [x1, y1]
@@ -27,7 +30,5 @@ x2 = round(startPoint(1)) + round(r * cosd(phi));
 y2 = round(startPoint(2)) + round(r * sind(phi));
 
 endPoint = [x2, y2];
-
-
 
 end
