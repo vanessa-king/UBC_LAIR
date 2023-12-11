@@ -141,17 +141,22 @@ xbox = xlimit([1 1 2 2 1]);
 ybox = ylimit([1 2 2 1 1]);
 
 % Create a line segment that extend beyond the boundary of the topo
-k=(startPoint(2)-endPoint(2))/(startPoint(1)-endPoint(1));
-b=(startPoint(2)-k*startPoint(1));
-% This if statement is to address the catastropic case when k is 0 or
-% infinity
-if abs(k)<1
-    Pt1_beyond=[xlimit(1)-10,(xlimit(1)-10)*k+b];
-    Pt2_beyond=[xlimit(2)+10,(xlimit(2)+10)*k+b];
+if startPoint(1) == endPoint(1)
+    Pt1_beyond=[startPoint(1), ylimit(1)-10];
+    Pt2_beyond=[endPoint(1), ylimit(2)+10]; 
 else
-    Pt1_beyond=[((ylimit(1)-10)-b)/k,ylimit(1)-10];
-    Pt2_beyond=[((ylimit(2)+10)-b)/k,ylimit(2)+10];    
-end 
+    k=(startPoint(2)-endPoint(2))/(startPoint(1)-endPoint(1));
+    b=(startPoint(2)-k*startPoint(1));
+    % This if statement is to address the catastropic case when k is 0 or
+    % infinity
+    if abs(k)<1
+         Pt1_beyond=[xlimit(1)-10,(xlimit(1)-10)*k+b];
+         Pt2_beyond=[xlimit(2)+10,(xlimit(2)+10)*k+b];
+    else
+         Pt1_beyond=[((ylimit(1)-10)-b)/k,ylimit(1)-10];
+         Pt2_beyond=[((ylimit(2)+10)-b)/k,ylimit(2)+10];    
+    end 
+end
 
 line_seg_x = [Pt1_beyond(1), Pt2_beyond(1)];
 line_seg_y = [Pt1_beyond(2), Pt2_beyond(2)];
