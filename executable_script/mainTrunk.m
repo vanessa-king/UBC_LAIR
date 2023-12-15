@@ -50,7 +50,8 @@
     % PD01A Porcessing-Derivative-01-A; create a regular dIdV for all I-V, and forward & backward separately
     % PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V) for all I-V, and forward & backward separately
     % PC02A Processing-Correcting-02-A; correct the grid for drift 
-    % PF0A Processing-Flatten-01-A; Subtracts the plane in topography images;
+    % PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
+    % PT01A Processing-Threshold-01-A; Gets threshold from the height distribution of topo;
     % VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them
     % VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
     % VS03A Visualize-Spectrum-03-A; circular masking
@@ -307,6 +308,30 @@ else
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "", LOGcomment ,0);
 
 end
+
+%% PT01A Processing-Threshold-01-A; Gets threshold from the height distribution of topo;
+%Edited by Rysa Greenwood Nov 2023
+%Need to run LI01A, LG01A first. Suggest running PF01A aswell. Right now this can only handle topo images
+%from grid structure
+%arguments:
+% topo (struct): grid
+
+image = topo;
+
+[topoThresh, LOGcomment] = topoGetThreshold(image);
+
+%ask for plotname:
+plot_name = uniqueNamePrompt("TopoThresh","",LOGpath);
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PT01A", LOGcomment ,0);
+
+%save the created figures here:
+savefig(strcat(LOGpath,"/",plot_name,".fig"))
+
+%create copy of the log corresponding to the saved figures
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+clear plot_name;
+
 %% VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them;
 % Edited by Jisun Kim Oct 2023
 % This section of code takes the average of the I-V and dI/dV. 
