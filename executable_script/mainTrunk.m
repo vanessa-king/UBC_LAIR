@@ -53,11 +53,6 @@
     % PF0A Processing-Flatten-01-A; Subtracts the plane in topography images;
     % VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them
     % VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
-    % PD01A Porcessing-Derivative-01-A; create a regular dIdV for all I-V, and forward & backward separately.
-    % PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V) for all I-V, and forward & backward separately.
-    % VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them
-    % VS01B Visualize-Spectrum-01-B; average normalized dI/dV and plot it;
-    % VS02A Visualize-Spectrum-02-A;     
     % VS03A Visualize-Spectrum-03-A; circular masking
     % VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
 
@@ -234,6 +229,12 @@ end
 C=3E-10;
 [didv, grid.I, V_reduced, I_offset, LOGcomment] = gridNormDerivative(grid, C);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PD02A", LOGcomment ,0);
+
+[I_offset_std, f, plot_name, LOGcomment] = plotDifferenceToMean(I_offset, LOGpath);
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+clear plot_name;
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
 
 if (~avg_forward_and_backward)
     gridForward = grid;
