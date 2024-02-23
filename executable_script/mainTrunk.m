@@ -47,7 +47,7 @@
     % LG01A Load-Grid-01-A; load grid 
     % LG01B Load-Grid-01-B; load grid and topo from Nanonis
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
-    % PD01A Porcessing-Derivative-01-A; create a regular dIdV for all I-V, and forward & backward separately
+    % PD01A Processing-Derivative-01-A; create a regular dIdV for all I-V, and forward & backward separately
     % PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V) for all I-V, and forward & backward separately
     % PC02A Processing-Correcting-02-A; correct the grid for drift 
     % PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
@@ -200,7 +200,7 @@ if (~avg_forward_and_backward)
     [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,'grid.I_Backward',span);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 end
-%% PD01A Porcessing-Derivative-01-A; create a regular dIdV for all I-V, and forward & backward separately. 
+%% PD01A Processing-Derivative-01-A; create a regular dIdV for all I-V, and forward & backward separately. 
 % Edited by: Jisun November 2023
 
 % This section of code creates a regular dIdV data from the grid. It will create dIdV for all I-V; foward only; backward only. 
@@ -333,102 +333,42 @@ saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
 clear plot_name;
 
 %% VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them;
-% Edited by Jisun Kim Oct 2023
+% Edited by Jisun Kim Oct 2023, again in Feb 2024
 % This section of code takes the average of the I-V and dI/dV. 
 % Then it plots I versus V, dI/dV versus V for all I-V curves; forward and backward separately.
 % NOTE: IF I DON'T RUN PD01A or PD01B, THIS SECTION DOESN'T RECOGNIZE V_reduced
 
-[number_bias_layer, ~] = size(V_reduced);
-
 % This makes the averaged "I versus V" plot
-[avg_iv, f1, LOGcomment] = gridAvg(grid.I, grid.V, 1);
-xlabel('V','fontsize', 20)
-ylabel('I(V) [A]','fontsize', 20)
-
-if f1 == []
-else
-    plot_name_1 = uniqueNamePrompt("average_IV","",LOGpath);
-    savefig(f1, strcat(LOGpath,"/",plot_name_1,".fig"))
-end
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_1));
+[avg_iv, LOGcomment] = gridAvg(grid.I);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01A", LOGcomment ,0);
+[~, plot_name_1,LOGcomment] = plotOneXYGraph(LOGpath,"IV", grid.V, avg_iv);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 % This makes the averaged "dI/dV versus V" plot
-[avg_didv, f2, LOGcomment] = gridAvg(didv, V_reduced,1);
-xlabel('V','fontsize', 20)
-ylabel('dI/dV [a.u.]','fontsize', 20)
-%xticks([-0.04 -0.02 0 0.02 0.04])
-%xlim([-0.02 0.02])
-%ylim([0 3e-9])
-set(gca,'fontsize',20)
-
-if f2 == []
-else
-    plot_name_2 = uniqueNamePrompt("average_dIdV","",LOGpath);
-    savefig(f2, strcat(LOGpath,"/",plot_name_2,".fig"))
-end
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_2));
+[avg_didv, LOGcomment] = gridAvg(didv);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+[~, plot_name_2,LOGcomment] = plotOneXYGraph(LOGpath,"dIdV", V_reduced, avg_didv);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 % This makes the averaged "I versus V" plot for forward and backward sweeps separately
-[avg_iv_forward, f3, LOGcomment] = gridAvg(grid.I_Forward, grid.V);
-
-if f3 == []
-    clear f3
-else
-    %close f3;
-end
+[avg_iv_forward, LOGcomment] = gridAvg(grid.I_Forward);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-[avg_iv_backward, f4, LOGcomment] = gridAvg(grid.I_Backward, grid.V,1);
-if f4 == []
-else
-    hold on
-    plot(grid.V,avg_iv_forward)
-    hold off
-    legend('bwd', 'fwd');
-    xlabel('V','fontsize', 20)
-    ylabel('I(V) [A]','fontsize', 20);
-    title("Avg I(V) for bwd and fwd");
-    
-    plot_name_3 = uniqueNamePrompt("forward_vs_backward_IV","",LOGpath);
-    savefig(strcat(LOGpath,"/",plot_name_3,".fig"))
-end
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_3));
+[avg_iv_backward, LOGcomment] = gridAvg(grid.I_Backward);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+[~, plot_name_3,LOGcomment] = plotTwoXYGraph(LOGpath,"IV_fwdbwd", grid.V,avg_iv_forward, avg_iv_backward);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 % This makes the averaged "dI/dV versus V" plot for forward and backward sweeps separately
-[avg_didv_forward, f5, LOGcomment] = gridAvg(didv_forward, V_reduced);
-
-if f5 == []
-    clear f5
-else
-    %close f5;
-end
+[avg_didv_forward, LOGcomment] = gridAvg(didv_forward);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-[avg_didv_backward, f6, LOGcomment] = gridAvg(didv_backward, V_reduced,1);
-if f6 == []
-else
-    hold on
-    plot(V_reduced,avg_didv_forward)
-    hold off
-    legend('bwd', 'fwd');
-    xlabel('V','fontsize', 20)
-    ylabel('dI/dV [a.u.]','fontsize', 20);
-    title("Avg dI/dV for bwd and fwd");
-    
-    plot_name_4 = uniqueNamePrompt("forward_vs_backward_dIdV","",LOGpath);
-    savefig(strcat(LOGpath,"/",plot_name_4,".fig"))
-end
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_4));
+[avg_didv_backward, LOGcomment] = gridAvg(didv_backward);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+[~, plot_name_4,LOGcomment] = plotTwoXYGraph(LOGpath,"dIdV_fwdbwd", V_reduced, avg_didv_forward, avg_didv_backward);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 %create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2, "+", plot_name_3,"+", plot_name_4));
 clear plot_name_1 plot_name_2 plot_name_3 plot_name_4;
-
-
 
 %% VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
 % Edited by Vanessa October 2023
