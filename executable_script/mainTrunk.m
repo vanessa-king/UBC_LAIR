@@ -164,7 +164,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 % This section of code loads the files called above (grid_number and img_number)
 
 avg_forward_and_backward = false;
-[grid,LOGcomment] = gridLoadDataUpward_separate(folder,stamp_project,img_number,grid_number,avg_forward_and_backward); % Taking data Upward
+[grid,LOGcomment] = gridLoadDataUpward(folder,stamp_project,img_number,grid_number,avg_forward_and_backward); % Taking data Upward
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01A", LOGcomment ,0);
 
 %% LG01B Load-Grid-01-B; load grid and topo from Nanonis
