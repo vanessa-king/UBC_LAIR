@@ -398,8 +398,8 @@ savefig(strcat(LOGpath,"/",plot_name,".fig"))
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
 clear plot_name;
 
-%% VS03A Visualize-Spectrum-03-A; circular masking; 
-% Edited by Jisun Oct 2023
+%% VS03A Visualize-Spectrum-03-A; circular masking;
+% Edited by Jisun Oct 2023, again in Feb 2024.
 % This section of code creates a circular mask of radius R around a
 % clicked point. It then plots the average dI/dV on that point. The user may toggle R and energy slice.
 
@@ -413,59 +413,15 @@ LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_1));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
 
 % Compute the average dI/dV spectra in the selected area
-[~, mask_averaged_didv, LOGcomment] = gridAvgMask(didv, circular_mask);
-
+[mask_averaged_didv, LOGcomment] = gridAvg(didv, circular_mask);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 % Generate the plot
-figure; 
-set(gca,'DefaultLineLineWidth',2)
-set(gca,'FontSize',20)
-plot(V_reduced, mask_averaged_didv,'b');  
-ylabel('dI/dV [a.u.]','fontsize', 20)
-xlabel('V','fontsize', 20)
-xticks([-0.04 -0.02 0 0.02 0.04])
-xlim([-0.05, 0.05])
-ylim([0, 4E-9])
-
-% Naming and saving the second figure
-plot_name_2 = uniqueNamePrompt("mask_averaged_didv", "", LOGpath);
-savefig(strcat(LOGpath, "/", plot_name_2, ".fig"));
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_2));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+[~, plot_name_2,LOGcomment] = plotOneXYGraph(LOGpath,"dIdV", V_reduced, mask_averaged_didv);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 % Create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2));
 clear plot_name_1 plot_name_2;
-
-%% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
-% Edited by James October 2023
-
-% This section visualizes a slice of dI/dV data at a user-defined bias. 
-% Features:
-% 1. Prompt the user for the bias of interest.
-% 2. Generate and save the slice plot with appropriate naming.
-% 3. Log actions using provided log blocks.
-
-% Ask the user to enter the bias of interest
-bias_of_interest = input("Enter the bias of interest: ");
-
-% Convert the bias_of_interest to string if it's a number
-bias_str = num2str(bias_of_interest);
-
-% Generate the first plot and return a LOGcomment
-plot_name_cell = {uniqueNamePrompt("bias_slice_" + bias_str, "", LOGpath)};
-[Biases,LOGcomment] = gridPlotSlices(didv, V_reduced, bias_of_interest, plot_name_cell);
-
-% Naming and saving the first figure
-filename = sprintf('%s/%s.fig', LOGpath, plot_name_cell{1});
-savefig(filename);
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_cell{1}));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT01A", LOGcomment, 0);
-
-% Create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name_cell{1});
-clear plot_name_cell;
-
-clear plot_name_cell;
 
 %% PT01A Processing-Transforming-01-A; takes (Matrix) flat-style data and tranforms it to (Nanonis) array-style data
 % Edited by James December 2023
