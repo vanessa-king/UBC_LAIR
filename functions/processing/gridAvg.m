@@ -21,10 +21,10 @@ else
     % Compute masked average
     [xrow,ycol] = find(mask);
     for i = 1:length(xrow)
-        X_masked(:,i,i) = X(:,xrow(i),ycol(i)); % here is the masked X
+        X_cropped(:,i,i) = X(:,xrow(i),ycol(i)); % here the original X is cropped to only store data where the mask is applied.
     end
     % Calculate average of X from only masked area
-    avg_X = mean(X_masked, [2 3]);
+    avg_X = mean(X_cropped, [2 3]);
     comment = sprintf("gridAvg(I or dIdV:%s) with mask applied|", mat2str(size(X)));
 end
 
