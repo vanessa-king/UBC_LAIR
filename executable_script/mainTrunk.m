@@ -423,6 +423,37 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2));
 clear plot_name_1 plot_name_2;
 
+%% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
+% Edited by James October 2023
+
+% This section visualizes a slice of dI/dV data at a user-defined bias. 
+% Features:
+% 1. Prompt the user for the bias of interest.
+% 2. Generate and save the slice plot with appropriate naming.
+% 3. Log actions using provided log blocks.
+
+% Ask the user to enter the bias of interest
+bias_of_interest = input("Enter the bias of interest: ");
+
+% Convert the bias_of_interest to string if it's a number
+bias_str = num2str(bias_of_interest);
+
+% Generate the first plot and return a LOGcomment
+plot_name_cell = {uniqueNamePrompt("bias_slice_" + bias_str, "", LOGpath)};
+[Biases,LOGcomment] = gridPlotSlices(didv, V_reduced, bias_of_interest, plot_name_cell);
+
+% Naming and saving the first figure
+filename = sprintf('%s/%s.fig', LOGpath, plot_name_cell{1});
+savefig(filename);
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_cell{1}));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT01A", LOGcomment, 0);
+
+% Create copy of the log corresponding to the saved figures
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name_cell{1});
+clear plot_name_cell;
+
+clear plot_name_cell;
+
 %% PT01A Processing-Transforming-01-A; takes (Matrix) flat-style data and tranforms it to (Nanonis) array-style data
 % Edited by James December 2023
 
