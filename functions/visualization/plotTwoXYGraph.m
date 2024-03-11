@@ -24,5 +24,5 @@ function [f, plot_name, comment] = plotTwoXYGraph(LOGpath, LayoutCase, X1, Y1, Y
 
  plot_name = uniqueNamePrompt(strcat("average_",LayoutCase),"",LOGpath);
  savefig(f, strcat(LOGpath,"/",plot_name,".fig"))
- comment = sprintf(strcat("plotTwoXYGraph(",ax.XLabel.String,":%s, ",strcat(ax.YLabel.String,"Y1"),":%s, ","Y2",":%s, ","plotname=%s|"),mat2str(size(X1)),mat2str(size(Y1)),mat2str(size(Y2)),plot_name);
+ comment = sprintf(strcat("plotTwoXYGraph(",ax.XLabel.String,":%s, ",strcat(ax.YLabel.String,"Y1"),":%s, ","Y2",":%s), ","plotname=%s|"),mat2str(size(X1)),mat2str(size(Y1)),mat2str(size(Y2)),plot_name);
 end

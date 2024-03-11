@@ -49,6 +49,6 @@ Num_in_mask = length(row);
 hold off
 
 % the x, y coordinate from the click are also included in the comment. 
-comment = sprintf("gridMaskPoint(didv:%s, V_reduced:%s, imageV=%s, radius=%s, x=%s, y=%s)|", mat2str(size(didv)), mat2str(size(V_reduced)), num2str(imageV), num2str(radius), num2str(pos(1)), num2str(pos(2)));
+comment = sprintf("gridMaskPoint(didv:%s, V_reduced:%s, imageV=%s, radius=%s, x=%s, y=%s)", mat2str(size(didv)), mat2str(size(V_reduced)), num2str(imageV), num2str(radius), num2str(pos(1)), num2str(pos(2)));
 end
 

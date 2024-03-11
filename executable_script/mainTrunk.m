@@ -409,7 +409,7 @@ radius = 3;
 
 plot_name_1 = uniqueNamePrompt("circular_mask_position","",LOGpath);
 savefig(strcat(LOGpath,"/",plot_name_1,".fig"))
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_1));
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s|",plot_name_1));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
 
 % Compute the average dI/dV spectra in the selected area
