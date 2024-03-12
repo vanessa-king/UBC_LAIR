@@ -1,8 +1,11 @@
-%Description: gridMaskPoint create mask of radius R around clicked point
-
 function [mask, Num_in_mask, comment] = gridMaskPoint(didv, V_reduced, imageV, radius)
+%Description: gridMaskPoint create a mask of radius R around the clicked point.
+% Note: this function logs the click position (x, y) corretly and the corresponding circular mask is created 
+% at the proper location. However, when you open the output "mask", it looks like the mask position
+% (non-zero rows and columns) is located at (x, y_max - y). This is not an error. 
+% This is just how MatLab handles rows and columns. 
 
-%Parameters
+% Parameters
 %   didv: 3D Matrix with dI/dV data
 %   V_reduced: reduced vector with bias voltages(see gridCorNorm for definition of V_reduced)
 %   imageV: float, voltage at which to display image 
@@ -46,6 +49,6 @@ Num_in_mask = length(row);
 hold off
 
 % the x, y coordinate from the click are also included in the comment. 
-comment = sprintf("gridMaskPoint(didv:%s, V_reduced:%s, imageV=%s, radius=%s, x=%s, y=%s)|", mat2str(size(didv)), mat2str(size(V_reduced)), num2str(imageV), num2str(radius), num2str(pos(1)), num2str(pos(2)));
+comment = sprintf("gridMaskPoint(didv:%s, V_reduced:%s, imageV=%s, radius=%s, x=%s, y=%s)", mat2str(size(didv)), mat2str(size(V_reduced)), num2str(imageV), num2str(radius), num2str(pos(1)), num2str(pos(2)));
 end
 

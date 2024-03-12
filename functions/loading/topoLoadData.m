@@ -1,61 +1,76 @@
-function [topo, comment] = topoLoadData(fld,stamp_project,img_nbr)
+% Description:  
+% Load topography from files with a z_flat format.
+% Parameters:
+%   folder: folder where z_flat files are stored
+%   stamp_project: the filename leader, takes the form
+%   'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--', for example
+%   img_number: the z-file name, takes the form '###_#'
+
+function topo = topoLoadData(folder,stamp_project,img_number)
 
 arguments
-    fld             {mustBeFolder}
+    folder          {mustBeFolder}
     stamp_project   {mustBeText}
-    img_nbr         {mustBeText}
+    img_number      {mustBeText}
 end
 
-%TOPOLOADDATA Load topography files from Omicron (z_flat).
-%   fld - folder where flat files are stored (string)
-%   stamp_project - name of the project (string)
-%   img_nbr - the image number (string)
-%
-%   Outputs a structure with topography data:
-%     x_img - the x axis of image
-%     y_img - the y axis of image
-%     z_img - the actual topographic heights
 
-%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
-%Never plot data (e.g. the whole gird) in the comment, only plot the values
-%('=<VARn_value>') of variables that decide/affect how the function
-%processes data (e.g. order of fit, ...) 
-%Note convert all <VARn_value> to strings; 
-comment = sprintf("topoLoadData(fld=%s, stamp_project=%s, img_nbr=%s)|", fld, stamp_project, img_nbr);
+Z_file = [stamp_project img_number '.Z_flat'];
 
-%regular function processing:
+addpath(folder);
 
-z_file = [stamp_project img_nbr '.Z_flat'];
+% parse a FLAT-File and return its contents in a structure F, and then transform the FLAT data into a matrix
+fZ = flat_parse(Z_file);
+mZ = flat2matrix(fZ); % this is a 3-d matrix: z, x, and y
 
-addpath(fld);
+rmpath(folder);
 
-fz = flat_parse(z_file);
-mz = flat2matrix(fz);
+% treatment of image data, by converting matrices into nanometers
+% xraw and yraw are converted here as a clunky way of plotting in nm
 
-rmpath(fld);
+xraw = 1e9*mZ{2};
+yraw = 1e9*mZ{3};
+zraw = mZ{1};
 
-xraw = 1e9*mz{2};
-yraw = 1e9*mz{3};
+% check if image is scanned forwards AND backwards
 
-zraw = mz{1};
-
-if find(abs(diff(sign(diff(xraw))))) % Check if image is scanned forwards and backwards
-                                     % only take the forward
+if find(abs(diff(sign(diff(xraw)))))
+    
+% but only take the forwards direction
     topo.x_img = xraw(1:length(xraw)/2);
     ztmp = zraw(1:length(xraw)/2,:);
+    
+% or take the backwards direction
+%   topo.x_img = xraw((length(xraw)/2+1):end);
+%   ztmp = zraw((length(xraw)/2+1):end,:);
+
+% do this if it was only scanned forwards (we DO have this option!)
 else
     topo.x_img = xraw;
     ztmp = zraw;
 end
 
-if find(abs(diff(sign(diff(yraw))))) % Check if swept up and down
-                                     % only take the up
-    topo.y_img = yraw(1:length(yraw)/2);
-    topo.z_img = ztmp(:,1:length(yraw)/2);
+% check if the image was swept up AND down
+if find(abs(diff(sign(diff(yraw)))))
+
+% but only take the up sweep
+    topo.y_img_all = yraw(1:length(yraw)/2);
+    topo.z_img_all = ztmp(:,1:length(yraw)/2);
+    
+% or take the down sweep
+%   topo.y_img_all = yraw((length(yraw)/2+1):end); 
+%   topo.z_img_all = ztmp(:,(length(yraw)/2+1):end);
+  
+% do this if it was only swept up  
 else
-    topo.y_img = yraw;
-    topo.z_img = ztmp;
+    topo.y_img_all = yraw;
+    topo.z_img_all = ztmp;
 end
+
+% This section is to remove NaN values in a partial image. If the image is complete, this section doesn't really do anything. 
+topo.z_img = topo.z_img_all(:,all(~isnan(topo.z_img_all)));
+topo.reduced_topo_size = size(topo.z_img,2);
+topo.y_img = topo.y_img_all(1:topo.reduced_topo_size,1);
 
 end
 

@@ -164,7 +164,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 % This section of code loads the files called above (grid_number and img_number)
 
 avg_forward_and_backward = false;
-[grid,LOGcomment] = gridLoadDataUpward_separate(folder,stamp_project,img_number,grid_number,avg_forward_and_backward); % Taking data Upward
+[grid,LOGcomment] = gridLoadDataUpward(folder,stamp_project,img_number,grid_number,avg_forward_and_backward); % Taking data Upward
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01A", LOGcomment ,0);
 
 %% LG01B Load-Grid-01-B; load grid and topo from Nanonis
@@ -398,8 +398,8 @@ savefig(strcat(LOGpath,"/",plot_name,".fig"))
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
 clear plot_name;
 
-%% VS03A Visualize-Spectrum-03-A; circular masking; 
-% Edited by Jisun Oct 2023
+%% VS03A Visualize-Spectrum-03-A; circular masking;
+% Edited by Jisun Oct 2023, again in Feb 2024.
 % This section of code creates a circular mask of radius R around a
 % clicked point. It then plots the average dI/dV on that point. The user may toggle R and energy slice.
 
@@ -409,28 +409,15 @@ radius = 3;
 
 plot_name_1 = uniqueNamePrompt("circular_mask_position","",LOGpath);
 savefig(strcat(LOGpath,"/",plot_name_1,".fig"))
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_1));
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s|",plot_name_1));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
 
 % Compute the average dI/dV spectra in the selected area
-[~, mask_averaged_didv, LOGcomment] = gridAvgMask(didv, circular_mask);
-
+[mask_averaged_didv, LOGcomment] = gridAvg(didv, circular_mask);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 % Generate the plot
-figure; 
-set(gca,'DefaultLineLineWidth',2)
-set(gca,'FontSize',20)
-plot(V_reduced, mask_averaged_didv,'b');  
-ylabel('dI/dV [a.u.]','fontsize', 20)
-xlabel('V','fontsize', 20)
-xticks([-0.04 -0.02 0 0.02 0.04])
-xlim([-0.05, 0.05])
-ylim([0, 4E-9])
-
-% Naming and saving the second figure
-plot_name_2 = uniqueNamePrompt("mask_averaged_didv", "", LOGpath);
-savefig(strcat(LOGpath, "/", plot_name_2, ".fig"));
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_2));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+[~, plot_name_2,LOGcomment] = plotOneXYGraph(LOGpath,"dIdV", V_reduced, mask_averaged_didv);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 % Create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2));
