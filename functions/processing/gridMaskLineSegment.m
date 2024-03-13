@@ -1,4 +1,4 @@
-function [mask,comment] = gridMaskLineSegment(topo,pointA, pointB, polcoord)
+function [mask,comment,startPoint, endPoint, polcoord] = gridMaskLineSegment(topo,pointA, pointB, polcoord)
 %Returns a mask representing a line segment. 
 %   Creates a mask of matching size to the topo image. The line segment is 
 %   defined by the start and end point, or the start point and relative polar
@@ -60,6 +60,11 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
         line([startPoint(1),endPoint(1)],[startPoint(2),endPoint(2)],'Color','red','linewidth', 1.5);
         hold off
 
+        % calculate the polar angle based on the start and end point. 
+        v=endPoint-startPoint;
+        u=[1 0];
+        polcoord=acos(dot(v,u)/norm(v));
+    
         comment = sprintf('gridMaskLineSegment(topo: %d x %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], endpoint[%d,%d];', size(topo, 1), size(topo, 2), startPoint(1), startPoint(2), endPoint(1), endPoint(2));
     else
         % click on topo once, and input r and theta
@@ -147,6 +152,11 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
         %draw line on plot
         line([startPoint(1),endPoint(1)],[startPoint(2),endPoint(2)],'Color','red', 'linewidth', 1.5);
         hold off
+        
+        % calculate the polar angle based on the start and end point. 
+        v=endPoint-startPoint;
+        u=[1 0];
+        polcoord=acos(dot(v,u)/norm(v));
 
         comment = sprintf('gridMaskLineSegment(topo: %d x %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], r=%d, theta=%d;', size(topo, 1), size(topo, 2), startPoint(1), startPoint(2), radius, angle);
     end
@@ -157,6 +167,7 @@ elseif (~isempty(pointA) && ~isempty(pointB)) || (~isempty(pointA) && ~isempty(p
         % use arguments point1 and point2
         startPoint=pointA;
         endPoint=pointB;
+        
         % check if the startPoint and endPoint is within the topo image
          if startPoint(1) < 1 || startPoint(2) < 1 || startPoint(1) > size(topo, 1) || startPoint(2) > size(topo, 2)
             disp('The startpoint lies beyond the limit of data range');
@@ -167,7 +178,12 @@ elseif (~isempty(pointA) && ~isempty(pointB)) || (~isempty(pointA) && ~isempty(p
             endPoint= [];
             return;
          end
-
+        
+        % calculate the polar angle based on the start and end point. 
+        v=endPoint-startPoint;
+        u=[1 0];
+        polcoord=acos(dot(v,u)/norm(v));
+        
         comment = sprintf('gridMaskLineSegment(topo: %d x %d, point1=[%d,%d],point2=[%d,%d], polcoord=[])', size(topo, 1), size(topo, 2), pointA(1), pointA(2), pointB(1), pointB(2));
     else 
         % use arguments point1 and polcoord
@@ -183,6 +199,12 @@ elseif (~isempty(pointA) && ~isempty(pointB)) || (~isempty(pointA) && ~isempty(p
             endPoint= [];
             return;
          end
+        
+        % calculate the polar angle based on the start and end point. 
+        v=endPoint-startPoint;
+        u=[1 0];
+        polcoord=acos(dot(v,u)/norm(v));
+        
         comment = sprintf('gridMaskLineSegment(topo: %d x %d, point1=[%d,%d],point2=[], polcoord=[%d,%d])', size(topo, 1), size(topo, 2), pointA(1), pointA(2), polcoord(1), polcoord(2));
     end
 else
