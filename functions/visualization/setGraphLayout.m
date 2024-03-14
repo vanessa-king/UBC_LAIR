@@ -20,6 +20,8 @@ switch LayoutCase
         ax.XLabel.String = 'bias(V)';
         ax.YLabel.String = 'dI/dV[a.u.]';
         ax.XTick = [-0.04 -0.02 0 0.02 0.04];        
+        ax.XLim = [-0.04 0.04];
+        ax.YLim = [0 3e-9];
     case "IV_fwdbwd"
         ax.FontSize = 20;
         ax.XLabel.String = 'bias(V)';
@@ -30,4 +32,16 @@ switch LayoutCase
         ax.XLabel.String = 'bias(V)';
         ax.YLabel.String = 'dI/dV[a.u.]';
         legend('bwd', 'fwd','location','southeast')
+    case "transparent_IV"
+        ax.FontSize = 12;
+        ax.Title.String = 'I/V Profiles with average';
+        ax.XLabel.String = 'Bias Voltage [V]';
+        ax.YLabel.String = 'I/V [a.u.]';
+        axis square;
+    case "transparent_dIdV"
+        ax.FontSize = 12;
+        ax.Title.String = 'dI/dV Profiles with average';
+        ax.XLabel.String = 'Bias Voltage [V]';
+        ax.YLabel.String = 'dI/dV [a.u.]';
+        axis square;
 end
