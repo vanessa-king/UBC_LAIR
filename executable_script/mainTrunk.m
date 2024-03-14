@@ -461,79 +461,21 @@ clear plot_name_cell;
 
 LOGcomment = strcat("Transform to Nanonis style data");
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PT01A", LOGcomment ,0);
-%% VS04A Visualize-Spectra-04-A: Plot All Spectra Faintly and Overlay the Average
-% Edited by James December 2023
+%% VS04A Visualize-Spectra-04-A: Unified Plotting of I/V and dI/dV Profiles
+% Adjusted to automatically determine layout case inside the function.
+% Edited by James March 2024
 
 % Display grid dimensions to the user
 numx = size(IV_NanonisStyle, 1);
 numy = size(IV_NanonisStyle, 2);
 disp(['Grid dimensions: numx = ', num2str(numx), ', numy = ', num2str(numy)]);
 
-label = grid.V; % Define 'label' for subsequent plotting
+% User input for step size in profile plotting
+step_size = input('Enter the step size for plotting profiles: ');
 
-% Set parameters for plot aesthetics: transparency, line width, and colors
-transp = 0.05;  % Transparency for individual spectra
-lwidth1 = 1.5;  % Line width for individual spectra
-lwidth2 = 2.5;  % Line width for average spectra
-pcolorb_raw = [0, 0, 1];  % Blue color for raw data
-pcolorb_avg = [0, 0, 0];  % Black color for average spectra
+% Assuming IV_NanonisStyle and dIdV_NanonisStyle have been defined elsewhere
+[figNameIV, commentIV] = plotSpectraProfiles(IV_NanonisStyle, grid.V, avg_IV_NanonisStyle, step_size, numx, numy, LOGpath, "transparent_IV");
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS04D", commentIV, 0);
 
-% User input for step size in I/V profile plotting
-step_size_IV = input('Enter the step size for plotting I/V profiles: ');
-if step_size_IV > numx || step_size_IV > numy || step_size_IV < 1
-    error('Step size for I/V must be between 1 and the minimum of numx or numy.');
-end
-
-% Adjust loop limits based on actual array dimensions for I/V
-max_i = min(numx, size(IV_NanonisStyle, 1));
-max_j = min(numy, size(IV_NanonisStyle, 2));
-elayer = size(IV_NanonisStyle, 3);
-
-% Plot I/V profiles with user-defined step size
-figure();
-for i = 1:step_size_IV:max_i
-    for j = 1:step_size_IV:max_j
-        plot1 = plot(label, reshape(IV_NanonisStyle(i, j, :), elayer, 1), 'color', pcolorb_raw, 'LineWidth', lwidth1);
-        plot1.Color(4) = transp;  % Apply transparency to individual spectra
-        hold on;
-    end
-end
-
-% Correctly reshape avg_IV_NanonisStyle based on its size
-avg_IV_length = length(avg_IV_NanonisStyle);
-plot(label(1:avg_IV_length), avg_IV_NanonisStyle, 'color', pcolorb_avg, 'LineWidth', lwidth2);  % Overlay average I/V profile
-
-title('Average I/V Profile', 'fontsize', 12);
-xlabel('Bias Voltage [V]', 'fontsize', 12);
-ylabel('I/V [a.u.]', 'fontsize', 12);
-hold off;
-axis square;
-
-% User input for step size in dI/dV profile plotting
-step_size_dIdV = input('Enter the step size for plotting dI/dV profiles: ');
-if step_size_dIdV > numx || step_size_dIdV > numy || step_size_dIdV < 1
-    error('Step size for dI/dV must be between 1 and the minimum of numx or numy.');
-end
-
-% Adjust loop limits based on actual array dimensions for dI/dV
-max_i_dIdV = min(numx, size(dIdV_NanonisStyle, 1));
-max_j_dIdV = min(numy, size(dIdV_NanonisStyle, 2));
-elayer_reduced = size(dIdV_NanonisStyle, 3);
-
-% Plot dI/dV profiles with user-defined step size
-figure();
-for i = 1:step_size_dIdV:max_i_dIdV
-    for j = 1:step_size_dIdV:max_j_dIdV
-        % Ensure the label array matches the length of the data being plotted
-        label_reduced = label(1:elayer_reduced);
-        plot1 = plot(label_reduced, reshape(dIdV_NanonisStyle(i, j, :), elayer_reduced, 1), 'color', pcolorb_raw, 'LineWidth', lwidth1);
-        plot1.Color(4) = transp;  % Apply transparency to individual spectra
-        hold on;
-    end
-end
-plot(label_reduced, reshape(avg_dIdV_NanonisStyle, elayer_reduced, 1), 'color', pcolorb_avg, 'LineWidth', lwidth2);  % Overlay average dI/dV profile
-ylim([0, 4e-9]);
-title('Average dI/dV Profile', 'fontsize', 12);
-xlabel('Bias Voltage [V]', 'fontsize', 12);
-ylabel('dI/dV [a.u.]', 'fontsize', 12);
-hold off;
+[figNameDIDV, commentDIDV] = plotSpectraProfiles(dIdV_NanonisStyle, V_reduced, avg_dIdV_NanonisStyle, step_size, numx, numy, LOGpath, "transparent_dIdV");
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentDIDV, 0);
