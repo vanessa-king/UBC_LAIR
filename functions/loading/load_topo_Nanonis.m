@@ -28,12 +28,11 @@ comment = sprintf("load_topo_Nanonis(folder=%s, stamp_project=%s, topo_number=%s
 
 topoFileName = strcat(folder,"/",stamp_project,topo_number,".sxm");
 %load the raw sxm data:
-[header, par, data] = loadsxm(topoFileName);
+[header, data] = loadsxm(topoFileName,1);
 
 %Return the entire header, in case we need it
 topo.header = header;
 
-topo.par = par;
 topo.data = data;
 
 end

@@ -1,12 +1,15 @@
-function [header, data] = loadsxm(fn, varargin)
-% loadsxm  Nanonis SXM file loader
+% Description: 
+%   Nanonis SXM file loader
 %   [header, data] = loadsxm(fn, varargin) reads a Nanonis 
-%   SXM file fn.
+%   SXM file
 %   Without a second argument, only the header is returned.
 %   With a second argument n, the return value data contains
 %   the n-th data set of the scan.
 %   n is calculated 2*channel number + 0/1 depending on
 %   whether forward of backward data should be loaded.
+
+function [header, data] = loadsxm(fn, varargin)
+
  
 data=''; header='';
  
