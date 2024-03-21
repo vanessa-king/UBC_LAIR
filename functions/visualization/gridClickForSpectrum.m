@@ -20,7 +20,7 @@ arguments
     offset
     xysmooth    {mustBeNumeric}
     vsmooth     {mustBeNumeric}
-    grid
+    grid        =[] %optional input
 end
 
 %output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
@@ -44,16 +44,14 @@ if vsmooth %then smooth along axes 1 which correspond to bias voltage
 end
 
 % use cases for different function arguments -> use dIdV at imageV, or use the topo
-switch nargin
-    case 8 % grid data is provided, use the topology instead
-        z_img = topoPlaneSub(grid,200,0); % subtract plane
-        fig_name = 'Topology associated with grid';
-
-        fig_plot = imresize(z_img, [size(didv,2), size(didv,3)]);
-    case 7 % grid data not provided, use the didv slice at imageV
-        fig_name = ['Image of states at ',num2str(imageV),' V'];
-        [~,imN] = min(abs(V_reduced-imageV));
-        fig_plot = squeeze(didv(imN,:,:));
+if isempty(grid) %if there is no grid use topo image
+    fig_name = ['Image of states at ',num2str(imageV),' V'];
+    [~,imN] = min(abs(V_reduced-imageV));
+    fig_plot = squeeze(didv(imN,:,:));
+else %there is a grid, use grid slice
+    z_img = topoPlaneSub(grid,200,0); % subtract plane
+    fig_name = 'Topology associated with grid';
+    fig_plot = imresize(z_img, [size(didv,2), size(didv,3)]);
 end
        
 %Plotting:

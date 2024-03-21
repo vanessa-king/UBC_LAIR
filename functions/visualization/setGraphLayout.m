@@ -44,4 +44,11 @@ switch LayoutCase
         ax.XLabel.String = 'Bias Voltage [V]';
         ax.YLabel.String = 'dI/dV [a.u.]';
         axis square;
+    case "meanSTDshadedPlot"
+        ax.FontSize = 12;
+        ax.Title.String = 'mean and STD plot';
+        ax.XLabel.String = 'Bias Voltage [V]';
+        ax.YLabel.String = 'dI/dV [a.u.]';
+        axis square;
+
 end
