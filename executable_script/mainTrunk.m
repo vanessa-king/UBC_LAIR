@@ -76,12 +76,14 @@ folder = uigetdir();
 
 % stamp_project is the filename leader and takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--';
 stamp_project = 'TestData'; 
+%stamp_project = '20210308-124244_CaPt--STM_Spectroscopy--'; 
 
 % set the grid I(V) file number
-grid_number = '007';
+grid_number = '108_1';
 
 % set the z-file (aka topo) image number
 img_number = '222'; 
+%img_number = '54_1'; 
 
 % set the dat file (aka spec) number
 spec_number = '100'; 
@@ -164,6 +166,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 % This section of code loads the files called above (grid_number and img_number)
 
 avg_forward_and_backward = false;
+
 [grid,LOGcomment] = gridLoadDataUpward(folder,stamp_project,img_number,grid_number,avg_forward_and_backward); % Taking data Upward
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01A", LOGcomment ,0);
 
