@@ -1,12 +1,18 @@
-function [figName, comment] = transparentMeanSTDplot(folder,data, V, mask, LayoutCase,transp_transp,transp_lwidth,transp_color,STD_transp,STD_lwidth,mean_lwidth,STD_pcolorb,mean_pcolorb)
-%UNTITLED3 Summary of this function goes here
-%   Detailed explanation goes here
+function [figName, comment] = transparentMeanSTDplot(folder,data, V, mask, supressSave,LayoutCase,transp_transp,transp_lwidth,transp_color,STD_transp,STD_lwidth,mean_lwidth,STD_pcolorb,mean_pcolorb)
+%Plots all dIdV cuves transparent with the average +- STD on top
+%   Plots the raw spectra [e.g. I(V), dIdV(I)] as selected by the mask 
+%   versus V. calculates the average of the masked data and STD and plots 
+%   those on top with a shaded area from mean+STD to mean-STD.
+
+%   M. Altthaler, March 2024
+
 arguments
     %data and mask
     folder          {mustBeText}    %folder for data output (figure)
     data            {mustBeNumeric}  %I(V) or dIdV(V) data(x,y,V) in a 3D cube
     V               {mustBeNumeric}  %voltage axis V
     mask            {mustBeNumeric} = ones(size(data,[1,2])) %opt. mask
+    supressSave     {mustBeNumericOrLogical} = 0  %~=0 surpresses saving the plot 
     % Define plot aesthetics
     LayoutCase      {mustBeText} = "transparent_dIdV" %layout case for the plot
     %transparent lines plot parameters 
@@ -34,9 +40,14 @@ end
 %graph layout
 [ax]=setGraphLayout(LayoutCase);
 
-% Saving the figure
-figName = uniqueNamePrompt(strcat(LayoutCase,"_profile"),"", folder);
-savefig(f, fullfile(folder, figName + ".fig"));
+if suppressSave==0
+    % Saving the figure
+    figName = uniqueNamePrompt(strcat(LayoutCase,"_profile"),"", folder);
+    savefig(f, fullfile(folder, figName + ".fig"));
+else
+    figName = "NoFigSaved";
+end
+
   
 % Generating comment for logging TBD!
 comment = sprintf("[figname = %s]=transparentLinePlot(folder = %s, data, V, mask, LayoutCase = %s, transp_transp = %d, transp_lwidth = %d, transp_color = [%d, %d, %d], STD_transp = %d, STD_lwidth = %d, mean_lwidth = %d, STD_pcolorb = [%d, %d, %d], mean_pcolorb = [%d, %d, %d]);", figName, folder, LayoutCase,transp_transp,transp_lwidth,transp_color(1),transp_color(2),transp_color(3),STD_transp,STD_lwidth,mean_lwidth,STD_pcolorb(1),STD_pcolorb(2),STD_pcolorb(3),mean_pcolorb(1),mean_pcolorb(2),mean_pcolorb(3));

@@ -1,12 +1,14 @@
-function [figName,comment] = meanSTDshadePlot(folder, meanData, STDdata, xAxis, LayoutCase,STD_transp,STD_lwidth,mean_lwidth,STD_pcolorb,mean_pcolorb)
-%UNTITLED7 Summary of this function goes here
-%   Detailed explanation goes here
+function [figName,comment] = meanSTDshadePlot(folder, meanData, STDdata, xAxis, suppressSave,LayoutCase,STD_transp,STD_lwidth,mean_lwidth,STD_pcolorb,mean_pcolorb)
+%Shaded plot of mean and standard deviation. 
+%   Plots the mean, mean+STD, and mean-STD as lines vs. the xAxis. 
+%   Additionally the STD is shaded. 
 
 arguments
     folder          {mustBeText}
     meanData        {mustBeNumeric}
     STDdata         {mustBeNumeric}
     xAxis           {mustBeNumeric}
+    suppressSave    {mustBeNumericOrLogical} = 0 %~=0 surpresses saving the plot 
     % Define plot aesthetics
     LayoutCase      {mustBeText} = "meanSTDshadedPlot"
     STD_transp      {mustBeNumeric} = 0.05;  % Transparency for shaded area
@@ -23,9 +25,15 @@ end
 %graph layout 
 [ax]=setGraphLayout(LayoutCase);
 
-% Saving the figure
-figName = uniqueNamePrompt(strcat(LayoutCase,"_profile"),"", folder);
-savefig(f, fullfile(folder, figName + ".fig"));
+
+if suppressSave==0
+    % Saving the figure
+    figName = uniqueNamePrompt(strcat(LayoutCase,"_profile"),"", folder);
+    savefig(f, fullfile(folder, figName + ".fig"));
+else
+    figName = "NoFigSaved";
+end
+
 
 % Generating comment for logging TBD!
 comment = sprintf("[filename = %s] = meanSTDshadePlot(folder = %s, meanData, STDdata, xAxis, LayputCase = %s, STD_transp = %d, STD_lwidth = %d, mean_lwidth = %d, STD_pcolorb = [%d, %d, %d], mean_pcolorb = [%d, %d, %d])", figName, folder, LayoutCase,STD_transp,STD_lwidth,mean_lwidth,STD_pcolorb(1),STD_pcolorb(2),STD_pcolorb(3),mean_pcolorb(1),mean_pcolorb(2),mean_pcolorb(3));

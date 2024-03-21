@@ -1,4 +1,4 @@
-function [figName, comment] = waterfallLinePlots(folder,data, V, mask, supSave, LayoutCase)
+function [figName, comment] = waterfallLinePlots(folder,data, V, mask, suppressSave, LayoutCase)
 %Plot I(V) or dIdV(V) curves as a waterfall plot 
 %   Plots all I(V) or dIdV(V) curves selected by the optional mask versus
 %   the V axis in a waterfall plot. 
@@ -7,13 +7,13 @@ function [figName, comment] = waterfallLinePlots(folder,data, V, mask, supSave, 
 
 arguments
     %data and mask
-    folder      {mustBeText}    %folder for data output (figure)
-    data        {mustBeNumeric}  %I(V) or dIdV(V) data(x,y,V) in a 3D cube
-    V           {mustBeNumeric}  %voltage axis V
-    mask        {mustBeNumeric} = ones(size(data,[1,2])) %opt. mask
-    supSave     {mustBeNumericOrLogical} = 0    %~=0 surpresses saving the plot
+    folder          {mustBeText}    %folder for data output (figure)
+    data            {mustBeNumeric}  %I(V) or dIdV(V) data(x,y,V) in a 3D cube
+    V               {mustBeNumeric}  %voltage axis V
+    mask            {mustBeNumeric} = ones(size(data,[1,2])) %opt. mask
+    suppressSave    {mustBeNumericOrLogical} = 0    %~=0 surpresses saving the plot
     % Define plot aesthetics
-    LayoutCase  {mustBeText} = "3D_waterfall_dIdV" %layout case for the plot
+    LayoutCase      {mustBeText} = "3D_waterfall_dIdV" %layout case for the plot
 end
 
 %list of all x,y coordinates of 1's in the mask
@@ -50,7 +50,7 @@ waterfall(Vmesh,stackLine,dataPlane);
 % view(315, 45);
 ax = set3DPlotLayout(LayoutCase);
 
-if supSave==0
+if suppressSave==0
     % Saving the figure
     figName = uniqueNamePrompt(strcat(LayoutCase,"_plot"),"", folder);
     savefig(f, fullfile(folder, figName + ".fig"));
@@ -59,6 +59,6 @@ else
 end
 
 % Generating comment for logging TBD!
-comment = sprintf("[figname = %s] = transparentLinePlot(folder = %s, data, V, mask, supSave = %d, LayoutCase = %s);|", figName, folder, supSave, LayoutCase);
+comment = sprintf("[figname = %s] = transparentLinePlot(folder = %s, data, V, mask, supSave = %d, LayoutCase = %s);|", figName, folder, suppressSave, LayoutCase);
 
 end

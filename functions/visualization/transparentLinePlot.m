@@ -1,4 +1,4 @@
-function [figName, comment] = transparentLinePlot(folder,data, V, mask, avgData, supSave, LayoutCase,transp,lwidth1,lwidth2,pcolorb_raw,pcolorb_avg)
+function [figName, comment] = transparentLinePlot(folder,data, V, mask, avgData, suppressSave, LayoutCase,transp,lwidth1,lwidth2,pcolorb_raw,pcolorb_avg)
 %Plot I(V) or dIdV(V) curves transparent and an optional average on top 
 %   Plots all I(V) or dIdV(V) curves selected by the optional mask versus
 %   the V axis in semi transparent blue. If avgData is parsed a thicker
@@ -10,19 +10,19 @@ function [figName, comment] = transparentLinePlot(folder,data, V, mask, avgData,
 
 arguments
     %data and mask
-    folder      {mustBeText}    %folder for data output (figure)
-    data        {mustBeNumeric}  %I(V) or dIdV(V) data(x,y,V) in a 3D cube
-    V           {mustBeNumeric}  %voltage axis V
-    mask        {mustBeNumeric} = ones(size(data,[1,2])) %opt. mask
-    avgData     {mustBeNumeric} = [] %opt. average to be plotted
-    supSave     {mustBeNumericOrLogical} = 0    %~=0 surpresses saving the plot
+    folder          {mustBeText}    %folder for data output (figure)
+    data            {mustBeNumeric}  %I(V) or dIdV(V) data(x,y,V) in a 3D cube
+    V               {mustBeNumeric}  %voltage axis V
+    mask            {mustBeNumeric} = ones(size(data,[1,2])) %opt. mask
+    avgData         {mustBeNumeric} = [] %opt. average to be plotted
+    suppressSave    {mustBeNumericOrLogical} = 0    %~=0 surpresses saving the plot
     % Define plot aesthetics
-    LayoutCase  {mustBeText} = "transparent_dIdV" %layout case for the plot
-    transp      {mustBeNumeric} = 0.05;  % Transparency for individual spectra
-    lwidth1     {mustBeNumeric} = 1.5;  % Line width for individual spectra
-    lwidth2     {mustBeNumeric} = 2.5;  % Line width for average spectra
-    pcolorb_raw {mustBeNumeric} = [0, 0, 1]; % Blue color for individual traces
-    pcolorb_avg {mustBeNumeric} = [0, 0, 0]; % Black color for average data
+    LayoutCase      {mustBeText} = "transparent_dIdV" %layout case for the plot
+    transp          {mustBeNumeric} = 0.05;  % Transparency for individual spectra
+    lwidth1         {mustBeNumeric} = 1.5;  % Line width for individual spectra
+    lwidth2         {mustBeNumeric} = 2.5;  % Line width for average spectra
+    pcolorb_raw     {mustBeNumeric} = [0, 0, 1]; % Blue color for individual traces
+    pcolorb_avg     {mustBeNumeric} = [0, 0, 0]; % Black color for average data
 end
 
 
@@ -70,7 +70,7 @@ end
 %graph layout
 [ax]=setGraphLayout(LayoutCase);
 
-if supSave==0 %safe figure unless supSave is parsed ~=0 
+if suppressSave==0 %safe figure unless supSave is parsed ~=0 
     % Saving the figure
     figName = uniqueNamePrompt(strcat(LayoutCase,"_profile"),"", folder);
     savefig(f, fullfile(folder, figName + ".fig"));
@@ -78,6 +78,6 @@ else
     figName = "NoFigSaved";
 end   
 % Generating comment for logging TBD!
-comment = sprintf("[filename = %s] = transparentLinePlot(folder = %s, data, V, mask, avgData, supSave = %d, LayputCase = %s, transp = %d, lwidth1 = %d, lwidth2 = %d, pcolorb_raw = [%d, %d, %d], pcolorb_avg = [%d, %d, %d])", figName, folder,supSave, LayoutCase,transp,lwidth1,lwidth2,pcolorb_raw(1),pcolorb_raw(2),pcolorb_raw(3),pcolorb_avg(1),pcolorb_avg(2),pcolorb_avg(3));
+comment = sprintf("[filename = %s] = transparentLinePlot(folder = %s, data, V, mask, avgData, supSave = %d, LayputCase = %s, transp = %d, lwidth1 = %d, lwidth2 = %d, pcolorb_raw = [%d, %d, %d], pcolorb_avg = [%d, %d, %d])", figName, folder,suppressSave, LayoutCase,transp,lwidth1,lwidth2,pcolorb_raw(1),pcolorb_raw(2),pcolorb_raw(3),pcolorb_avg(1),pcolorb_avg(2),pcolorb_avg(3));
 
 end
