@@ -1,11 +1,19 @@
-function [mask, chosenPoints] = gridRectangularMask(data, cornerPoints)
-    %improvement: chosenPoint to comment(output)
+function [mask, num_in_mask, comment] = gridMaskRectangle(data, cornerPoints)
+    % mask: Rectanglular mask produced 
+    % num_in_mask: number of points in the mask
     
     arguments
     data    
     cornerPoints      {mustBeNumeric} =[]
     end
-
+    
+    % load colourmap
+    color_scale_resolution = 1000; % 1000 evenly spaced colour points
+    cm_viridis = viridis(color_scale_resolution); % Default matlibplot
+    cm_inferno = inferno(color_scale_resolution);
+    cm_magma = magma(color_scale_resolution);
+    cm_plasma = plasma(color_scale_resolution);
+    
     % Check if data is a 2D map
     if ndims(data) ~= 2
         error('Data must be a 2D map');
@@ -16,7 +24,7 @@ function [mask, chosenPoints] = gridRectangularMask(data, cornerPoints)
     % Display the data map and get corner points if not provided
     if nargin < 2 || isempty(cornerPoints)
         imagesc(data); % Display the data map
-        colormap(gray);
+        colormap(cm_magma);
         title('Click two opposite corners of the rectangle');
         [x, y] = ginput(2); % Get two points from the user
         cornerPoints = [x y];
@@ -46,4 +54,7 @@ function [mask, chosenPoints] = gridRectangularMask(data, cornerPoints)
 
     % Fill in the rectangle in the mask
     mask(y1:y2, x1:x2) = true;
+   
+    % the x, y coordinate from the click are also included in the comment. 
+    comment = sprintf("gridMaskRectangle(data:%s, Point1=%s, Point2=%s)", data, chosenPoints(1,:),chosenPoints(2,:));
 end
