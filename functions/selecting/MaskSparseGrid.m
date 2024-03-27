@@ -48,5 +48,5 @@ else
     disp("Data size parsed is not 2D.")
     return
 end
-
+mask = logical(mask); %set datatype
 end
