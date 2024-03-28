@@ -70,5 +70,5 @@ mapshow(BoundaryPoints_x,BoundaryPoints_y,'DisplayType','point','Marker','o')
 
 % make the mask 
 [mask,~] =createLineSegmentMask(size(topo), BoundaryPoint1, BoundaryPoint2);
-
+mask = logical(mask); %set datatype
 end
