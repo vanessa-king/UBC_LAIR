@@ -39,7 +39,7 @@ axis square
 
 pickManually = input('type y for custom threshold, otherwise median threshold: ', 's'); % Type y to manually choose a threshold by clicking on the dI/dV distribution plot
 if strcmp(pickManually, 'y')
-    [I_threshold, ~] = ginput(1);
+    [I_threshold, ~] = ginputAllPlatform(1);
 else
     I_threshold = median(I_slice(:));
 end
