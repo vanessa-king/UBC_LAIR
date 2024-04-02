@@ -34,7 +34,8 @@ yy = sqrt(radius^2-xx.^2);
 
 %Drawing the mask(circle) on LDOS map at certain bias
 figure(img)
-pos = round(ginput(1)); %click for the first point
+pos = round(ginputAllPlatform(1)); %click for the first point
+%pos = round(ginput(1)); %click for the first point
 plot(pos(1)+xx,pos(2)+yy,'g','LineWidth',0.6)
 plot(pos(1)+xx,pos(2)-yy,'g','LineWidth',0.6)
 

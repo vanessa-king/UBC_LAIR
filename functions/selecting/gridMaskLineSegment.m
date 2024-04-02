@@ -50,7 +50,8 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
         axis square
         hold on
 
-        selectedTwoPoints=ginput(2);
+        selectedTwoPoints=ginputAllPlatform(2);
+        %selectedTwoPoints=ginput(2);
         % define the start point
         startPoint=round(selectedTwoPoints(1,:));
         % define the end point
@@ -76,7 +77,9 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
         hold on
 
         % define the start point
-        startPoint=round(ginput(1));
+        startPoint=round(ginputAllPlatform(1));
+        %startPoint=round(ginput(1));
+        
 
         % define the end point with proper r and theta
         
