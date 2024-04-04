@@ -2,6 +2,8 @@
 %% Mask the data with rectangulr mask
 data = rand(100); % Example 2D data map
 %cornerPoints = [20, 30; 80, 70]; % Specify corner points as [x1, y1; x2, y2]
+non_rectangular_mask= zeros(100);
+%%
 [mask, N, comment] = gridMaskRectangle(data);
 
 figure; 
@@ -13,5 +15,5 @@ title('Data with Rectangular Mask Overlay');
 
 %% crop the data 
 figure;
-cropped_data= gridCropmask(data, mask);
+cropped_data= gridCropmask(data, non_rectangular_mask);
 imshow(cropped_data);
