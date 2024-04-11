@@ -74,11 +74,17 @@ for x = 1:number_x_points
     end
 end
 
+%The energy dimension of z is reductive, removing it:
+z_all = z_all(:,:,1);
+z_backward_all = z_backward_all(:,:,1);
+
 %Get x out of the experimental parameters:
 grid.x = zeros([number_x_points,1]);
 for j = 1:number_x_points
     grid.x(j) = par{j,1}(3);
 end
+%Convert from m to nm
+grid.x = grid.x .* 1e9; 
 
 % This section is to determine if we have a partial image and remove 0 values if so. 
 % Note this wasn't necessary for x or V since they're always full
@@ -95,9 +101,13 @@ if max(y_coordinates) == max(x_coordinates) %grid is finished
     end
     if any(z_all,'all')
         grid.z = z_all;
+        %Convert from m to nm
+        grid.z = grid.z .* 1e9;
     end
     if any(z_backward_all,'all')
         grid.z_backward = z_backward_all;
+        %Convert from m to nm
+        grid.z_backward = grid.z_backward .* 1e9;
     end
     if any(other_channel_all,'all')
         grid.other_channel = other_channel_all;
@@ -108,6 +118,8 @@ if max(y_coordinates) == max(x_coordinates) %grid is finished
     for j = 1:number_y_points
         grid.y(j) = par{1,j}(4);
     end
+    %Convert from m to nm
+    grid.y = grid.y .* 1e9;
 
 else  %grid is not finished, take off the any unfinished fast scan line
     grid.I_all = I_all;
@@ -125,12 +137,18 @@ else  %grid is not finished, take off the any unfinished fast scan line
 
     if any(z_all,'all')
         grid.z_all = z_all;
-        grid.z = grid.z_all(:, 1:max(y_coordinates)-1, :);
+        grid.z = grid.z_all(:, 1:max(y_coordinates)-1);
+        %Convert from m to nm
+        grid.z_all = grid.z_all .* 1e9;
+        grid.z = grid.z .* 1e9;
     end
     
     if any(z_backward_all,'all')
         grid.z_backward_all = z_backward_all;
-        grid.z_backward = grid.z_backward_all(:, 1:max(y_coordinates)-1, :);
+        grid.z_backward = grid.z_backward_all(:, 1:max(y_coordinates)-1);
+        %Convert from m to nm
+        grid.z_backward_all = grid.z_backward_all .* 1e9;
+        grid.z_backward = grid.z_backward .* 1e9;
     end
 
     if any(other_channel_all,'all')
@@ -143,12 +161,10 @@ else  %grid is not finished, take off the any unfinished fast scan line
     for j = 1:max(y_coordinates)-1
         grid.y(j) = par{1,j}(4);
     end
+    %Convert from m to nm
+    grid.y = grid.y .* 1e9;
 
 end
 
-%Convert from m to nm
-grid.x = grid.x .* 1e9; 
-grid.y = grid.y .* 1e9;
-grid.z = grid.z .* 1e9;
 
 end
