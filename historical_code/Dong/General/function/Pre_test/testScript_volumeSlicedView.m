@@ -1,0 +1,24 @@
+% Example usage
+dataCube = QPI;  % Replace with your actual data
+
+%define point and angle
+ point =round(size(dataCube, [1 2 3])./2);
+ % point=[];
+ theta = [];
+ phi = [85];
+ eslice= 50;
+
+[cuboidMaskThree, commentThree] = volumeMaskZslice(dataCube, eslice, point, phi);
+% 3d plot 
+[s, cuboidMask, comment] = volumeMaskedZslicePlotManual(dataCube, eslice, point, phi);
+figure()
+%define energy range
+% energy_range=1000*bias(2:end,1); %(use this for the QPI data)
+energy_range=linspace(-500,1500,size(dataCube,3));
+colormap(gray) 
+[s1,comment1] = volumeMaskedZslice2Dplot_Dong(dataCube,cuboidMaskThree,energy_range);
+title(sprintf("point at [%d, %d, %d] theta=%d phi=%d", point(1),point(2),point(3),theta, phi))
+
+
+
+
