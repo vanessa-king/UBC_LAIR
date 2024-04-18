@@ -1,0 +1,39 @@
+test result:
+
+1. Need to manually input the voltage vector in 'load3dsall.m' under 'WRITES THE VOLTAGE TO A VECTOR'
+
+2. Need to manually modify 'load3dsall.m' under 'TAKES THE MIDPOINT OF THE VOLTAGE DATA '
+
+3. Brandon used numerical didv only, need to implement lockin signal in the code 
+
+4. Modified the code to fit lockindIdV, including producing LockinQPI
+
+5. x_num=xsize
+
+
+In Test file the 2 codes are now compatible with 007
+
+
+Now test another Grid map 
+
+Tested on other Grid, they now works, however, Processed data looks missing some of the data 
+
+Seokhwan's code can not plot cropped data? IT CAN 
+
+dIdV data can be in different channel, change line 141 in file load3dsall.m accordingly
+
+In Symmetrizing2.m, line 107, why circshift 3rd dimension by 100 elements. 
+
+
+PtSn4 specific things: 
+
+applied qx, qy fold symmetry.
+
+How to define the qx and qy direction in QPI map from the brag peaks. 
+
+Note that in real space, Pt-Pt bond is 45deg off to the a&c directions, so the bragg peak should also be 45deg off qa and qc, therefore, the axis of our map is qa and qc but dont know which is which. 
+
+the self-correlation function maintains the function's symmetry.
+
+While taking the grid: 
+real space Resolution does not have to be too fine since the important info lies within the bragg peaks, which is q_bragg=~2pi/0.5-> q_range: q_bragg/sqrt(2)~10.5(nm^-1)-> R_resolution=~2pi/q_range=0.7nm/pixel->dim:pix~=1:3 to 1:4. 
