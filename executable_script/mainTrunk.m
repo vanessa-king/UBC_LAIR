@@ -43,7 +43,7 @@
     % same name already exists a 3 digit running number is appended.
 %% Block List
     % LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
-    % LI01B Load-Initialize-01-B; Initializing the log file and UI select data
+    % %% LI01B Load-Initialize-01-B; Initialize log file, UI select path and name
     % LG01A Load-Grid-01-A; load grid 
     % LG01B Load-Grid-01-B; load grid and topo from Nanonis
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
@@ -96,68 +96,51 @@ LOGfile = strcat(stamp_project,"_grdNr_",grid_number,"_imgNr_",img_number,"_PpS_
 LOGcomment = "Initializing log file";
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01A", LOGcomment, 1);
 
-%% LI01B Load-Initialize-01-B; Initialize log file, UI select data, load data
+%% LI01B Load-Initialize-01-B; Initialize log file, UI select path and name
+%   Edited by M. Altthaler, April 2024
 
-%   Edited by Markus, October 2023
+% This section of code specifies the <paths> and <name> of the LOG file. 
+% Subsequently the <path>\<name>_LOGfile.txt is initialized with this information. 
+ 
+%select LOGpath and LOGfile
+%choose to run the function with argument 0 or 1!
+% 0: UI to choose <paths> and an input prompt for the log file <name>
+% 1: UI to select a file, the file <name> and <paths> set the log file 
+% Note: _LOGfile.txt will be appended to the chosen name!
+[LOGpath,LOGfile] = setLogFile(0);
 
-% This section of code specifies the data paths, and files to be analyzed. 
-% The log file is initialized based on the given file names and paths.
-% Based on the file extension the appropriate load function is used. 
+%potential bug with uniqueNamePrompt() in setLogFile() not assigning
+%running numbers resulting in overwriting log files!!! 
 
-% work in progress!
+% Initialize LogFile 
+%initialize LOG file & log name and directory
+LOGcomment = "Initializing log file: <LOGpath>/<LOGfile>_LOGfile.txt";
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01B", LOGcomment, 1);
+LOGcomment = strcat(LOGpath,"/",LOGfile,"_LOGfile.txt");
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
-%select data
-[filePath, fileName, fileExt] = selectData();
 
-%section on loading the files and getting file specific parameters 
-%   not sure how to do this! 
-%   might be read out of header when the file is loaded?
+%% LD01A Load-Data-01-A; Load data (grid, topo, ...) via UI file selection
+% Edited by M. Altthaler, April 2024
 
-switch fileExt
-    case '.flat'
-        %Load flat file -> Matrix 
-        %requires differentiating tyoe of data (IV grid, topo, ...)
-    case '.3ds'
-        %load 3ds file -> Nanonis grid
-    case '.sxm'
-        %load smx file -> Nanonis topo
-    case '.dat'
-        %load dat file -> Nanonis point spectrum
-    case '.mat'
-        %load .mat file -> Matlab workspace
-        load(strcat(filePath,fileName,fileExt));
-        %Note this option allows you to load a previously saved workspace.  
-        %Only use it if you saved a workspace created by loading data via
-        %this block before!
-    otherwise
-        disp("No file of appropriate data type selected")
-end
+% This block allows users to pick files of data via UI. The load function 
+% picks the appropriate specific load function for the specific data type 
+% based on file the extension (compatible formats to be expanded). 
+% The user sets the <name> of the field the data is assigned to.
 
+% Returns: data.<name>, where <name>.XXX is the actual data, e.g.:
+% data.<name>.I     --> I(V) data from a .3ds file 
+% data.<name>.z     --> topo (z) data from a .sxm file
+
+[data, commentA, commentB, commentC] = loadData(data, direction);
 
 % everything below covers logging the selected data
 
-%select LOG file location
-LOGpath = setLOGpath(filePath,1);
-%set log file name
-LOGfile = fileName; %Note logUsedBlocks() appends '_LOGfile.txt' 
-
-%initialize LOG file & log name and directory
-LOGcomment = "Initializing log file";
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01B", LOGcomment, 1);
-LOGcomment = strcat("LOGfile = ", LOGfile,"_LOGfile.txt");
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
-LOGcomment = strcat("LOGpath = ", LOGpath);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
-
 %log selected data
-LOGcomment = "Selected data file:";
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
-LOGcomment = strcat("filePath = ", filePath);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
-LOGcomment = strcat("fileName = ", fileName);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
-LOGcomment = strcat("fileExt = ", fileExt);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LD01A", commentA, 0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentB, 0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentC, 0);
+
 
 
 %% LG01A Load-Grid-01-A; load grid 

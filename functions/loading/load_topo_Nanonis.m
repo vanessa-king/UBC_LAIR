@@ -11,13 +11,12 @@
 %   topo: structure containing all the topo associated data
 %   comment: string containing log comment
 
-function [topo, comment] = load_topo_Nanonis(folder, stamp_project, topo_number, direction)
+function [topo, comment] = load_topo_Nanonis(folder, topoFileName, direction)
 
 arguments
     folder          {mustBeText}
-    stamp_project   {mustBeText}
-    topo_number     {mustBeText}
-    direction       {mustBeText}
+    topoFileName    {mustBeText}
+    direction       {mustBeText} = "forward"
 end
 
 %output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
@@ -25,11 +24,9 @@ end
 %('=<VARn_value>') of variables that decide/affect how the function
 %processes data (e.g. order of fit, ...) 
 %Note convert all <VARn_value> to strings; 
-comment = sprintf("load_topo_Nanonis(folder=%s, stamp_project=%s, topo_number=%s, direction=%s)|", folder, stamp_project, topo_number,direction);
+comment = sprintf("load_topo_Nanonis(folder=%s, topoFileName=%s, direction=%s)|", folder, topoFileName,direction);
 
 %regular function processing:
-
-topoFileName = strcat(folder,"/",stamp_project,topo_number,".sxm");
 
 %load the raw sxm data:
 if direction == "forward"
