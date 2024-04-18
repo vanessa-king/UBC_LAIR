@@ -1,4 +1,4 @@
-function [data, commentA, commentB, commentC] = loadData(data, direction)
+function [data, commentA, commentB, commentC, commentD] = loadData(data, direction)
 %Load STM data from UI selected file of variable formats (.3ds, .sxm,) 
 %   Select data file using the UI. Basen on the file extension the 
 %   appropriate specific loading function for that dataype is chosen. 
@@ -18,9 +18,6 @@ arguments
     direction   {mustBeText}="forward"
 end
 
-%log function call
-commentA = sprintf("loadData(data,direction = %s); Selected data: <path>/<file>", direction);
-
 %select data via UI
 [filePath, fileName, fileExt] = selectData();
 fullFileName = strcat(fileName, fileExt);
@@ -31,9 +28,10 @@ commentB = sprintf("%s/%s", filePath, fullFileName);
 fieldName = fieldNamePrompt();
 
 switch fileExt
-    case '.flat'
-        %Load flat file -> Matrix 
-        %requires differentiating tyoe of data (IV grid, topo, ...)
+    case '.Z_flat'
+        %load matrix topo
+    case '.I(V)_flat'
+        %load matrix grid
     case '.3ds'
         %load 3ds file -> Nanonis grid
         [grid, commentC] = load_grid_Nanonis(filePath,fullFileName);
@@ -54,6 +52,12 @@ switch fileExt
         disp("No file of appropriate data type selected")
         commentC = "No file of appropriate data type selected";
 end
+
+%log function call
+commentA = sprintf("[data.%s, ...] = loadData(data,direction = %s); Selected data: <path>/<file>", fieldName, direction);
+
+%log selected file
+commentB = sprintf("%s/%s", filePath, fullFileName);
 
 
 end

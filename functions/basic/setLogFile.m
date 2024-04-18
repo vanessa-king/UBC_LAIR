@@ -10,9 +10,7 @@ end
     if fileBool == 0
         %uigetdir + name prompt
         LOGpath = uigetdir();
-        LOGfile = uniqueNamePrompt('ProjectLogFile','',LOGpath);
-        
-
+        LOGfile = uniqueLOGNamePrompt(LOGpath,'NewProject');
     elseif fileBool == 1
         %uigetfile sets the name
         [LOGpath,LOGfile,~] = selectData();

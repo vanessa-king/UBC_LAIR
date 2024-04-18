@@ -44,6 +44,7 @@
 %% Block List
     % LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
     % %% LI01B Load-Initialize-01-B; Initialize log file, UI select path and name
+    % LD01A Load-Data-01-A; Load data (grid, topo, ...) via UI file selection
     % LG01A Load-Grid-01-A; load grid 
     % LG01B Load-Grid-01-B; load grid and topo from Nanonis
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
@@ -59,7 +60,6 @@
 
 
 %% LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
-
 %   Edited by Markus, August 2023
 
 % This section of code specifies the data paths, and files to be  
@@ -109,9 +109,6 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01A", LOGcomment, 1);
 % Note: _LOGfile.txt will be appended to the chosen name!
 [LOGpath,LOGfile] = setLogFile(0);
 
-%potential bug with uniqueNamePrompt() in setLogFile() not assigning
-%running numbers resulting in overwriting log files!!! 
-
 % Initialize LogFile 
 %initialize LOG file & log name and directory
 LOGcomment = "Initializing log file: <LOGpath>/<LOGfile>_LOGfile.txt";
@@ -124,7 +121,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 % Edited by M. Altthaler, April 2024
 
 % This block allows users to pick files of data via UI. The load function 
-% picks the appropriate specific load function for the specific data type 
+% picks the appropriate specific load function for the data type 
 % based on file the extension (compatible formats to be expanded). 
 % The user sets the <name> of the field the data is assigned to.
 
@@ -132,16 +129,12 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 % data.<name>.I     --> I(V) data from a .3ds file 
 % data.<name>.z     --> topo (z) data from a .sxm file
 
-[data, commentA, commentB, commentC] = loadData(data, direction);
+[data, commentA, commentB, commentC] = loadData();
 
-% everything below covers logging the selected data
-
-%log selected data
+%log used of block, and the specific data and field name assigned
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LD01A", commentA, 0);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentB, 0);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentC, 0);
-
-
+%LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentC, 0);
 
 %% LG01A Load-Grid-01-A; load grid 
 % This section of code loads the files called above (grid_number and img_number)
