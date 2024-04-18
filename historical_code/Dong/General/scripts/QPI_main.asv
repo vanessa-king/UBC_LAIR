@@ -56,7 +56,7 @@ cropped_data= gridCropmask(target_data, mask);
 % INPUTS
 % 1: dIdV 3x3 matrix
 % 2: Voltage vector to index match the chosen image voltage
-% 3: Voltage(meV) to display dIdV to mask data
+% 3: Voltage to display dIdV to mask data
 
 % OUTPUTS
 % dIdV_masked: dIdV with Gaussian masking over chosen defects
@@ -72,7 +72,6 @@ cropped_data= gridCropmask(target_data, mask);
 %[LockindIdV_masked, LockinQPI_masked] = masking(LockindIdV_nostreaks,midV,200);
 
 %% Crop the dIdV data to remove new line drift
-% Under Crop function 
 
 % INPUTS
 % dIdV_nostreaks: dIdV matrix after streak removal algorithm
@@ -117,7 +116,7 @@ cropped_data= gridCropmask(target_data, mask);
 %for k = 1:size(bias,1)
 %    LockinQPI_pointsymm(:,:,k) = (LockinQPI_aligned_crop(:,:,k)+imrotate(LockinQPI_aligned_crop(:,:,k),180))/2;
 %end
-
+ 
 QPI_pointsymm=zeros(size(QPI_aligned_crop,1),size(QPI_aligned_crop,2),size(QPI_aligned_crop,3));
 for k = 1:size(QPI_aligned_crop,3)
     QPI_pointsymm(:,:,k) = QPI_aligned_crop(:,:,k)+imrotate(QPI_aligned_crop(:,:,k),180);
