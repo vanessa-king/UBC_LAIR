@@ -5,7 +5,7 @@ function [mask, num_in_mask, comment] = gridMaskRectangle(data, cornerPoints)
     arguments
     data    
     cornerPoints {mustBeNumeric} = []
-    end
+    end 
     
     % Load colour maps
     color_scale_resolution = 1000; % 1000 evenly spaced colour points
