@@ -1,32 +1,33 @@
 function [nameString] = uniqueLOGNamePrompt(filepath, defaultName)
-%User prompt to specify a unique fieldName and check if the file
-%exists already
-%   returns a string containing a unique name for a figure that consists of
-%   a name and unique tag. The name and tag can be specified by the user 
-%   via a command window promt. The function is called with default values 
-%   for both variables. Additionally the function checks if a file of the
-%   same name already exists. If a file with the same name and tag already 
-%   exists the function appends '_001' to the name and tag and rececks. If 
-%   that is taken it tires '_002' and so on. (Note if you run a block with
-%   default values several times this will make sure you get unique file
-%   names!) 
+%User prompt to specify a unique name for the LOG file and check if the file
+%already exists. In that case a running number is appended. 
+%   Returns a string containing a unique <name> for the log file. The <name> 
+%   is specified by the user via a command window promt. Note:  
+%       The <name> given will result in a file: <name>_LOGfile.txt
+%   The function can be called with a default <name>. Additionally the 
+%   function checks if a file of the same <name> already exists. If a file 
+%   with the same <name>_LOGfile already exists the function appends a 
+%   number string in the format '_###', yielding nameString = <name>_001, 
+%   i.e. <name>_001_LOGfile.txt. The '_###' appended <name> is then 
+%   rechecked and the number counts up ('_002', ...) until a unique name is
+%   generated. 
 %   
-%
-%   defaultName: default name for the figure (should describe the figure
-%   like 'IV plot', 'topo', ...)
-%   defaultUniqueTag: default unique identifier for figure (a, b, c, ...)
-%   filepath: directory to be checked for duplicete names, i.e. the one you
-%   intend to save your file in
-%
-%   Markus Altthaler
+%   Note if you run the initialize block with the same name multiple times
+%   this will ensure no LOG file is ever overwritten!   
 
-%   ToDo: check if a file name ends on "_XXX" and set the counter
-%   accordingly to name the file _XXX+1 rather than "_XXX_001" !Note may
-%   cause problems if uniqueTag is set to XXX!
+
+%   arguments
+%   filepath:       directory checked for duplicate names, i.e. the one the 
+%                   LOG file is supposed ot be saved in.
+%   defaultName:    specifies <name> the LOG file defaults to if no user 
+%                   input is given. If no name is parsed: <name>="Project"
+%
+%   M. Altthaler, April 2024
+
 
 arguments
     filepath        {mustBeText}=""
-    defaultName     {mustBeText}=""
+    defaultName     {mustBeText}="Project"
 end
 
 %fill in current folder in case no filepath is given
