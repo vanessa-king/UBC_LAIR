@@ -5,6 +5,6 @@ function [filePath,fileName,ext] = selectData()
 
 %   Markus Altthaler
 
-[tempFile,filePath] = uigetfile('','Select data');
+[tempFile,filePath] = uigetfile('*.*','Select data');
 [~, fileName, ext] = fileparts(tempFile);
 end

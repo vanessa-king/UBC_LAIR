@@ -8,12 +8,10 @@
 % Output: 
 %   grid: structure containing all the grid associated data
 %   comment: string containing log comment
-function [grid, comment] = load_grid_Nanonis(folder, stamp_project, grid_number)
-
+function [grid, comment] = load_grid_Nanonis(folder,gridFileName)
 arguments
     folder          {mustBeText}
-    stamp_project   {mustBeText}
-    grid_number     {mustBeText}
+    gridFileName    {mustBeText}
 end
 
 %output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
@@ -21,11 +19,10 @@ end
 %('=<VARn_value>') of variables that decide/affect how the function
 %processes data (e.g. order of fit, ...) 
 %Note convert all <VARn_value> to strings; 
-comment = sprintf("load_grid_Nanonis(folder=%s, stamp_project=%s, grid_number=%s)|", folder, stamp_project, grid_number);
+comment = sprintf("load_grid_Nanonis(folder=%s, gridFileName=%s)|", folder, gridFileName);
 
 %regular function processing:
 
-gridFileName = strcat(folder,"/",stamp_project,grid_number,".3ds");
 %load the raw 3ds data:
 [header, par, data] = load3ds_Nanonis(gridFileName);
 
@@ -93,7 +90,7 @@ grid.x = grid.x .* 1e9;
 %Check if the grid is finished, assign variables accordingly
 if max(y_coordinates) == max(x_coordinates) %grid is finished
     grid.I = I_all;
-    if any(lock_in,'all')
+    if any(lock_in_all,'all')
         grid.lock_in = lock_in_all;
     end
     if any(I_backward_all,'all')
