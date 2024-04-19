@@ -6,12 +6,11 @@ function [data, commentA, commentB, commentC, commentD] = loadData(data, directi
 %   the actual data is assigned to. E.g: data.topoBefore, or data.grid. 
 
 %   Requires the toplevel data struct variable to be parsed. In this case 
-%   the function adds the field data.<name> to it. If no data variable is 
-%   parsed it is initialized (Note this may result in overwriting the 
-%   toplevel data variable!)
+%   the function adds the field data.<name> to it. 
 
-%   direction is an optional input to specify the direcion 'forward' or
-%   'backward' a topo image (.sxm) is loaded
+%   Optional arguments (to be expanded)
+%   direction   is an optional input to specify the direcion 'forward' or
+%               'backward' a topo image (.sxm) is loaded
 
 arguments
     data        
