@@ -134,7 +134,7 @@ data = {};
 
 [data, commentA, commentB, commentC] = loadData(data);
 
-%log used of block, and the specific data and field name assigned
+%log use of block, and the specific data and field name assigned
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LD01A", commentA, 0);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentB, 0);
 %LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentC, 0);
