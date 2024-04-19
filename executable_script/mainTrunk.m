@@ -43,7 +43,7 @@
     % same name already exists a 3 digit running number is appended.
 %% Block List
     % LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
-    % %% LI01B Load-Initialize-01-B; Initialize log file, UI select path and name
+    % LI01B Load-Initialize-01-B; Initialize log file, UI select path and name
     % LD01A Load-Data-01-A; Load data (grid, topo, ...) via UI file selection
     % LG01A Load-Grid-01-A; load grid 
     % LG01B Load-Grid-01-B; load grid and topo from Nanonis
