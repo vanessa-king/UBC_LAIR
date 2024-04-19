@@ -116,6 +116,9 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01B", LOGcomment, 1);
 LOGcomment = strcat(LOGpath,"/",LOGfile,"_LOGfile.txt");
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
+% initialize empty data struct 
+data = {};
+
 
 %% LD01A Load-Data-01-A; Load data (grid, topo, ...) via UI file selection
 % Edited by M. Altthaler, April 2024
@@ -129,7 +132,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 % data.<name>.I     --> I(V) data from a .3ds file 
 % data.<name>.z     --> topo (z) data from a .sxm file
 
-[data, commentA, commentB, commentC] = loadData();
+[data, commentA, commentB, commentC] = loadData(data);
 
 %log used of block, and the specific data and field name assigned
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LD01A", commentA, 0);

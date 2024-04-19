@@ -1,4 +1,4 @@
-function [fieldName] = fieldNamePrompt(fieldNameIn)
+function [fieldName] = fieldNamePrompt(fieldName)
 %Prompts user to give a field name:
 %   Asks for user input to set the field name. The input can either be a
 %   prest name or a free input. Free inputs may only contain up to 20
@@ -8,11 +8,10 @@ function [fieldName] = fieldNamePrompt(fieldNameIn)
 % M. Altthaler, April 2024
 
 arguments
-    fieldNameIn {mustBeText}= ""
+    fieldName {mustBeText}={}
 end
  
-    if fieldNameIn == ""
-        %no field name parsed - initial setting
+    if fieldName == {}
         disp('The data file you selected will be saved as data.<name>');
         disp('To default to a preset type #');
         disp('1: <name> = grid');
@@ -45,39 +44,14 @@ end
                 end
         end
     else 
-        %field name parsed - field already exists
-        disp('------------------------------------------------------------------------------')
-        strOut = sprintf('The field data.<name> = data.%s is already in use!', fieldNameIn);
+        strOut = sprintf('The field data.<name> = data.%s is already in use!', fieldName);
         disp(strOut);
         disp('You can overwrite the exising field or chose a new name.');
-        disp('To default to a preset type # or type the new name (see above for details)');
-        strOut = sprintf('0: overwrite with the chosen name: %s', fieldNameIn);
+        disp('To default to a preset type # (see above)');
+        strOut = sprintf('0: overwrite with the chosen name: %s', fieldName);
         disp(strOut);
         str = input('Please type the <name> you desire:' ,"s");
-        switch str
-            case '0'
-                fieldName = fieldNameIn;
-            case '1'
-                fieldName = 'grid';
-            case '2'
-                fieldName = 'topo';
-            case '3'
-                fieldName = 'topoBefore';
-            case '4'
-                fieldName = 'topoAfter';
-            case '5'
-                fieldName = 'IVcurve';
-            otherwise
-                %free name assignment
-                %filter space and other fobidden chars!
-                str = regexprep(str,'[^a-zA-Z\s]','');
-                str = erase(str, " ");
-                if strlength(str) <21
-                    fieldName = str;
-                else
-                    disp('Name exceeds limit of 20 characters');
-                end
-        end    
+
     end    
 
 end

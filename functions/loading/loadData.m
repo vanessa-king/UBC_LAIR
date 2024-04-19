@@ -14,19 +14,23 @@ function [data, commentA, commentB, commentC, commentD] = loadData(data, directi
 %   'backward' a topo image (.sxm) is loaded
 
 arguments
-    data        ={}
+    data        
     direction   {mustBeText}="forward"
 end
 
 %select data via UI
 [filePath, fileName, fileExt] = selectData();
 fullFileName = strcat(fileName, fileExt);
-%log selected file
-commentB = sprintf("%s/%s", filePath, fullFileName);
 
 %selecting the fieldName for data.<fieldName> to be assigned the loaded data
 fieldName = fieldNamePrompt();
+if isfield(data,fieldName)
+    %fieldname already in use
+    fieldName = fieldNamePrompt(fieldName);
+end
 
+
+%actual loading
 switch fileExt
     case '.Z_flat'
         %load matrix topo
@@ -49,7 +53,7 @@ switch fileExt
     %     %Only use it if you saved a workspace created by loading data via
     %     %this block before!
     otherwise
-        disp("No file of appropriate data type selected")
+        disp("No file of appropriate data type selected");
         commentC = "No file of appropriate data type selected";
 end
 
