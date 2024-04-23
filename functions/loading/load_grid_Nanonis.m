@@ -24,7 +24,7 @@ comment = sprintf("load_grid_Nanonis(folder=%s, gridFileName=%s)|", folder, grid
 %regular function processing:
 
 %load the raw 3ds data:
-[header, par, data] = load3ds_Nanonis(gridFileName);
+[header, par, data] = load3ds_Nanonis(strcat(folder,'/',gridFileName));
 
 %Return the entire header, in case we need it
 grid.header = header;

@@ -28,11 +28,12 @@ comment = sprintf("load_topo_Nanonis(folder=%s, topoFileName=%s, direction=%s)|"
 
 %regular function processing:
 
+loadStr = strcat(folder,'/',topoFileName);
 %load the raw sxm data:
 if direction == "forward"
-    [header, data] = loadsxm(topoFileName,1);
+    [header, data] = loadsxm(loadStr,1);
 elseif direction == "backward"
-    [header, data] = loadsxm(topoFileName,2);
+    [header, data] = loadsxm(loadStr,2);
 else
     fprintf('Invalid direction input.\n');
     return
