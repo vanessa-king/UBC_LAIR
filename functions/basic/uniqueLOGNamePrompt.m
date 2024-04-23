@@ -37,9 +37,9 @@ end
 
 %ask for user input of name and tag
 %user specified figure name
-prompt = strcat("Please type the field name [",defaultName,"]:");
-name = input(prompt,"s");
-if isempty(name)
+prompt = strcat("Please type the <name> for '<name>_LOGfile' [",defaultName,"]:");
+nameString = input(prompt,"s");
+if isempty(nameString)
     nameString = defaultName;
 end
 
