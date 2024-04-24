@@ -35,8 +35,8 @@ grid.x_position = header.grid_settings(1);
 grid.y_position = header.grid_settings(2); 
 
 %Calculate V based off of parameters in the header:
-bias_start = str2num(header.bias_spectroscopy_sweep_start__v_);
-bias_end = str2num(header.bias_spectroscopy_sweep_end__v_);
+bias_start = par{1,1}(1);
+bias_end = par{1,1}(2);
 number_bias_points = header.points;
 V = linspace(bias_start,bias_end,number_bias_points);
 grid.V = transpose(V);%(1, number_bias_points) -> (number_bias_points, 1)
