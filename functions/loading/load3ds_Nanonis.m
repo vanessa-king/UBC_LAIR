@@ -90,7 +90,7 @@ fprintf('Reading data \n')
 
 for j = 1:header.grid_dim(1) % Size of the grid in the y-direction
     for i = 1:header.grid_dim(2) % Size of the grid in the x-direction
-        par{i,j} = fread(fid, header.num_parameters, 'float'); % Reads some parameters which aren't useful for this code, but need to keep this in to correctly index through the binary file.
+        par{i,j} = fread(fid, header.num_parameters, 'float'); % Reads the parameters
         data{i,j} = fread(fid, [header.points prod(size(header.channels))], 'float'); % Reads data
     end
 end
