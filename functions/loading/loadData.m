@@ -56,6 +56,9 @@ switch fileExt
         commentC = "No file of appropriate data type selected";
 end
 
+%save the fieldName as the name of the data set
+data.(fieldName).dataSetName = fieldName;
+
 %log function call
 commentA = sprintf("[data.%s, ...] = loadData(data,direction = %s); Selected data: <path>/<file>", fieldName, direction);
 
