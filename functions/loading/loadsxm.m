@@ -115,7 +115,6 @@ if nargin > 1
                
                pix = header.scan_pixels;
                data = fread(fid, [pix(1) pix(2)], 'float');
-               data = transpose(data);
 end
  
 fclose(fid);
