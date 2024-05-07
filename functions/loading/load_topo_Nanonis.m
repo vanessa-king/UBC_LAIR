@@ -49,8 +49,16 @@ x_range = x_range * 1e9; %convert m to nm
 y_range = y_range * 1e9; %convert m to nm
 x_resolution = header.scan_pixels(1);
 y_resolution = header.scan_pixels(2);
-topo.x = linspace((-x_range/2.0), (x_range/2), x_resolution);
-y_all = linspace((-y_range/2.0), (y_range/2.0), y_resolution);
+topo.x = linspace((-x_range/2.0), (x_range/2.0), x_resolution);
+if topo.header.scan_dir == "up" %y direction is positive
+    y_all = linspace((-y_range/2.0), (y_range/2.0), y_resolution);
+elseif topo.header.scan_dir == "down" %y direction is negative
+    y_all = linspace((y_range/2.0), (-y_range/2.0), y_resolution);
+else
+    fprintf('Invalid scan direction in header.\n');
+    return
+end
+
 
 %Get the center position of the topo (in m)
 topo.x_position = header.scan_offset(1);
