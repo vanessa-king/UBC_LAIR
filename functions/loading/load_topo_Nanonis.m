@@ -31,9 +31,9 @@ comment = sprintf("load_topo_Nanonis(folder=%s, topoFileName=%s, direction=%s)|"
 loadStr = strcat(folder,'/',topoFileName);
 %load the raw sxm data:
 if direction == "forward"
-    [header, data] = loadsxm(loadStr,1);
+    [header, z_all] = loadsxm(loadStr,2);
 elseif direction == "backward"
-    [header, data] = loadsxm(loadStr,2);
+    [header, z_all] = loadsxm(loadStr,1);
 else
     fprintf('Invalid direction input.\n');
     return
@@ -49,30 +49,36 @@ x_range = x_range * 1e9; %convert m to nm
 y_range = y_range * 1e9; %convert m to nm
 x_resolution = header.scan_pixels(1);
 y_resolution = header.scan_pixels(2);
-topo.x = linspace((-x_range/2.0), (x_range/2), x_resolution);
-topo.y_all = linspace((-y_range/2.0), (y_range/2.0), y_resolution);
+topo.x = linspace((-x_range/2.0), (x_range/2.0), x_resolution);
+if topo.header.scan_dir == "up" %y direction is positive
+    y_all = linspace((-y_range/2.0), (y_range/2.0), y_resolution);
+elseif topo.header.scan_dir == "down" %y direction is negative
+    y_all = linspace((y_range/2.0), (-y_range/2.0), y_resolution);
+else
+    fprintf('Invalid scan direction in header.\n');
+    return
+end
+
 
 %Get the center position of the topo (in m)
 topo.x_position = header.scan_offset(1);
 topo.y_position = header.scan_offset(2);
 
-%Get the z data. It doesn't come in the correct orientation relative,
-% so we need to rotate it 270 deg CCW (90 deg CW)
-topo.z_all = rot90(data,3);
-
 %This section is to determine if we have a partial image and remove NaN
 %values if so. Note that this wasn't necessary for x since it's always full
 
 %find pixels where there is data
-[x_coordinates, y_coordinates] = find(~isnan(topo.z_all));
+[x_coordinates, y_coordinates] = find(~isnan(z_all));
 
-%check if the topo is finished 
-if max(y_coordinates) == max(x_coordinates) %full topo
-    topo.y = topo.y_all;
-    topo.z = topo.z_all;
+%assign topo.y and topo.z:
+%first check if the topo is finished 
+if ~any(isnan(z_all),'all') %we have a full topo
+    topo.y = y_all;
+    topo.z = z_all;
 
 else % unfinished topo
-    %assign topo.y and topo.z
+    topo.y_all = y_all;
+    topo.z_all = z_all;
     topo.y = topo.y_all(:, 1:max(y_coordinates)-1);
     topo.z = topo.z_all(:, 1:max(y_coordinates)-1);
 end
