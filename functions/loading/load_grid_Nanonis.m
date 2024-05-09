@@ -90,7 +90,6 @@ grid.x = grid.x .* 1e9;
 %Check if the grid is finished, assign variables accordingly
 if all(I_all,'all') %grid is finished
     grid.I = I_all;
-    disp('we are here');
     if any(lock_in_all,'all')
         grid.lock_in = lock_in_all;
     end
