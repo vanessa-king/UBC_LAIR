@@ -8,7 +8,7 @@ function [mask, num_in_mask, comment] = gridMaskRectangle(data, cornerPoints)
     arguments
     data    
     cornerPoints {mustBeNumeric} = []
-    end 
+    end
     
     % Load colour maps
     color_scale_resolution = 1000; % 1000 evenly spaced colour points
@@ -24,7 +24,6 @@ function [mask, num_in_mask, comment] = gridMaskRectangle(data, cornerPoints)
     % Display the data map and get corner points if not provided
     if nargin < 2 || isempty(cornerPoints)
         imagesc(data); % Display the data map
-        axis xy
         colormap(cm_magma);
         title('Click two opposite corners of the rectangle');
         [x, y] = ginput(2); % Get two points from the user
@@ -34,10 +33,7 @@ function [mask, num_in_mask, comment] = gridMaskRectangle(data, cornerPoints)
             error('Corner points must be a 2x2 matrix');
         end
     end
-    
-    % Round points from ginput or manual input
-    cornerPoints = round(cornerPoints);
-    
+
     % Check if the provided corner points are within the data bounds
     if any(cornerPoints(:,1) < 1 | cornerPoints(:,1) > cols | ...
            cornerPoints(:,2) < 1 | cornerPoints(:,2) > rows)
@@ -46,6 +42,10 @@ function [mask, num_in_mask, comment] = gridMaskRectangle(data, cornerPoints)
 
     x = cornerPoints(:, 1);
     y = cornerPoints(:, 2);
+
+    % Ensure the coordinates are within the data bounds
+    x = min(max(round(x), 1), cols);
+    y = min(max(round(y), 1), rows);
 
     % Define the corners of the rectangle
     x1 = min(x);

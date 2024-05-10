@@ -1,5 +1,9 @@
-function [Cropped_data] = gridCropmask(data, mask)
-    % Validate inputs
+function [Cropped_data, comment] = gridCropMask(data, mask)
+%the data is cropped to the masked area. 
+
+% improvement: 1. Log comment 2. description 3. non-rectangular mask to crop the 外切rectangle
+% 
+% Validate inputs
     arguments
         data    
         mask logical
