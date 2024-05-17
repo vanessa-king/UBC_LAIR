@@ -1,3 +1,4 @@
+function [grid, comment] = load_grid_Nanonis(folder,gridFileName)
 % Description: 
 %   Wrapper function for loading grids from Nanonis, using the Nanonis-made
 %   load3ds.m function, processes the data into the grid structure 
@@ -8,7 +9,6 @@
 % Output: 
 %   grid: structure containing all the grid associated data
 %   comment: string containing log comment
-function [grid, comment] = load_grid_Nanonis(folder,gridFileName)
 arguments
     folder          {mustBeText}
     gridFileName    {mustBeText}
@@ -43,7 +43,7 @@ grid.V = transpose(V);%(1, number_bias_points) -> (number_bias_points, 1)
 
 %Get the channels from the data: 
 number_x_points = header.grid_dim(2);
-number_y_points = header.grid_dim(1); 
+number_y_points = header.grid_dim(1);
 I_all = zeros(number_x_points, number_y_points, number_bias_points);
 lock_in_all = zeros(number_x_points, number_y_points, number_bias_points);
 I_backward_all = zeros(number_x_points, number_y_points, number_bias_points);
@@ -88,7 +88,7 @@ grid.x = grid.x .* 1e9;
 [x_coordinates,y_coordinates] = find(all(I_all,3)); %pixels where there are spectra
 
 %Check if the grid is finished, assign variables accordingly
-if ~any(isnan(I_all),'all') %grid is finished
+if all(I_all,'all') %grid is finished
     grid.I = I_all;
     if any(lock_in_all,'all')
         grid.lock_in = lock_in_all;
