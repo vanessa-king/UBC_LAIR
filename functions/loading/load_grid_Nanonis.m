@@ -42,8 +42,8 @@ V = linspace(bias_start,bias_end,number_bias_points);
 grid.V = transpose(V);%(1, number_bias_points) -> (number_bias_points, 1)
 
 %Get the channels from the data: 
-number_x_points = header.grid_dim(2);
-number_y_points = header.grid_dim(1);
+number_x_points = header.grid_dim(1);
+number_y_points = header.grid_dim(2);
 I_all = zeros(number_x_points, number_y_points, number_bias_points);
 lock_in_all = zeros(number_x_points, number_y_points, number_bias_points);
 I_backward_all = zeros(number_x_points, number_y_points, number_bias_points);

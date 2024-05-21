@@ -88,8 +88,8 @@ end
 %% READS THE DATA FROM THE .3ds FILE INTO A CELL ARRAY
 fprintf('Reading data \n')
 
-for j = 1:header.grid_dim(1) % Size of the grid in the y-direction
-    for i = 1:header.grid_dim(2) % Size of the grid in the x-direction
+for j = 1:header.grid_dim(2) % Size of the grid in the y-direction
+    for i = 1:header.grid_dim(1) % Size of the grid in the x-direction
         par{i,j} = fread(fid, header.num_parameters, 'float'); % Reads the parameters
         data{i,j} = fread(fid, [header.points prod(size(header.channels))], 'float'); % Reads data
     end
