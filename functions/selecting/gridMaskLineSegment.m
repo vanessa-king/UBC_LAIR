@@ -218,7 +218,7 @@ end
 %actually creating the mask; note: the returned lower level comment is 
 %omitted as the log comments that the function returns are assigned above
 %based on the use case
-[mask,~] =createLineMask(size(topo), startPoint,endPoint);
+[mask,~] =createLineSegmentMask(size(topo), startPoint,endPoint);
 mask = logical(mask); %set datatype
 
 

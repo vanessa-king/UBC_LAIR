@@ -35,36 +35,22 @@ end
 
 % Initialize mask with zeros
 mask = zeros(imageSize);
-
-% Bresenham's line algorithm
-x1 = round(point1(1));
-y1 = round(point1(2));
-x2 = round(point2(1));
-y2 = round(point2(2));
-
-dx = abs(x2 - x1);
-dy = abs(y2 - y1);
-
-sx = sign(x2 - x1);
-sy = sign(y2 - y1);
-
-err = dx - dy;
-
-while true
-    mask(y1, x1) = 1; % Set the pixel in the mask
-
-    if x1 == x2 && y1 == y2
-        break;
-    end
-    e2 = 2 * err;
-    if e2 > -dy
-        err = err - dy;
-        x1 = x1 + sx;
-    end
-    if e2 < dx
-        err = err + dx;
-        y1 = y1 + sy;
-    end
+%line interpolation
+X = [point1(1),point2(1)];
+Y = [point1(2),point2(2)];
+%assignment of x and y coords
+x = min(X):max(X);
+y = min(Y):max(Y);
+if length(y)> length(x)
+    %stretch x and round to integer
+    x = round(linspace(min(X),max(X),length(y)));
+else 
+    %stretch y and round to integer
+    y = round(linspace(min(Y),max(Y),length(x)));
+end
+%set mask to 1 for all (x,y) coordinates
+for n = 1:length(x)
+    mask(x(n),y(n)) = 1;
 end
 
 end
