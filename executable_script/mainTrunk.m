@@ -171,7 +171,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LS02A", LOGcomment ,0);
 
 %presets:
 dataset = 'grid';   % specify the dataset to be used: e.g. grid
-variableIn = 'I';  % specify the variable to be processed, e.g. I
+variableIn = 'I';  % specify the variable to be processed, e.g. I, I_Forward, I_Backward
 variableOut = 'I_smoothed'; % specify the variable to return the data to, e.g. I (overwrite data) or I_smoothed
 span = 3;       %size of the moving window. E.g. 3: for nearest neighbor averaging; 5 for next nearast neighbor averaging.
 
@@ -180,16 +180,11 @@ span = 3;       %size of the moving window. E.g. 3: for nearest neighbor averagi
 LOGcomment = sprintf("DataIn: %s.%s; dataOut: %s.%s",dataset ,variableIn , dataset, variableOut);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01A", LOGcomment ,0);
 
-
+%execute function
 [data.(dataset).(variableOut), LOGcomment] = smoothData(data.(dataset).(variableIn),span,'IV');
+%LOG function call
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
-% if (~avg_forward_and_backward)
-%     [grid.I_Forward,LOGcomment] = gridSmooth(grid.I_Forward,'grid.I_Forward',span);
-%     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0); 
-%     [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,'grid.I_Backward',span);
-%     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-% end
 %% PD01A Processing-Derivative-01-A; create a regular dIdV for all I-V, and forward & backward separately. 
 % Edited by: Jisun November 2023
 
@@ -242,28 +237,45 @@ if (~avg_forward_and_backward)
 end
 
 %% PC02A Processing-Correcting-02-A; correct the grid for drift 
-% Edited by Vanessa Nov 2023
-% TO DO: have it actually take in two different topos. Make a new block
-% just for loading individual topos without a corresponding grid? 
+% Edited by Markus May 2024, Vanessa Nov 2023
+% TO DO: check it with two actual different topo images
 
-before = grid.z_img;
-after = grid.z_img;
-theta = 0;
-[grid,LOGcomment] = gridDriftCorrection(grid, before, after, theta);
+%presets:
+datasetGrid ='grid';                %specify the dataset to be used: e.g. grid
+variableGrid ='I';                  %specify the variable to be processed: e.g. I
+datasetTopoBefore ='topoBefore';    %specify the dataset to be used: e.g. topoBefore
+variableTopoBefore ='z';            %specify the variable to be processed: e.g. z
+datasetTopoAfter ='topoAfter';      %specify the dataset to be used: e.g. topoAfter
+variableTopoAfter ='z';             %specify the variable to be processed: e.g. z
+datasetOut ='grid';                 %specify the dataset to return the data to: e.g. grid 
+variableOut ='I_driftCorr';         %specify the variable to return the data to: e.g. I (overwrite data) or I_smoothed
+theta = 0;                          %angle to rotate the grid (in degrees)
 
-%ask for plotname:
-plot_name = uniqueNamePrompt("driftCorrected","",LOGpath);
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%LOG data in/out:
+LOGcomment = sprintf("Grid in: %s.%s; topo before: %s.%s; topo after: %s.%s; data out: %s.%s;",datasetGrid ,variableGrid , datasetTopoBefore, variableTopoBefore, datasetTopoAfter, variableTopoAfter, datasetOut, variableOut);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02A", LOGcomment ,0);
 
-%save the created figures here:
-savefig(strcat(LOGpath,"/",plot_name,".fig"))
+%execute function
+[data.(datasetOut).(variableOut),LOGcomment] = gridDriftCorrection(data.(datasetGrid).(variableGrid), data.(datasetTopoBefore).(variableTopoBefore), data.(datasetTopoAfter).(variableTopoAfter), theta);
+%LOG function call
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+%ask for plotname and the folder it should be saved in:
+targetFolder = uigetdir([],'Choose folder to save the figure to:');
+plot_name = uniqueNamePrompt("driftCorrected","",targetFolder);
+%LOG saved figure name and dir
+LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_name);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
+%save the created figures here:
+savefig(strcat(targetFolder,"/",plot_name,".fig"))
 %create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+
+%clear excess variables that may create issues in other blocks
 clear plot_name;
-
-
+clear targetFolder
+clear theta
 %% PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
 %Edited by Rysa Greenwood Nov 2023
 %Need to run LI01A, LG01A first. Right now this can only handle topo images
