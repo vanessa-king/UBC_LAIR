@@ -123,14 +123,16 @@ data = {};
 %% LD01A Load-Data-01-A; Load data (grid, topo, ...) via UI file selection
 % Edited by M. Altthaler, April 2024
 
-% This block allows users to pick files of data via UI. The load function 
-% picks the appropriate specific load function for the data type 
-% based on file the extension (compatible formats to be expanded). 
-% The user sets the <name> of the field the data is assigned to.
+% This block allows users to pick a file of data (i.e. the data set) via UI. 
+% The load function picks the appropriate specific load function for the 
+% data type based on file the extension (compatible formats to be expanded). 
+% The user sets the <name> of the field the data set is assigned to. All 
+% data is saved in the format: data.dataset.variable
 
-% Returns: data.<name>, where <name>.XXX is the actual data, e.g.:
+% Returns: data.<name>, where <name>.<varName> is the actual data, e.g.:
 % data.<name>.I     --> I(V) data from a .3ds file 
 % data.<name>.z     --> topo (z) data from a .sxm file
+
 
 [data, commentA, commentB, commentC] = loadData(data);
 
@@ -163,22 +165,31 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01B", LOGcomment ,0);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LS02A", LOGcomment ,0);
 
 %% PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
-%Edited by James October 2023; Jisun October 2023
+%Edited by M. Altthaler April 2024; James October 2023; Jisun October 2023
 
 % This section of code applies moving-average smoothing to the I-V data of the grid. 
 
-% span is the size of the moving window. For example, 3 is for nearest neighbor
-% averaging; 5 is for next nearast neighbor averaging.
-span = 3;
-[grid.I, LOGcomment] = gridSmooth(grid.I,'grid.I',span);
+%presets:
+dataset = 'grid';   % specify the dataset to be used: e.g. grid
+variableIn = 'I';  % specify the variable to be processed, e.g. I
+variableOut = 'I_smoothed'; % specify the variable to return the data to, e.g. I (overwrite data) or I_smoothed
+span = 3;       %size of the moving window. E.g. 3: for nearest neighbor averaging; 5 for next nearast neighbor averaging.
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%LOG data in/out:
+LOGcomment = sprintf("DataIn: %s.%s; dataOut: %s.%s",dataset ,variableIn , dataset, variableOut);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01A", LOGcomment ,0);
 
-if (~avg_forward_and_backward)
-    [grid.I_Forward,LOGcomment] = gridSmooth(grid.I_Forward,'grid.I_Forward',span);
-    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0); 
-    [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,'grid.I_Backward',span);
-    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-end
+
+[data.(dataset).(variableOut), LOGcomment] = smoothData(data.(dataset).(variableIn),span,'IV');
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
+% if (~avg_forward_and_backward)
+%     [grid.I_Forward,LOGcomment] = gridSmooth(grid.I_Forward,'grid.I_Forward',span);
+%     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0); 
+%     [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,'grid.I_Backward',span);
+%     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+% end
 %% PD01A Processing-Derivative-01-A; create a regular dIdV for all I-V, and forward & backward separately. 
 % Edited by: Jisun November 2023
 

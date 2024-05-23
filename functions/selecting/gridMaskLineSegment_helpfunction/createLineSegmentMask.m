@@ -33,38 +33,36 @@ if point1(1)>imageSize(1)||point1(2)>imageSize(2)||point2(1)>imageSize(1)||point
 end
 
 
+
+
+%line interpolation
+%x(P1) -> x(P2)
+if point1(1)>point2(1)
+    x = point1(1):-1:point2(1);
+else
+    x = point1(1):point2(1);  
+end 
+%y(P1) -> y(P2)
+if point1(2)>point2(2)
+    y = point1(2):-1:point2(2);
+else
+    y = point1(2):point2(2);
+end
+
+%adjust x and y to match in length
+if length(y)> length(x)
+    %stretch x and round to integer
+    x = round(linspace(x(1),x(end),length(y)));
+elseif length(x)> length(y)
+    %stretch y and round to integer
+    y = round(linspace(y(1),y(end),length(x)));
+end
+
 % Initialize mask with zeros
 mask = zeros(imageSize);
-
-% Bresenham's line algorithm
-x1 = round(point1(1));
-y1 = round(point1(2));
-x2 = round(point2(1));
-y2 = round(point2(2));
-
-dx = abs(x2 - x1);
-dy = abs(y2 - y1);
-
-sx = sign(x2 - x1);
-sy = sign(y2 - y1);
-
-err = dx - dy;
-
-while true
-    mask(y1, x1) = 1; % Set the pixel in the mask
-
-    if x1 == x2 && y1 == y2
-        break;
-    end
-    e2 = 2 * err;
-    if e2 > -dy
-        err = err - dy;
-        x1 = x1 + sx;
-    end
-    if e2 < dx
-        err = err + dx;
-        y1 = y1 + sy;
-    end
+%set mask to 1 for all (x,y) coordinates
+for n = 1:length(x)
+    mask(x(n),y(n)) = 1;
 end
 
 end
