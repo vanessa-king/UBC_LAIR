@@ -379,26 +379,43 @@ clear plot_name_1 plot_name_2 plot_name_3 plot_name_4;
 %
 % NOTE: IF I DON'T RUN PC01A, THIS SECTION DOESN'T RECOGNIZE V_reduced
 
-imageV = 0.6; %float, Voltage at which to display grid slice in no topo is provided
-n=1; %integer, Number of point spectra to plot
-offset=0; %Vertical offset for each point spectra 
-xysmooth=0.0; %float, the standard deviation of a Gaussian for smoothing xy pixels (0 is no smoothing)
-vsmooth=0.0; %float, the standard deviation of a Gaussian for smoothing the voltage sweep points (0 is no smoothing)
+%presets:
+datasetIn ='grid';              %specify the dataset to be used: e.g. grid
+variableImgIn = 'didv';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+variableVaxIn = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
 
+imageV = 0.6;                   %specify the voltage of the dIdV slice to be displayed [float]
+n=1;                            %Number of point spectra to be selected for the plot [integer]
+offset=0;                       %Vertical offset for each point spectra 
+xysmooth=0.0;                   %the standard deviation of a Gaussian for smoothing xy pixels (0 is no smoothing)
+vsmooth=0.0;                    %the standard deviation of a Gaussian for smoothing the voltage sweep points (0 is no smoothing)
 
-LOGcomment = gridClickForSpectrum(didv, V_reduced, imageV, n, offset, xysmooth, vsmooth, grid);
-
-%ask for plotname:
-plot_name = uniqueNamePrompt("clickedSpectrum","",LOGpath);
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%LOG data in/out:
+LOGcomment = sprintf("<datasetIn>.<variableImgIn>: %s.%s; <datasetIn>.<variableVaxIn>: %s.%s; ",datasetIn ,variableImgIn ,datasetIn ,variableVaxIn);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment ,0);
+
+%execute function FUNCTION OUTDATED???
+LOGcomment = gridClickForSpectrum(didv, V_reduced, imageV, n, offset, xysmooth, vsmooth, grid);
+%LOG function call
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment ,0);
+
+%ask for plotname and the folder it should be saved in:
+targetFolder = uigetdir([],'Choose folder to save the figure to:');
+plot_name = uniqueNamePrompt("clickedSpectrum","",targetFolder);
+%LOG saved figure name and dir
+LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_name);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 %save the created figures here:
 savefig(strcat(LOGpath,"/",plot_name,".fig"))
 
 %create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
+
+%clear excess variables that may create issues in other blocks
 clear plot_name;
+clear targetFolder
 
 %% VS03A Visualize-Spectrum-03-A; circular masking;
 % Edited by Jisun Oct 2023, again in Feb 2024.
