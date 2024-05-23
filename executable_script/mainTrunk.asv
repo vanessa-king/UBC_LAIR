@@ -423,7 +423,7 @@ radius = 3;     % radius R
     % save fig
     % function: SaveUsedBlocks
  
-    
+%%%
 [circular_mask, Num_in_mask, LOGcomment] = gridMaskPoint(didv, V_reduced, imageV, radius);
 
 
