@@ -270,7 +270,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 %save the created figures here:
 savefig(strcat(targetFolder,"/",plot_name,".fig"))
 %create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
 
 %clear excess variables that may create issues in other blocks
 clear plot_name;
