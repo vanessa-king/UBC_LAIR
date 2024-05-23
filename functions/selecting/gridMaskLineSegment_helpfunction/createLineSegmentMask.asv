@@ -33,8 +33,8 @@ if point1(1)>imageSize(1)||point1(2)>imageSize(2)||point2(1)>imageSize(1)||point
 end
 
 
-
-
+% Initialize mask with zeros
+mask = zeros(imageSize);
 %line interpolation
 %x(P1) -> x(P2)
 if point1(1)>point2(1)
@@ -48,18 +48,14 @@ if point1(2)>point2(2)
 else
     y = point1(2):point2(2);
 end
-
 %adjust x and y to match in length
 if length(y)> length(x)
     %stretch x and round to integer
-    x = round(linspace(x(1),x(end),length(y)));
+    x = round(linspace(min(X),max(X),length(y)));
 elseif length(x)> length(y)
     %stretch y and round to integer
-    y = round(linspace(y(1),y(end),length(x)));
+    y = round(linspace(min(Y),max(Y),length(x)));
 end
-
-% Initialize mask with zeros
-mask = zeros(imageSize);
 %set mask to 1 for all (x,y) coordinates
 for n = 1:length(x)
     mask(x(n),y(n)) = 1;
