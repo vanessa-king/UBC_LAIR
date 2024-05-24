@@ -377,26 +377,24 @@ clear plot_name_1 plot_name_2 plot_name_3 plot_name_4;
 % This section of the code opens a GUI that allows you to click
 % point(s) on a grid and plot the spectra
 %
-% NOTE: IF I DON'T RUN PC01A, THIS SECTION DOESN'T RECOGNIZE V_reduced
+% NOTE: plots dIdV(V) curves. But requires matching V (V_redeuced) as voltage axis input.
 
 %presets:
 datasetIn ='grid';              %specify the dataset to be used: e.g. grid
-variableImgIn = 'didv';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+variableDataIn = 'didv';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
 variableVaxIn = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
 
 imageV = 0.6;                   %specify the voltage of the dIdV slice to be displayed [float]
 n=1;                            %Number of point spectra to be selected for the plot [integer]
 offset=0;                       %Vertical offset for each point spectra 
-xysmooth=0.0;                   %the standard deviation of a Gaussian for smoothing xy pixels (0 is no smoothing)
-vsmooth=0.0;                    %the standard deviation of a Gaussian for smoothing the voltage sweep points (0 is no smoothing)
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %LOG data in/out:
-LOGcomment = sprintf("<datasetIn>.<variableImgIn>: %s.%s; <datasetIn>.<variableVaxIn>: %s.%s; ",datasetIn ,variableImgIn ,datasetIn ,variableVaxIn);
+LOGcomment = sprintf("<datasetIn>.<variableImgIn>: %s.%s; <datasetIn>.<variableVaxIn>: %s.%s; ",datasetIn ,variableDataIn ,datasetIn ,variableVaxIn);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment ,0);
 
 %execute function FUNCTION OUTDATED???
-LOGcomment = gridClickForSpectrum(didv, V_reduced, imageV, n, offset, xysmooth, vsmooth, grid);
+LOGcomment = gridClickForSpectrum(data.(datasetIn).(variableDataIn), data.(datasetIn).(variableVaxIn), imageV, n, offset);
 %LOG function call
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment ,0);
 
