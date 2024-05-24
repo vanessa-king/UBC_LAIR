@@ -399,6 +399,8 @@ clear plot_name;
 imageV = 0.15;  % bias voltage of image slice
 radius = 3;     % radius R 
 
+variableDataIn = 'didv';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+variableVaxIn = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
 
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
