@@ -432,8 +432,10 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
     
 % save the figures
 savefig(strcat(targetFolder,"/",plot_name,".fig"));
+
 % function: SaveUsedBlocks
 saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, strcat(plot_name));
+
 % clear excess variables
 
 
