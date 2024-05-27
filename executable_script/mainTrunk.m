@@ -422,8 +422,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 
-% Ask for dir of saving `figure`
-    % and the name 
+% Ask for dir of saving `figure` and the name 
 targetFolder = uigetdir([],'Choose folder to save the figure to:');
 plot_name = uniqueNamePrompt("circular mask","",targetFolder);
 
