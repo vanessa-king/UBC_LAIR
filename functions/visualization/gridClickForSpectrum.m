@@ -49,10 +49,10 @@ colours = 'rgbcmyk'; % A list of the colours to be used to represent the differe
 %for loop for every point clicked.
 for k = 1:n
     figure(img)
-    position = round(ginput(1)); %click where you want the spectrum
+    position = round(ginputAllPlatform(1)); %click where you want the spectrum
     plot(position(1)+xx,position(2)+yy,colours(mod(k-1,7)+1))
     plot(position(1)+xx,position(2)-yy,colours(mod(k-1,7)+1))
    
     figure(spec)
-    plot(V_reduced,squeeze(didv(:,position(2),position(1)))+(k-1)*offset,colours(mod(k-1,7)+1))
+    plot(V_reduced,squeeze(didv(position(1),position(2),:))+(k-1)*offset,colours(mod(k-1,7)+1))
 end
