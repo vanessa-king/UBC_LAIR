@@ -273,9 +273,8 @@ savefig(strcat(targetFolder,"/",plot_name,".fig"))
 saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
 
 %clear excess variables that may create issues in other blocks
-clear plot_name;
-clear targetFolder
-clear theta
+clearvars datasetGrid variableGrid datasetTopoBefore variableTopoBefore datasetTopoAfter variableTopoAfter datasetOut variableOut
+clearvars plot_name targetFolder theta
 %% PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
 %Edited by Rysa Greenwood Nov 2023
 %Need to run LI01A, LG01A first. Right now this can only handle topo images
@@ -380,9 +379,9 @@ clear plot_name_1 plot_name_2 plot_name_3 plot_name_4;
 % NOTE: plots dIdV(V) curves. But requires matching V (V_redeuced) as voltage axis input.
 
 %presets:
-datasetIn ='grid';              %specify the dataset to be used: e.g. grid
-variableDataIn = 'didv';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
-variableVaxIn = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
+dataset ='grid';                %specify the dataset to be used: e.g. grid
+variableIn1 = 'didv';           %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+variableIn2 = 'V_reduced';      %specify the variable to be processed as the V axis: e.g. V_reduced
 
 imageV = 0.6;                   %specify the voltage of the dIdV slice to be displayed [float]
 n=1;                            %Number of point spectra to be selected for the plot [integer]
@@ -390,11 +389,11 @@ offset=0;                       %Vertical offset for each point spectra
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %LOG data in/out:
-LOGcomment = sprintf("<datasetIn>.<variableImgIn>: %s.%s; <datasetIn>.<variableVaxIn>: %s.%s; ",datasetIn ,variableDataIn ,datasetIn ,variableVaxIn);
+LOGcomment = sprintf("<dataset>.<variableIn1>: %s.%s; <dataset>.<variableIn2>: %s.%s; ",dataset ,variableDataIn1 ,dataset ,variableIn2);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment ,0);
 
 %execute function FUNCTION OUTDATED???
-LOGcomment = gridClickForSpectrum(data.(datasetIn).(variableDataIn), data.(datasetIn).(variableVaxIn), imageV, n, offset);
+LOGcomment = gridClickForSpectrum(data.(dataset).(variableIn1), data.(dataset).(variableIn2), imageV, n, offset);
 %LOG function call
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment ,0);
 
@@ -412,8 +411,8 @@ savefig(strcat(LOGpath,"/",plot_name,".fig"))
 saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
 
 %clear excess variables that may create issues in other blocks
-clear plot_name;
-clear targetFolder
+clearvars dataset variableIn1 variableIn2 imageV n offset
+clearvars targetFolder plot_name
 
 %% VS03A Visualize-Spectrum-03-A; circular masking;
 % Edited by Jisun Oct 2023, again in Feb 2024.
