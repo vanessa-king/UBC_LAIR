@@ -437,8 +437,7 @@ savefig(strcat(targetFolder,"/",plot_name,".fig"));
 saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, strcat(plot_name));
 
 % clear excess variables
-
-
+clear plot_name;
 
 %% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
 % Edited by James October 2023
