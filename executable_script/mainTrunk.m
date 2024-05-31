@@ -396,9 +396,9 @@ clear plot_name;
 % It then plots the average dI/dV on that point. The user may toggle R and energy slice.
 
 %presets:
-datasetIn ='grid';              %specify the dataset to be used: e.g. grid
+dataset ='grid';              %specify the dataset to be used: e.g. grid
 variableDataIn = 'didv';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
-variableVaxIn = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
+variableIn = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
 
 variableDataOut = 'circular_mask';              % return the function of excuation
 variableNumOut = 'Num_in_mask';
@@ -409,13 +409,13 @@ radius = 3;     % radius R
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % LOG data in/out:
-LOGcomment = sprintf("<datasetIn>.<variableImgIn>: %s.%s; <datasetIn>.<variableVaxIn>: %s.%s; ",datasetIn ,variableDataIn ,datasetIn ,variableVaxIn);
+LOGcomment = sprintf("<dataset>.<variableImgIn>: %s.%s; <dataset>.<variableIn>: %s.%s; ",dataset ,variableDataIn ,dataset ,variableIn);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
 
 
 % excute the function
 % [circular_mask, Num_in_mask, LOGcomment] = gridMaskPoint(data.(datasetIn).(variableDataIn),  data.(datasetIn).(variableVaxIn), imageV, radius);
-[data.(datasetIn).(variableDataOut), data.(datasetIn).(variableNumOut), LOGcomment] = gridMaskPoint(data.(datasetIn).(variableDataIn),  data.(datasetIn).(variableVaxIn), imageV, radius);
+[data.(dataset).(variableDataOut), data.(dataset).(variableNumOut), LOGcomment] = gridMaskPoint(data.(dataset).(variableDataIn),  data.(datasetIn).(variableIn), imageV, radius);
 
 
 % log the function of excuation 
