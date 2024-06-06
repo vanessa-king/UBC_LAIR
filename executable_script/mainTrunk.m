@@ -48,7 +48,7 @@
     % LG01A Load-Grid-01-A; load grid 
     % LG01B Load-Grid-01-B; load grid and topo from Nanonis
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
-    % PD01A Processing-Derivative-01-A; create a regular dIdV for all I-V, and forward & backward separately
+    % PD01A Processing-Derivative-01-A; create a regular dIdV for I-V
     % PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V) for all I-V, and forward & backward separately
     % PC02A Processing-Correcting-02-A; correct the grid for drift 
     % PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
@@ -190,27 +190,32 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 %     [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,'grid.I_Backward',span);
 %     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 % end
-%% PD01A Processing-Derivative-01-A; create a regular dIdV for all I-V, and forward & backward separately. 
-% Edited by: Jisun November 2023
+%% PD01A Processing-Derivative-01-A; create a regular dIdV for I-V. 
+% Edited by: Jisun November 2023, again in May 2024
 
-% This section of code creates a regular dIdV data from the grid. It will create dIdV for all I-V; foward only; backward only. 
-[didv, V_reduced, LOGcomment] = gridDerivative(grid);
+% This section of code creates a regular dIdV data from the grid. It will create dIdV for I-V
+
+%presets:
+dataset = 'grid';   % specify the dataset to be used: e.g. grid
+variableIn1 = 'I_smoothed'; % specify the variable to be processed, e.g. I, I_Forward, or I_Backward
+                            % this is a 3d array form (x, y, V)
+variableIn2 = 'V'; % specify the variable to be processed, e.g. V or Z
+                   % this is a 1d array form (V ,1)
+variableOut1 = 'dIdV'; % specify the variable to return the data to
+                       % this is a 3d array form (x, y, V-1)
+variableOut2 = 'V_reduced'; % specify the variable to return the data to
+                            % this is a 3d array form (x, y, V-1)
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%LOG data in/out:
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s; dataOut: dataset = %s, variableOut1 = %s, variableOut2 = %s",dataset, variableIn1, variableIn2, dataset, variableOut1, variableOut2);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PD01A", LOGcomment ,0);
 
-if (~avg_forward_and_backward)
-    gridForward = grid;
-    [gridForward.I] = gridForward.I_Forward;
-    [didv_forward, ~, LOGcomment] = gridDerivative(gridForward);
-    LOGcomment = strcat("Forward_",LOGcomment);
-    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-    
-    gridBackward = grid;
-    [gridBackward.I] = gridForward.I_Backward;
-    [didv_backward, ~, LOGcomment] = gridDerivative(gridBackward);
-    LOGcomment = strcat("Backward_",LOGcomment);
-    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-end
+[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = Derivative(data.(dataset).(variableIn1),data.(dataset).(variableIn2));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
+clearvars dataset  
+clearvars variableIn1 variableIn2 
+clearvars variableOut1 variableOut2 
 %% PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V) for all I-V, and forward & backward separately. 
 % When you run this section, your didv becomes/means normalized didv 
 % and your grid.I becomes/means offset corrected I (see gridNormDerivative for details).
