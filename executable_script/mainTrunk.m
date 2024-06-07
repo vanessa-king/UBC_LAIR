@@ -394,29 +394,51 @@ saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
 clear plot_name;
 
 %% VS03A Visualize-Spectrum-03-A; circular masking;
-% Edited by Jisun Oct 2023, again in Feb 2024.
-% This section of code creates a circular mask of radius R around a
-% clicked point. It then plots the average dI/dV on that point. The user may toggle R and energy slice.
 
-imageV = 0.0055;
-radius = 3;
-[circular_mask, Num_in_mask, LOGcomment] = gridMaskPoint(didv, V_reduced, imageV, radius);
+% Edited by Jiabin May 2024; Jisun Oct 2023, again in Feb 2024.
+% This section of code creates a circular mask of radius R around a clicked point. 
+% It then plots the average dI/dV on that point. The user may toggle R and energy slice.
 
-plot_name_1 = uniqueNamePrompt("circular_mask_position","",LOGpath);
-savefig(strcat(LOGpath,"/",plot_name_1,".fig"))
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s|",plot_name_1));
+%presets:
+dataset ='grid';              %specify the dataset to be used: e.g. grid
+variableIn1 = 'didv';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+variableIn2 = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
+
+variableOut1 = 'circular_mask';              % return the function of excuation
+variableOut2 = 'Num_in_mask';
+
+imageV = 0.15;  % bias voltage of image slice
+radius = 3;     % radius R 
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% LOG data in/out
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1,variableIn2, variableOut1, variableOut2);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
 
-% Compute the average dI/dV spectra in the selected area
-[mask_averaged_didv, LOGcomment] = gridAvg(didv, circular_mask);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-% Generate the plot
-[~, plot_name_2,LOGcomment] = plotOneXYGraph(LOGpath,"dIdV", V_reduced, mask_averaged_didv);
+% excute the function
+[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = gridMaskPoint(data.(dataset).(variableIn1),  data.(dataset).(variableIn2), imageV, radius);
+
+% log the function of excuation 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
-% Create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2));
-clear plot_name_1 plot_name_2;
+% Ask for dir of saving `figure` and the name 
+targetFolder = uigetdir([],'Choose folder to save the figure to:');
+plot_name = uniqueNamePrompt("circular mask","",targetFolder);
+
+% LOG dir/plotname.fig
+LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_name);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+    
+% save the figures
+savefig(strcat(targetFolder,"/",plot_name,".fig"));
+
+% function: SaveUsedBlocks
+saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, strcat(plot_name));
+
+% clear excess variables
+clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2
+clearvars imageV radius targetFolder plot_name
 
 %% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
 % Edited by James October 2023
