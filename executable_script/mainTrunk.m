@@ -329,60 +329,45 @@ clear plot_name;
 
 %% VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them;
 % Edited by Jisun Kim Oct 2023, again in Feb 2024, Dong Chen June 2024
-% This section of code takes the average of the I-V and dI/dV. 
-% Then it plots I versus V, dI/dV versus V for all I-V curves; forward and backward separately.
+% This section of code takes the average of the I-V and dI/dV.
+% Then it plots I versus V, dI/dV versus V for all I-V curves.
 % NOTE: IF I DON'T RUN PD01A or PD01B, THIS SECTION DOESN'T RECOGNIZE V_reduced
 
 % Presets
+% Define dataset and input/output variables here
 dataset = 'grid';   % specify the dataset to be used: e.g. grid
-variableIn1 = 'I'; % specify the variable to be processed, e.g. I, I_Forward, or I_Backward
-variableIn2 = 'V'; % specify the variable to be processed, e.g. V or Z
-variableIn3 = 'I_Forward'; % specify the variable to be processed for forward sweeps
-variableIn4 = 'I_Backward'; % specify the variable to be processed for backward sweeps
-variableIn5 = 'didv'; % specify the derivative variable
-variableIn6 = 'didv_forward'; % specify the derivative variable for forward sweeps
-variableIn7 = 'didv_backward'; % specify the derivative variable for backward sweeps
-variableIn8 = 'V_reduced'; % reduced voltage
-variableOut1 = 'avg_iv'; % specify the variable to return the data to
-variableOut2 = 'avg_didv'; % specify the derivative data output
-variableOut3 = 'avg_iv_forward'; % output for forward sweeps
-variableOut4 = 'avg_iv_backward'; % output for backward sweeps
-variableOut5 = 'avg_didv_forward'; % output for derivative forward sweeps
-variableOut6 = 'avg_didv_backward'; % output for derivative backward sweeps
+variableIn1 = 'I'; % specify the first input variable
+variableIn2 = 'V'; % specify the second input variable
+variableIn3 = 'didv'; % specify the third input variable for the derivative variable
+variableIn4 = 'V_reduced'; % specify the fourth input variable for reduced voltage
+variableOut1 = 'avg_iv'; % specify the first output variable
+variableOut2 = 'avg_didv'; % specify the second output variable
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Log input and output variables
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s, variableIn3 = %s, variableIn4 = %s; DataOut: variableOut1 = %s, variableOut2 = %s", ...
+    dataset, variableIn1, variableIn2, variableIn3, variableIn4, variableOut1, variableOut2);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01A", LOGcomment, 0);
+
+% Main code execution section
 
 % This makes the averaged "I versus V" plot
-[avg_iv, LOGcomment] = gridAvg(data.(dataset).(variableIn1));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01A", LOGcomment ,0);
-[~, plot_name_1,LOGcomment] = plotOneXYGraph(LOGpath,"IV", data.(dataset).(variableIn2), avg_iv);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+[data.(dataset).(variableOut1), LOGcomment] = gridAvg(data.(dataset).(variableIn1));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01A", LOGcomment, 0);
+[~, plot_name_1, LOGcomment] = plotOneXYGraph(LOGpath, "IV", data.(dataset).(variableIn2), data.(dataset).(variableOut1));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % This makes the averaged "dI/dV versus V" plot
-[avg_didv, LOGcomment] = gridAvg(data.(dataset).(variableIn5));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-[~, plot_name_2,LOGcomment] = plotOneXYGraph(LOGpath,"dIdV", data.(dataset).(variableIn8), avg_didv);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+[data.(dataset).(variableOut2), LOGcomment] = gridAvg(data.(dataset).(variableIn3));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+[~, plot_name_2, LOGcomment] = plotOneXYGraph(LOGpath, "dIdV", data.(dataset).(variableIn4), data.(dataset).(variableOut2));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
-% This makes the averaged "I versus V" plot for forward and backward sweeps separately
-[avg_iv_forward, LOGcomment] = gridAvg(data.(dataset).(variableIn3));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-[avg_iv_backward, LOGcomment] = gridAvg(data.(dataset).(variableIn4));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-[~, plot_name_3,LOGcomment] = plotTwoXYGraph(LOGpath,"IV_fwdbwd", data.(dataset).(variableIn2), avg_iv_forward, avg_iv_backward);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-% This makes the averaged "dI/dV versus V" plot for forward and backward sweeps separately
-[avg_didv_forward, LOGcomment] = gridAvg(data.(dataset).(variableIn6));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-[avg_didv_backward, LOGcomment] = gridAvg(data.(dataset).(variableIn7));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-[~, plot_name_4,LOGcomment] = plotTwoXYGraph(LOGpath,"dIdV_fwdbwd", data.(dataset).(variableIn8), avg_didv_forward, avg_didv_backward);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-% Create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2, "+", plot_name_3,"+", plot_name_4));
+% Example of creating a copy of the log corresponding to the saved figures
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2));
 
 % Clear preset variables
-clearvars dataset variableIn1 variableIn2 variableIn3 variableIn4 variableIn5 variableIn6 variableIn7 variableIn8 variableOut1 variableOut2 variableOut3 variableOut4 variableOut5 variableOut6 plot_name_1 plot_name_2 plot_name_3 plot_name_4;
+clearvars dataset variableIn1 variableIn2 variableIn3 variableIn4 variableOut1 variableOut2 plot_name_1 plot_name_2;
 
 
 %% VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
