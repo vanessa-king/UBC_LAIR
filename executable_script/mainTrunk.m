@@ -338,7 +338,7 @@ clear plot_name;
 dataset = 'grid';   % specify the dataset to be used: e.g. grid
 variableIn1 = 'I'; % specify the first input variable
 variableIn2 = 'V'; % specify the second input variable
-variableIn3 = 'didv'; % specify the third input variable for the derivative variable
+variableIn3 = 'dIdV'; % specify the third input variable for the derivative variable
 variableIn4 = 'V_reduced'; % specify the fourth input variable for reduced voltage
 variableOut1 = 'avg_iv'; % specify the first output variable
 variableOut2 = 'avg_didv'; % specify the second output variable
