@@ -471,13 +471,38 @@ clear plot_name_cell;
 
 clear plot_name_cell;
 
-%% PT01A Processing-Transforming-01-A; takes (Matrix) flat-style data and tranforms it to (Nanonis) array-style data
-% Edited by James December 2023
+%% PT02A Processing-Transforming-01-A: Transforms Flat-Style Matrix Data to Nanonis Array-Style
+% This script converts Matrix-style data, typically used in generic processing, to
+% the array-style format used by Nanonis systems, facilitating compatibility and further analysis.
+%
+% Edited by James December 2023; James May 2024
 
-[IV_NanonisStyle, dIdV_NanonisStyle, avg_IV_NanonisStyle, avg_dIdV_NanonisStyle, comment] = matrixToNanonis(grid, didv);
+% This section of code transforms the grid and dI/dV data, from Matrix format to Nanonis-style arrays.
 
+% Presets:
+dataset = 'grid';   % specify the dataset to be used; e.g, grid
+variableIn = 'didv';  % specify the variable to be processed; e.g., didv
+variableOut1 = 'IV_NanonisStyle'; % specify the variable to return the data to; e.g., Nanonis-style IV array
+variableOut2 = 'dIdV_NanonisStyle'; % specify the variable to return the data to; e.g., Nanonis-style dIdV array
+variableOut3 = 'avg_IV_NanonisStyle'; % specify the variable to return the data to; e.g., Nanonis-style averaged IV array
+variableOut4 = 'avg_dIdV_NanonisStyle'; % specify the variable to return the data to; e.g., Nanonis-style averaged dIdV array
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LOG data in/out:
+LOGcomment = sprintf("DataIn: %s.%s; DataOut: %s.%s %s %s %s", dataset, variableIn, dataset, variableOut1, variableOut2, variableOut3, variableOut4);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PT02A", LOGcomment ,0);
+
+% Main code execution section
+% Transform Matrix-style data to Nanonis-style arrays
+[data.(dataset).(variableOut1), data.(dataset).(variableOut2), data.(dataset).(variableOut3), data.(dataset).(variableOut4), LOGcomment] = matrixToNanonis(data.(dataset), data.(dataset).(variableIn));
+
+% LOG data out:
 LOGcomment = strcat("Transform to Nanonis style data");
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PT01A", LOGcomment ,0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+% Clear preset variables
+clearvars dataset variableIn variableOut1 variableOut2 variableOut3 variableOut4;
+
 %% VS04A Visualize-Spectra-04-A: Unified Plotting of I/V and dI/dV Profiles
 % Adjusted to automatically determine layout case inside the function.
 % Edited by James March 2024
