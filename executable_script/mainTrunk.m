@@ -198,7 +198,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 % Presets
 % Define dataset and input/output variables here
 dataset = 'grid';   % specify the dataset to be used: e.g., grid
-variableIn1 = 'I'; % specify the first input variable
+variableIn1 = 'I'; % the variable that you want to average. 
 variableOut1 = 'avg_iv'; % specify the first output variable
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -211,7 +211,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PMA01A", LOGcomment, 0);
 
 % This makes the averaged "I versus V" plot
 [~, data.(dataset).(variableOut1), LOGcomment] = avgMaskFast(data.(dataset).(variableIn1));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PMA01A", LOGcomment, 0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % Clear preset variables
 clearvars dataset variableIn1 variableOut1;
@@ -360,9 +360,9 @@ clear plot_name;
 
 % Presets
 % Define dataset and input/output variables here
-dataset = 'grid';   % specify the dataset to be used: e.g., grid
-variableIn1 = 'V'; % specify the first input variable
-variableIn2 = 'avg_iv'; % specify the second input variable
+dataset = 'grid';   % specify which dataset to be used: e.g., grid
+variableIn1 = 'V'; % specify the first input variable, x axis.
+variableIn2 = 'avg_iv'; % specify the second input variable, y axis.
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Log input and output variables
