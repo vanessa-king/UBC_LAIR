@@ -48,12 +48,13 @@
     % LG01A Load-Grid-01-A; load grid 
     % LG01B Load-Grid-01-B; load grid and topo from Nanonis
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
+    % PA02A Processing-Averaging-Mask-02-A; average I-V according to a mask
     % PD01A Processing-Derivative-01-A; create a regular dIdV for I-V
     % PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V) for all I-V, and forward & backward separately
     % PC02A Processing-Correcting-02-A; correct the grid for drift 
     % PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
     % PT01A Processing-Threshold-01-A; Gets threshold from the height distribution of topo;
-    % VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them
+    % VS01A Visualize-Spectrum-01-A; plot I-V or dI/dV
     % VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
     % VS03A Visualize-Spectrum-03-A; circular masking
     % VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
@@ -190,6 +191,31 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 %     [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,'grid.I_Backward',span);
 %     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 % end
+%% PA02A Processing-Averaging-Mask-02-A; average I-V according to a mask
+% Edited by Jisun Kim Oct 2023, again in Feb 2024, Dong Chen June 2024
+% This section of code averages the I-V data according to a given mask.
+
+% Presets
+% Define dataset and input/output variables here
+dataset = 'grid';   % specify the dataset to be used: e.g., grid
+variableIn1 = 'I'; % specify the first input variable
+variableOut1 = 'avg_iv'; % specify the first output variable
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Log input and output variables
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s; DataOut: variableOut1 = %s", ...
+    dataset, variableIn1, variableOut1);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PMA01A", LOGcomment, 0);
+
+% Main code execution section
+
+% This makes the averaged "I versus V" plot
+[~, data.(dataset).(variableOut1), LOGcomment] = avgMaskFast(data.(dataset).(variableIn1));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PMA01A", LOGcomment, 0);
+
+% Clear preset variables
+clearvars dataset variableIn1 variableOut1;
+
 %% PD01A Processing-Derivative-01-A; create a regular dIdV for I-V. 
 % Edited by: Jisun November 2023, again in May 2024
 
@@ -327,44 +353,34 @@ savefig(strcat(LOGpath,"/",plot_name,".fig"))
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
 clear plot_name;
 
-%% VS01A Visualize-Spectrum-01-A; average I-V & dI/dV and plot them;
-% Edited by Jisun Kim Oct 2023, again in Feb 2024
-% This section of code takes the average of the I-V and dI/dV. 
-% Then it plots I versus V, dI/dV versus V for all I-V curves; forward and backward separately.
+%% VS01A Visualize-Spectrum-01-A; plot I-V or dI/dV
+% Edited by Jisun Kim Oct 2023, again in Feb 2024, Dong Chen June 2024
+% This section of code plots I versus V, dI/dV versus V for all I-V curves.
 % NOTE: IF I DON'T RUN PD01A or PD01B, THIS SECTION DOESN'T RECOGNIZE V_reduced
 
+% Presets
+% Define dataset and input/output variables here
+dataset = 'grid';   % specify the dataset to be used: e.g., grid
+variableIn1 = 'V'; % specify the first input variable
+variableIn2 = 'avg_iv'; % specify the second input variable
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Log input and output variables
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s", ...
+    dataset, variableIn1, variableIn2);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01A", LOGcomment, 0);
+
+% Main code execution section
+
 % This makes the averaged "I versus V" plot
-[avg_iv, LOGcomment] = gridAvg(grid.I);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01A", LOGcomment ,0);
-[~, plot_name_1,LOGcomment] = plotOneXYGraph(LOGpath,"IV", grid.V, avg_iv);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+[~, plot_name_1, LOGcomment] = plotOneXYGraph(LOGpath, "IV", data.(dataset).(variableIn1), data.(dataset).(variableIn2));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
-% This makes the averaged "dI/dV versus V" plot
-[avg_didv, LOGcomment] = gridAvg(didv);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-[~, plot_name_2,LOGcomment] = plotOneXYGraph(LOGpath,"dIdV", V_reduced, avg_didv);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+% Example of creating a copy of the log corresponding to the saved figures
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1));
 
-% This makes the averaged "I versus V" plot for forward and backward sweeps separately
-[avg_iv_forward, LOGcomment] = gridAvg(grid.I_Forward);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-[avg_iv_backward, LOGcomment] = gridAvg(grid.I_Backward);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-[~, plot_name_3,LOGcomment] = plotTwoXYGraph(LOGpath,"IV_fwdbwd", grid.V,avg_iv_forward, avg_iv_backward);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-% This makes the averaged "dI/dV versus V" plot for forward and backward sweeps separately
-[avg_didv_forward, LOGcomment] = gridAvg(didv_forward);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-[avg_didv_backward, LOGcomment] = gridAvg(didv_backward);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-[~, plot_name_4,LOGcomment] = plotTwoXYGraph(LOGpath,"dIdV_fwdbwd", V_reduced, avg_didv_forward, avg_didv_backward);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-%create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1, "+", plot_name_2, "+", plot_name_3,"+", plot_name_4));
-clear plot_name_1 plot_name_2 plot_name_3 plot_name_4;
-
+% Clear preset variables
+clearvars dataset variableIn1 variableIn2 plot_name_1;
 %% VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
 % Edited by Vanessa October 2023
 % This section of the code opens a GUI that allows you to click
