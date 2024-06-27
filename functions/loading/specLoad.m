@@ -1,4 +1,4 @@
-function [header, data, channels, comment] = specLoad(folder,stamp_project,spec_number)
+function [header, data] = specLoad(fileName,vargin)
 % loaddat  Nanonis DAT ASCII file loader
 %   [header, data, channels] = loaddat(fn) reads a Nanonis 
 %   DAT ASCII file fn.
@@ -8,11 +8,20 @@ function [header, data, channels, comment] = specLoad(folder,stamp_project,spec_
 %       data array corresponds to an acquired channel.
 %   channels: contains the names of the data channels.
 
-% generate log comment 
-comment = sprintf("specload(folder=%s, stamp_project=%s, spec_number=%s)|", folder, stamp_project, spec_number);
+%Nanonis DAT file loader
+% Input:
+%   fn: string of the filename
+%   varargin: optional int describing which spectrum to return.
+%   Without a second argument, only the header is returned.
+%   With a second argument n, the return value data contains
+%   the n-th data set of the scan.
+%   n is calculated 2*channel number + 0/1 depending on
+%   whether forward of backward data should be loaded.
+% Output:
+%   header: structure containing all header information from the file
+%   data: array containing dataset
 
-datfile = strcat(folder,"/",stamp_project,spec_number,".dat");
-fn= datfile;
+fn= fileName;
 
 data=''; header=''; channels='';
 
