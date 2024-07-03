@@ -1,4 +1,4 @@
-function [header, data] = specLoad(fileName,vargin)
+function [header, channels, data] = specLoad(fileName)
 % loaddat  Nanonis DAT ASCII file loader
 %   [header, data, channels] = loaddat(fn) reads a Nanonis 
 %   DAT ASCII file fn.
@@ -10,23 +10,16 @@ function [header, data] = specLoad(fileName,vargin)
 
 %Nanonis DAT file loader
 % Input:
-%   fn: string of the filename
-%   varargin: optional int describing which spectrum to return.
-%   Without a second argument, only the header is returned.
-%   With a second argument n, the return value data contains
-%   the n-th data set of the scan.
-%   n is calculated 2*channel number + 0/1 depending on
-%   whether forward of backward data should be loaded.
+%   fileName: string of the filename
 % Output:
 %   header: structure containing all header information from the file
-%   data: array containing dataset
-
-fn= fileName;
+%   channels: array containing string titles of each channel of data
+%   data: array containing dataset in shape [channels,V]
 
 data=''; header=''; channels='';
 
-if exist(fn, 'file')
-    fid = fopen(fn, 'r', 'ieee-be');    % open with big-endian
+if exist(fileName, 'file')
+    fid = fopen(fileName, 'r', 'ieee-be');    % open with big-endian
 else
     fprintf('File does not exist.\n');
     return;
@@ -64,7 +57,6 @@ channels = strsplit_i(s,char(9));
 
 % read the data
 data = fscanf(fid, '%f', [prod(size(channels)) Inf]);
-data = transpose(data);
 
 fclose(fid);
 end

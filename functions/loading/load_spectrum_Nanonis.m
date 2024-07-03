@@ -1,21 +1,18 @@
-function [spectrum,comment] = load_spectrum_Nanonis(folder,spectrumFileName,direction)
+function [spectrum,comment] = load_spectrum_Nanonis(folder,spectrumFileName)
 % Load function for point spectrum '.dat' files
 % Description: 
 %   Wrapper function for loading point spectra from Nanonis, using 
 %   specLoad.m function, processes the data into a structure 
 % Input: 
 %   folder: string of folder containing data
-%   spectrum_number: the filename, including the extension
-%   direction: string indicating what energy scan direction you want: 
-%   "forward" or "backward" 
+%   spectrumFileName: the filename, including the extension
 % Output: 
 %   spectrum: structure containing all the point spectrum associated data
 %   comment: string containing log comment
 
 arguments
-    folder          {mustBeText}
+    folder              {mustBeText}
     spectrumFileName    {mustBeText}
-    direction       {mustBeText} = "forward"
 end
 
 %output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
@@ -23,21 +20,32 @@ end
 %('=<VARn_value>') of variables that decide/affect how the function
 %processes data (e.g. order of fit, ...) 
 %Note convert all <VARn_value> to strings; 
-comment = sprintf("load_spectrum_Nanonis(folder=%s, spectrumFileName=%s, direction=%s)|", folder, spectrumFileName,direction);
+comment = sprintf("load_spectrum_Nanonis(folder=%s, spectrumFileName=%s)|", folder, spectrumFileName);
 
 %regular function processing:
 
-loadStr = strcat(folder,'/',spectrumFileName);
 %load the raw dat data:
-if direction == "forward"
-    [header, z_all] = specLoad(loadStr,2);
-elseif direction == "backward"
-    [header, z_all] = specLoad(loadStr,1);
-else
-    fprintf('Invalid direction input.\n');
-    return
+[header, channels, data] = specLoad(strcat(folder,'/',spectrumFileName));
+
+%Return the entire header, in case we need it
+spectrum.header = header;
+spectrum.header.channels = channels;
+
+%Get the channels from the data: 
+number_channels = size(data,1);
+for channel = 1:number_channels
+    if spectrum.header.channels{channel} == "Current (A)"
+        spectrum.I = data(channel,:);
+    elseif spectrum.header.channels{channel} == "Bias calc (V)"
+        spectrum.V = data(channel,:);
+    elseif spectrum.header.channels{channel} == "LI Demod 1 X (A)"
+        spectrum.lock_in_x = data(channel,:);
+    elseif spectrum.header.channels{channel} == "LI Demod 1 Y (A)"
+        spectrum.lock_in_y = data(channel,:);
+    else
+        disp(strcat("Not saving channel ", spectrum.header.channels{channel}));
+    end
 end
 
 
-spectrum = inputArg2;
 end
