@@ -296,39 +296,42 @@ clear plot_name;
 
 
 %% PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
-%Edited by Rysa Greenwood Nov 2023
-%Need to run LI01A, LG01A first. Right now this can only handle topo images
-%from grid structure
-%arguments:
-% image (struct): the structure variable, either from loadDataUpward or from TopoLoadData
-% if there is a smarter way?
-% n(integer): number of points to sample, the default number is 200 
-% plot(boolean): choose to plot the process of plane sub, the is default is F
+%Edited by Rysa Greenwood Nov 2023, Rysa May 2024
+% This section of code subtracts a plane to 'flatten' the image
 
+%presets:
+dataset = 'topo'; %specify the dataset to be used
+variableIn1= 'x'; % (array) x axis
+variableIn2 = 'y'; % (array) y axis
+variableIn3 = 'z'; % (array) data
+n = 100; %integer: number of points to sample. Default 200
+plot = 1; %boolean: chose to plot the process or not (0: no plot, 1: plot)
+variableOut = 'z_flat'; % (array) flattened z data
 
-image = grid; 
-n = 100;
-plot = 1; 
-
-[topo, LOGcomment] = topoPlaneSub(image, n, plot);
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%log input variables
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s,  variableIn2 = %s; dataOut: variableOut = %s",dataset ,variableIn1 , variableIn2, variableIn3, variableOut);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PF01A", LOGcomment ,0);
+%function execution
+[data.(dataset).(variableOut), LOGcomment] = topoPlaneSub(data.(dataset).(variableIn1), data.(dataset).(variableIn2), data.(dataset).(variableIn3), n, plot); %need to fix function
+%plot if desired and LOG data in/out:
 if plot
     %ask for plotname:
     plot_name = uniqueNamePrompt("PlaneSub","",LOGpath);
     LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
-    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PF01A", LOGcomment ,0);
-
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
     %save the created figures here:
     savefig(strcat(LOGpath,"/",plot_name,".fig"))
-
     %create copy of the log corresponding to the saved figures
     saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
     clear plot_name;
-
 else
-    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "", LOGcomment ,0);
-
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 end
+%clear variables
+clearvars dataset variableIn1 variableIn2 variableIn3 variableOut
+clearvars n plot
+clearvars plotname
 
 %% PT01A Processing-Threshold-01-A; Gets threshold from the height distribution of topo;
 %Edited by Rysa Greenwood Nov 2023
