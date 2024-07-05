@@ -335,19 +335,17 @@ clearvars plotname
 
 %% PT01A Processing-Threshold-01-A; Gets threshold from the height distribution of topo;
 %Edited by Rysa Greenwood Nov 2023, Rysa July 2024
-% This section of code makes a mask based on user defined z threshold
+% This section of code does xyz
 
 %presets:
 dataset = 'topo'; %specify the dataset to be used
-variableIn = 'z_flat'; % (array) z data (z_flat if flattened data desired)
-variableOut = 'z_Threshold'; % (array) 
+variableIn1= 'z_flat'; % (array) z data (z_flat if flattened 
+variableOut = 'z_Threshold'; % (array) flattened z data
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % log input variable 
 %add log
-LOGcomment = sprintf("DataIn: dataset = %s, variableIn = %s; dataOut: variableOut = %s",dataset ,variableIn, variableOut);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PT01A", LOGcomment ,0);
 
 %function execution
 [data.(dataset).(variableOut), LOGcomment] = topoGetThreshold(data.(dataset).(variableIn));
@@ -362,10 +360,6 @@ savefig(strcat(LOGpath,"/",plot_name,".fig"))
 
 %create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
-
-%clear variables
-clearvars dataset variableIn variableOut;
-clearvars n plot;
 clear plot_name;
 
 %% VS01A Visualize-Spectrum-01-A; plot I-V or dI/dV
