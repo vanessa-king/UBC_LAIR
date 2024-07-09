@@ -50,7 +50,7 @@
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
     % PA02A Processing-Averaging-Mask-02-A; average I-V according to a mask
     % PD01A Processing-Derivative-01-A; create a regular dIdV for I-V
-    % PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V) for all I-V, and forward & backward separately
+    % PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V)
     % PC02A Processing-Correcting-02-A; correct the grid for drift 
     % PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
     % PT01A Processing-Threshold-01-A; Gets threshold from the height distribution of topo;
@@ -216,21 +216,21 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 % Clear preset variables
 clearvars dataset variableIn1 variableOut1;
 
-%% PD01A Processing-Derivative-01-A; create a regular dIdV for I-V. 
+%% PD01A Processing-Derivative-01-A; create a regular dIdV. 
 % Edited by: Jisun November 2023, again in May 2024
 
 % This section of code creates a regular dIdV data from the grid. It will create dIdV for I-V
 
 %presets:
-dataset = 'grid';   % specify the dataset to be used: e.g. grid
+dataset = 'grid';           % specify the dataset to be used: e.g. grid
 variableIn1 = 'I_smoothed'; % specify the variable to be processed, e.g. I, I_Forward, or I_Backward
                             % this is a 3d array form (x, y, V)
-variableIn2 = 'V'; % specify the variable to be processed, e.g. V or Z
-                   % this is a 1d array form (V ,1)
-variableOut1 = 'dIdV'; % specify the variable to return the data to
-                       % this is a 3d array form (x, y, V-1)
-variableOut2 = 'V_reduced'; % specify the variable to return the data to
+variableIn2 = 'V';          % specify the variable to be processed, e.g. V or Z
+                            % this is a 1d array form (V, 1)
+variableOut1 = 'dIdV';      % specify the variable to return the data to
                             % this is a 3d array form (x, y, V-1)
+variableOut2 = 'V_reduced'; % specify the variable to return the data to
+                            % this is a 1d array form (V-1, 1)
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %LOG data in/out:
 LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s; dataOut: dataset = %s, variableOut1 = %s, variableOut2 = %s",dataset, variableIn1, variableIn2, dataset, variableOut1, variableOut2);
@@ -242,35 +242,47 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 clearvars dataset  
 clearvars variableIn1 variableIn2 
 clearvars variableOut1 variableOut2 
-%% PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V) for all I-V, and forward & backward separately. 
+%% PD01B Processing-Derivative-01-B; create a normalized dIdV (i.e. dIdV/I-V).
 % When you run this section, your didv becomes/means normalized didv 
-% and your grid.I becomes/means offset corrected I (see gridNormDerivative for details).
-% Edited by: Jisun November 2023
+% and your grid.I becomes/means offset corrected I (see NormDerivative for details).
+% Edited by: Jisun November 2023, again in June 2024
+% This section of code creates a normalized dIdV data from the grid. 
 
-% This section of code creates a normalized dIdV data from the grid. It will create dIdV for all I-V; foward only; backward only. 
-C=3E-10;
-[didv, grid.I, V_reduced, I_offset, LOGcomment] = gridNormDerivative(grid, C);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PD02A", LOGcomment ,0);
+% Presets
+% Define dataset and input/output variables here
+dataset = 'grid';           % Specify the dataset to be used, e.g., grid.
+variableIn1 = 'I_smoothed'; % Specify the variable to be processed, e.g. I, I_Forward, or I_Backward.
+                            % This is a 3d array form (x, y, V).
+variableIn2 = 'V';          % Specify the variable to be processed, e.g. V or Z.
+                            % This is a 1d array form (V, 1).
+C = 3E-10;                  % This is a neumetic value to deal with the diverging value at V=0 while normalizing.
+savefigpath = '';           % This is to define the folder where the created figure to be saved. If you choose '' then 
+                            % it will pop up a window for a user to select the folder to save the figure. Or you can
+                            % just directly put a path here: e.g. savefigpat = LOGpath. This must be string.
+                            
+variableOut1 = 'norm_dIdV'; % This is a 3d array form (x, y, V-1).                            
+variableOut2 = 'V_reduced'; % This is a 1d array form (V-1, 1).                            
+variableOut3 = 'I_corrected'; % This is a 1d array form (x, y, V).                            
+variableOut4 = 'I_offset';  % This is a 1d array form (x, y).                            
+variableOut5 = 'I_offset_std'; % This is a neumetic value.
 
-[I_offset_std, f, plot_name, LOGcomment] = plotDifferenceToMean(I_offset, LOGpath);
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
-clear plot_name;
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Log input and output variables
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s; variableIn2 = %s; C = %s, DataOut: dataset = %s, variableOut1 = %s, variableOut2 = %s, variableOut3 = %s, variableOut4 = %s, variableOut5 = %s", ...
+    dataset, variableIn1, variableIn2, C, dataset, variableOut1, variableOut2, variableOut3, variableOut4, variableOut5);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PD01B", LOGcomment, 0);
 
+[data.(dataset).(variableOut1), data.(dataset).(variableOut2), data.(dataset).(variableOut3), data.(dataset).(variableOut4),LOGcomment] = NormDerivative(data.(dataset).(variableIn1),data.(dataset).(variableIn2), C);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
-if (~avg_forward_and_backward)
-    gridForward = grid;
-    [gridForward.I] = gridForward.I_Forward;
-    [didv_forward, grid.I_Forward, ~, ~, LOGcomment] = gridNormDerivative(gridForward, C);
-    LOGcomment = strcat("Forward_",LOGcomment);
-    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-    
-    gridBackward = grid;
-    [gridBackward.I] = gridForward.I_Backward;
-    [didv_backward, grid.I_Backward, ~, ~, LOGcomment] = gridNormDerivative(gridBackward, C);
-    LOGcomment = strcat("Backward_",LOGcomment);
-    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-end
+[data.(dataset).(variableOut5), ~, plot_name, savefigpath, LOGcomment] = plotDifferenceToMean(data.(dataset).(variableOut4),savefigpath);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+% save the log file for the figure in the folder where the figure is saved.
+saveUsedBlocksLog(LOGpath, LOGfile, savefigpath, plot_name);
+clear plot_name savefigpath;
+
+% Clear preset variables
+clearvars dataset variableIn1 variableIn2 variableIn3 C variableOut1 variableOut2 variableOut3 variableOut4 variableOut5;
 
 %% PC02A Processing-Correcting-02-A; correct the grid for drift 
 % Edited by Vanessa Nov 2023
