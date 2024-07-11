@@ -546,20 +546,38 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 clearvars dataset variableIn variableOut1 variableOut2 variableOut3 variableOut4;
 
 %% VS04A Visualize-Spectra-04-A: Unified Plotting of I/V and dI/dV Profiles
+% This script visualizes I/V and dI/dV profiles, automatically determining the layout for display.
+% The user can define the step size for profile plotting, enhancing custom visualization.
 % Adjusted to automatically determine layout case inside the function.
-% Edited by James March 2024
+%
+% Edited by James March 2024, James July 2024
 
-% Display grid dimensions to the user
-numx = size(IV_NanonisStyle, 1);
-numy = size(IV_NanonisStyle, 2);
+% Presets:
+dataset = 'grid';   % specify the dataset to be used; e.g, grid
+variableIn1 = 'I_smoothed'; % specify the variable to be processed; e.g., IV or dIdV array
+variableIn2 = 'V'; % specify the variable to be processed; e.g., voltage or reduced voltage array
+variableIn3 = 'avg_iv'; % specify the variable to be processed; e.g., averaged IV or dIdV array
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Display the grid dimensions, so the user sees the scale of the data.
+numx = size(data.(dataset).(variableIn1), 1);
+numy = size(data.(dataset).(variableIn1), 2);
 disp(['Grid dimensions: numx = ', num2str(numx), ', numy = ', num2str(numy)]);
 
-% User input for step size in profile plotting
+% Prompt user for the step size in profile plotting.
 step_size = input('Enter the step size for plotting profiles: ');
 
-% Assuming IV_NanonisStyle and dIdV_NanonisStyle have been defined elsewhere
-[figNameIV, commentIV] = plotSpectraProfiles(IV_NanonisStyle, grid.V, avg_IV_NanonisStyle, step_size, numx, numy, LOGpath, "transparent_IV");
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS04D", commentIV, 0);
+% Plot the I/V or dI/dV profiles and log the process
+[figName, comment] = plotSpectraProfiles(data.(dataset).(variableIn1), data.(dataset).(variableIn2), data.(dataset).(variableIn3), step_size, numx, numy, LOGpath, "transparent_profiles");
 
-[figNameDIDV, commentDIDV] = plotSpectraProfiles(dIdV_NanonisStyle, V_reduced, avg_dIdV_NanonisStyle, step_size, numx, numy, LOGpath, "transparent_dIdV");
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentDIDV, 0);
+% Log the profile plot
+LOGcomment = sprintf("DataIn: %s.%s %s.%s %s.%s; DataOut: %s", dataset, variableIn1, dataset, variableIn2, dataset, variableIn3, figName);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS04A", LOGcomment, 0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", comment, 0);
+
+% Log the saved figures
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(figName));
+
+% Clear preset variables
+clearvars dataset variableIn1 variableIn2 variableIn3 figName step_size numx numy;
