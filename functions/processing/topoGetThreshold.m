@@ -1,22 +1,25 @@
-function [topoThresh, comment] = topoGetThreshold(topo)
+function [topoThresh, comment] = topoGetThreshold(topo, plot_histograms)
 %% Description:
 % topoGetThreshold gets the threshold from the height distribution of the topo
 % suggest running topoPlaneSub first
 %% Input parameters:
     % topo(matrix): topo (grid.z_img or topo (output from topoPlaneSub))
+    % plot_histogram(bool): true to plot histograms; false to not plot
 %% Output parameters:
     % topoThresh(structure): structure containing height_threshold and
     % masks
 
 % Plot the histogram of the topography to visualize height distribution
-hold on
-figure();
-histogram(topo)
-title("Topo height distribution")
-xlabel("Height (m)")
-ylabel("Counts");
-axis square
-hold off
+if plot_histograms
+    hold on
+    figure();
+    histogram(topo)
+    title("Topo height distribution")
+    xlabel("Height (m)")
+    ylabel("Counts");
+    axis square
+    hold off
+end
 
 %Prompt user for threshold input 
 pickManually = input('y for custom threshold, otherwise median threshold [m]: ', 's');
@@ -26,16 +29,18 @@ else
     height_threshold = median(topo(:));
 end
 
-%Plot the histogram again with the selected threshold marked
-figure("Name", "Height Distribution");
-histogram(topo);
-title("Topo height distribution")
-xlabel("Height (units?)")
-ylabel("Counts");
-axis square
-hold on
-xline(height_threshold, 'color', [1 0 0])
-hold off
+if plot_histograms
+    %Plot the histogram again with the selected threshold marked
+    figure("Name", "Height Distribution");
+    histogram(topo);
+    title("Topo height distribution")
+    xlabel("Height (units?)")
+    ylabel("Counts");
+    axis square
+    hold on
+    xline(height_threshold, 'color', [1 0 0])
+    hold off
+end
 
 %create a threshold image based on the selected threshold
 z_img = flip(permute(topo,[2 1]),1);
