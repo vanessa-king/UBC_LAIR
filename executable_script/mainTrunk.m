@@ -346,27 +346,38 @@ clearvars n plot
 clearvars plotname
 
 %% PT01A Processing-Threshold-01-A; Gets threshold from the height distribution of topo;
-%Edited by Rysa Greenwood Nov 2023
-%Need to run LI01A, LG01A first. Suggest running PF01A aswell. Right now this can only handle topo images
-%from grid structure
-%arguments:
-% topo (struct): grid
+%Edited by Rysa Greenwood Nov 2023, Rysa July 2024
+% This section of code makes a mask based on user defined z threshold
 
-image = topo;
+%presets:
+dataset = 'topo'; %specify the dataset to be used
+variableIn = 'z_flat'; % (array) z data (z_flat if flattened data desired)
+variableOut = 'z_Threshold'; % (array)
+plot_histograms = true; % true if you would like to see the intermediate histogram of z to help choose your desired threshold value; false if not
 
-[topoThresh, LOGcomment] = topoGetThreshold(image);
+%%%%%%%%%%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% log input variable
+%add log
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn = %s; dataOut: variableOut = %s",dataset ,variableIn, variableOut);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PT01A", LOGcomment ,0);
+
+%function execution
+[data.(dataset).(variableOut), LOGcomment] = topoGetThreshold(data.(dataset).(variableIn), plot_histograms);
 
 %ask for plotname:
 plot_name = uniqueNamePrompt("TopoThresh","",LOGpath);
 LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PT01A", LOGcomment ,0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 %save the created figures here:
 savefig(strcat(LOGpath,"/",plot_name,".fig"))
-
 %create copy of the log corresponding to the saved figures
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
-clear plot_name;
+
+%clear variables
+clearvars dataset variableIn variableOut
+clearvars n plot
+clear plot_name
 
 %% VS01A Visualize-Spectrum-01-A; plot I-V or dI/dV
 % Edited by Jisun Kim Oct 2023, again in Feb 2024, Dong Chen June 2024
