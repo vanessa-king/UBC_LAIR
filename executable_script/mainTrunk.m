@@ -355,7 +355,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PT01A", LOGcomment ,0);
 %ask for plotname:
 plot_name = uniqueNamePrompt("TopoThresh","",LOGpath);
 LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PT01A", LOGcomment ,0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 %save the created figures here:
 savefig(strcat(LOGpath,"/",plot_name,".fig"))
