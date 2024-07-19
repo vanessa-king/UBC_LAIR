@@ -13,15 +13,11 @@ switch LayoutCase
     case "IV"
         ax.FontSize = 20;
         ax.XLabel.String = 'bias(V)';
-        ax.YLabel.String = 'I(V)[A]';
-        ax.XTick = [-0.04 -0.02 0 0.02 0.04];        
+        ax.YLabel.String = 'I(V)[A]';          
     case "dIdV"
         ax.FontSize = 20;
         ax.XLabel.String = 'bias(V)';
-        ax.YLabel.String = 'dI/dV[a.u.]';
-        ax.XTick = [-0.04 -0.02 0 0.02 0.04];        
-        ax.XLim = [-0.04 0.04];
-        ax.YLim = [0 3e-9];
+        ax.YLabel.String = 'dI/dV[a.u.]';        
     case "IV_fwdbwd"
         ax.FontSize = 20;
         ax.XLabel.String = 'bias(V)';

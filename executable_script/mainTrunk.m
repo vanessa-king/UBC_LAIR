@@ -48,13 +48,13 @@
     % LG01A Load-Grid-01-A; load grid 
     % LG01B Load-Grid-01-B; load grid and topo from Nanonis
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
-    % PA02A Processing-Averaging-Mask-02-A; average I-V according to a mask
+    % PA02A Processing-Averaging-Mask-02-A; average I-V or dI/dV according to a mask
     % PD01A Processing-Derivative-01-A; create a regular dIdV for I-V
     % PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V)
     % PC02A Processing-Correcting-02-A; correct the grid for drift 
     % PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
     % PT01A Processing-Threshold-01-A; Gets threshold from the height distribution of topo;
-    % VS01A Visualize-Spectrum-01-A; plot I-V or dI/dV
+    % VS01A Visualize-Spectrum-01-A; plot average I-V or dI/dV
     % VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
     % VS03A Visualize-Spectrum-03-A; circular masking
     % VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
@@ -191,15 +191,19 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 %     [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,'grid.I_Backward',span);
 %     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 % end
-%% PA02A Processing-Averaging-Mask-02-A; average I-V according to a mask
+%% PA02A Processing-Averaging-Mask-02-A; average I-V or dI/dV according to a mask
 % Edited by Jisun Kim Oct 2023, again in Feb 2024, Dong Chen June 2024
 % This section of code averages the I-V data according to a given mask.
 
 % Presets
 % Define dataset and input/output variables here
-dataset = 'grid';   % specify the dataset to be used: e.g., grid
-variableIn1 = 'I'; % the variable that you want to average. 
-variableOut1 = 'avg_iv'; % specify the first output variable
+dataset = 'grid';               % specify the dataset to be used: e.g., grid
+variableIn1 = 'dIdV_bwd';     % the variable that you want to average. e.g. I_forward, I_backward
+                                % If you want to average dIdV, you need to run PD01A or PD01B first. 
+                                % Also you can input dIdV_forward or dIdV_backward to get average 
+                                % of foward or backward only average dIdV.
+variableOut1 = 'avg_dIdV_bwd';        % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
+                                % or avg_dIdV_fwd or avg_dIdV_bwd
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Log input and output variables
@@ -223,11 +227,11 @@ clearvars dataset variableIn1 variableOut1;
 
 %presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
-variableIn1 = 'I_smoothed'; % specify the variable to be processed, e.g. I, I_Forward, or I_Backward
+variableIn1 = 'I_backward'; % specify the variable to be processed, e.g. I, or I_backward
                             % this is a 3d array form (x, y, V)
 variableIn2 = 'V';          % specify the variable to be processed, e.g. V or Z
                             % this is a 1d array form (V, 1)
-variableOut1 = 'dIdV';      % specify the variable to return the data to
+variableOut1 = 'dIdV_bwd';      % specify the variable to return the data to
                             % this is a 3d array form (x, y, V-1)
 variableOut2 = 'V_reduced'; % specify the variable to return the data to
                             % this is a 1d array form (V-1, 1)
@@ -380,33 +384,47 @@ clearvars n plot
 clear plot_name
 
 %% VS01A Visualize-Spectrum-01-A; plot I-V or dI/dV
-% Edited by Jisun Kim Oct 2023, again in Feb 2024, Dong Chen June 2024
+% Edited by Jisun Kim Oct 2023, again in Feb 2024, Dong Chen June 2024, Jisun Kim July 2024
 % This section of code plots I versus V, dI/dV versus V for all I-V curves.
-% NOTE: IF I DON'T RUN PD01A or PD01B, THIS SECTION DOESN'T RECOGNIZE V_reduced
+% NOTE: IF I DON'T RUN PD01A or PD01B, THIS SECTION DOESN'T RECOGNIZE V_reduced or dIdV
 
 % Presets
 % Define dataset and input/output variables here
-dataset = 'grid';   % specify which dataset to be used: e.g., grid
-variableIn1 = 'V'; % specify the first input variable, x axis.
-variableIn2 = 'avg_iv'; % specify the second input variable, y axis.
-
+dataset = 'grid';       % specify which dataset to be used: e.g., grid
+variableIn1 = 'V_reduced';      % specify the first input variable, x axis. To plot dIdV, this should be V_reduced
+variableIn2 = 'avg_dIdV'; % specify the second input variable, y axis. e.g. avg_IV or avg_dIdV. Match it to what you process in PA02A, PD01A or PD01B.
+variableIn3 = 'avg_dIdV_bwd';    % If you don't want a two plot graph (e.g. foward and backward) you must set this as an emptry string, i.e. variableIn3 = ''    
+                        % If you want to plot forward and backward separtely but together in one plot, varialbeIn2 and variableIn3 
+                        % should be specified accordingly. e.g. variableIn2 = avg_IV, variableIn3 = avg_IV_bwd; variableIn2 = avg_dIdV, variableIn3 = avg_dIdV_bwd.                          
+savefigpath = '';       % This is to define the folder where the created figure to be saved. If you choose '' then 
+                        % it will pop up a window for a user to select the folder to save the figure. Or you can
+                        % just directly put a path here: e.g. savefigpat = LOGpath. This must be string.
+LayoutCase = 'dIdV_fwdbwd';
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Log input and output variables
-LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s", ...
-    dataset, variableIn1, variableIn2);
+% Log input and output variables 
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s, variableIn3 = %s",...
+    dataset, variableIn1, variableIn2, variableIn3);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01A", LOGcomment, 0);
 
-% Main code execution section
+if variableIn3 == ""
+    % This makes the averaged "I versus V" plot
+    [~, plot_name_1, savefigpath, LOGcomment] = plotOneXYGraph(LayoutCase, data.(dataset).(variableIn1), data.(dataset).(variableIn2), savefigpath);
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
-% This makes the averaged "I versus V" plot
-[~, plot_name_1, LOGcomment] = plotOneXYGraph(LOGpath, "IV", data.(dataset).(variableIn1), data.(dataset).(variableIn2));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+    % create a copy of the log corresponding to the saved figure
+    saveUsedBlocksLog(LOGpath, LOGfile, savefigpath, plot_name_1);
 
-% Example of creating a copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(plot_name_1));
-
+else
+    % This plots "avg_IV_fwd vs V" and "avg_IV_bwd vs V" in one graph
+    [~, plot_name_2, savefigpath, LOGcomment] = plotTwoXYGraph(LayoutCase, data.(dataset).(variableIn1),data.(dataset).(variableIn2), data.(dataset).(variableIn3), savefigpath);
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+    
+    % create a copy of the log corresponding to the saved figure
+    saveUsedBlocksLog(LOGpath, LOGfile, savefigpath, plot_name_2);
+end
+  
 % Clear preset variables
-clearvars dataset variableIn1 variableIn2 plot_name_1;
+clearvars dataset variableIn1 variableIn2 variableIn3 savefigpath plot_name_1 plot_name_2 LayoutCase;
 %% VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
 % Edited by Vanessa October 2023
 % This section of the code opens a GUI that allows you to click
@@ -556,7 +574,7 @@ clearvars dataset variableIn variableOut1 variableOut2 variableOut3 variableOut4
 dataset = 'grid';   % specify the dataset to be used; e.g, grid
 variableIn1 = 'I_smoothed'; % specify the variable to be processed; e.g., IV or dIdV array
 variableIn2 = 'V'; % specify the variable to be processed; e.g., voltage or reduced voltage array
-variableIn3 = 'avg_iv'; % specify the variable to be processed; e.g., averaged IV or dIdV array
+variableIn3 = 'avg_IV'; % specify the variable to be processed; e.g., averaged IV or dIdV array
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
