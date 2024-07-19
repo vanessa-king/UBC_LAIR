@@ -42,11 +42,16 @@
     % to overwrite the name by the response to the promtp. If a file of the
     % same name already exists a 3 digit running number is appended.
 %% Block List
+%Loading
     % LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
     % LI01B Load-Initialize-01-B; Initialize log file, UI select path and name
     % LD01A Load-Data-01-A; Load data (grid, topo, ...) via UI file selection
     % LG01A Load-Grid-01-A; load grid 
     % LG01B Load-Grid-01-B; load grid and topo from Nanonis
+    % LS02A Load-Spectra-01-A; load grid and topo from Nanonis
+    % SW01A Save-Workspace-01A; Save the current workspace
+    % LW01A Load-Workspace-01A; Loads a saved workspace from a .mat file
+%Processing
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
     % PA02A Processing-Averaging-Mask-02-A; average I-V or dI/dV according to a mask
     % PD01A Processing-Derivative-01-A; create a regular dIdV for I-V
@@ -54,6 +59,7 @@
     % PC02A Processing-Correcting-02-A; correct the grid for drift 
     % PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
     % PT01A Processing-Threshold-01-A; Gets threshold from the height distribution of topo;
+%Visualizing
     % VS01A Visualize-Spectrum-01-A; plot average I-V or dI/dV
     % VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
     % VS03A Visualize-Spectrum-03-A; circular masking
@@ -165,6 +171,108 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01B", LOGcomment ,0);
 [header, data, channels, LOGcomment] = specLoad(folder,stamp_project,spec_number);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LS02A", LOGcomment ,0);
 
+%% SW01A Save-Workspace-01A; Save the current workspace
+%Edited: M. Altthaler July,2024;
+%This block saves the current work space (all assigend variable) to a file 
+%and saves a copy of the LOGfile with it. 
+%By default these are saved in the LOGpath and the name is set to the 
+%LOGfile name with the date (format: '_DD-MMM-YYY_hh-mm-ss') appended. 
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%select folder and file name
+targetFolder = uigetdir(LOGpath,"Specify the folder to save the workspace in:");
+dateStr = string(datetime);
+dateStr = regexprep(dateStr, ' ', '_'); %repalce space with _ to avoid issue with filename in save
+dateStr = regexprep(dateStr, ':', '-'); %repalce : with - to avoid issue with filename in save
+defName = strcat(LOGfile,'_',dateStr);
+fileName = uniqueNamePrompt(defName,'',targetFolder);
+
+clear dateStr defName
+%save workspace
+save(strcat(targetFolder,'/',fileName))
+
+%LOG block execution
+LOGcomment = sprintf("Saved current workspace as %s/%s.mat",targetFolder,fileName);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SW01A", LOGcomment ,0);
+
+%save copy of LOG with with the .mat file
+saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, fileName); 
+
+clear targetFolder fileName
+%% LW01A Load-Workspace-01A; Loads a saved workspace from a .mat file
+%Edited: M. Altthaler July,2024;
+%This block loads a work space (all assigend variable) from a 
+% <dir>/<fileName>.mat file. The corresponding copy of the original LOGfile 
+% <dir>/<fileName>_LOGfile.txt (automatically created when saving a 
+% workspace with block SW01A) is required to load a block! 
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+cont = input("Loading a workspace clears your current workspace! Do you want to continue? Y/N [Y]:","s");
+if isempty(cont)
+    cont = 'Y';
+end
+
+if cont=='Y'|cont=='y'
+    %clear workspace and go on with the execution
+    disp('Current workspace cleared. Use GUI to select workspace to load.')
+    clear 
+    %
+    %UI select saved workspace (.mat file)
+    [tempFile,filePath] = uigetfile('*.mat','Select saved workspace:');
+    [~, fileName, ext] = fileparts(tempFile);
+    if ext == ".mat"
+        %<dir>/<name>.mat file selected:
+        fullFileName = strcat(filePath,'/',fileName,ext);
+        %check if corresponding <dir>/<name>_LOGfile.txt exists
+        savedLOGfileName = strcat(filePath,'/',fileName,'_LOGfile.txt');
+        if isfile(savedLOGfileName)
+            % corresponding <dir>/<name>_LOGfile.txt exists, load <dir>/<name>.mat file
+            load(fullFileName)
+            %check if LOGpath and LOGfile variable exist in the loaded workspace
+            if exist('LOGfile','var') && exist('LOGpath','var') && exist('data','var')
+                %valid workspace
+                clear targetFolder fileName %they always get saved SW01A as they are needed in the save command (but not outside the block) 
+                %restore LOG in <LOGpath>/<LOGfile>_LOGfile.txt from <dir>/<name>_LOGfile.txt
+                restoredLOG = strcat(LOGpath,'/',LOGfile,'_LOGfile.txt');
+                copyfile(savedLOGfileName, restoredLOG)
+                %LOG execution in the resored LOG file
+                LOGcomment = "Loaded workspace and restored corresponding LOGfile";
+                disp(LOGcomment)
+                LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LW01A", LOGcomment, 0);
+                LOGcomment = strcat("Loaded workspace: <dir>/<name>.mat = ",fullFileName);
+                disp(LOGcomment)
+                LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+                LOGcomment = strcat("Source LOGfile: <dir>/<name>_LOGfile.txt = ",savedLOGfileName);
+                disp(LOGcomment)
+                LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+                LOGcomment = strcat("Restored LOGfile: <LOGpath>/<LOGfile>_LOGfile.txt = ",restoredLOG);
+                disp(LOGcomment)
+                LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+            else
+                %invalid workspace
+                clear
+                disp("Invalid workspace loaded!")
+                disp("Workspace does not contain required variables: LOGfile, LOGpath, data")
+            end
+        else
+            % <dir>/<name>_LOGfile.txt does not exist.
+            disp('Workspace cannot be loaded!')
+            disp('No matching <name>_LOGfile.txt found for the selected workspace <name>.mat in <dir>.');
+            disp(sprintf("<name> = %s",fileName))
+            disp(sprintf("<dir> = %s",filePath)) 
+        end
+    else
+        disp('Workspace cannot be loaded!')
+        disp('Wrong file type selected. A <name>.mat file has to be selected.')
+    end
+
+else  % n, N, and all other inputs
+    disp('Execution aborted.')
+    LOGcomment = "Execution aborted.";
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LW01A", LOGcomment, 0);
+end
+clear cont tempFile filePath fileName ext fullFileName savedLOGfileName restoredLOG
 %% PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
 %Edited by M. Altthaler April 2024; James October 2023; Jisun October 2023
 
