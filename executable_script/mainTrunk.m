@@ -168,7 +168,8 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LS02A", LOGcomment ,0);
 %% PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
 %Edited by M. Altthaler April 2024; James October 2023; Jisun October 2023
 
-% This section of code applies moving-average smoothing to the I-V data of the grid. 
+% This section of code applies moving-average smoothing to the I-V data of the grid.
+% Note that by default 'I' is the forward scan
 
 %presets:
 dataset = 'grid';   % specify the dataset to be used: e.g. grid
