@@ -1,17 +1,15 @@
-% Description: 
-%   Wrapper function for loading topos from Nanonis, using the Nanonis-made
-%   loadsxm.m function, processes the data into a structure 
+function [topo, comment] = load_topo_Nanonis(folder, topoFileName, direction)
+%Wrapper function for loading topos from Nanonis
+%   Uses the Nanonis-made loadsxm.m function, processes the data into a structure 
 % Input: 
 %   folder: string of folder containing data
-%   stamp_project: the filename leader, takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--'
-%   topo_number: string of sxm file number, ie: 'NbIrPtTe001'
+%   topoFileName: string of the fileName including the extension
 %   direction: string indicating what topo you want: 
 %   "forward" or "backward" 
 % Output: 
 %   topo: structure containing all the topo associated data
 %   comment: string containing log comment
 
-function [topo, comment] = load_topo_Nanonis(folder, topoFileName, direction)
 
 arguments
     folder          {mustBeText}

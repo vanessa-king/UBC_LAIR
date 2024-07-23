@@ -1,23 +1,16 @@
-function [header, data, channels, comment] = specLoad(folder,stamp_project,spec_number)
-% loaddat  Nanonis DAT ASCII file loader
-%   [header, data, channels] = loaddat(fn) reads a Nanonis 
-%   DAT ASCII file fn.
-%   fn: path of the .dat file to read.
-%   header: header info of the data file.
-%   data: contains the data of all channels, each column in the
-%       data array corresponds to an acquired channel.
-%   channels: contains the names of the data channels.
-
-% generate log comment 
-comment = sprintf("specload(folder=%s, stamp_project=%s, spec_number=%s)|", folder, stamp_project, spec_number);
-
-datfile = strcat(folder,"/",stamp_project,spec_number,".dat");
-fn= datfile;
+function [header, channels, data] = specLoad(fileName)
+%Nanonis-made DAT ASCII file loader
+% Input:  
+%   fileName: string of the file name
+% Output:
+%   header: structure containing all header information from the file
+%   channels: array containing string titles of each channel
+%   data: array containing the dataset in shape [channels, energy]
 
 data=''; header=''; channels='';
 
-if exist(fn, 'file')
-    fid = fopen(fn, 'r', 'ieee-be');    % open with big-endian
+if exist(fileName, 'file')
+    fid = fopen(fileName, 'r', 'ieee-be');    % open with big-endian
 else
     fprintf('File does not exist.\n');
     return;
@@ -55,11 +48,8 @@ channels = strsplit_i(s,char(9));
 
 % read the data
 data = fscanf(fid, '%f', [prod(size(channels)) Inf]);
-data = transpose(data);
-
 fclose(fid);
 end
-
 
 function s = strsplit_i(str, delim)
     s = {};
