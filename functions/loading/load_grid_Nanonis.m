@@ -1,7 +1,6 @@
 function [grid, comment] = load_grid_Nanonis(folder,gridFileName)
-% Description: 
-%   Wrapper function for loading grids from Nanonis, using the Nanonis-made
-%   load3ds.m function, processes the data into the grid structure 
+%Wrapper function for loading grids from Nanonis
+%   Uses the Nanonis-made load3ds.m function, processes the data into a structure 
 % Input: 
 %   folder: string of folder containing data
 %   stamp_project: the filename leader, takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--'
@@ -71,7 +70,7 @@ for x = 1:number_x_points
     for y = 1:number_y_points
         for channel = 1:size(data{x,y},2)
             if header.channels{channel} == "Current (A)"
-                I_all(x,y,:) = data{x,y}(:,channel);
+                I_all(x,y,:) = data{x,y}(:,channel); %Note: I_all is the forward scan by default
             elseif header.channels{channel} == "LI D1 X 1 omega (A)"
                 lock_in_all(x,y,:) = data{x,y}(:,channel);
             elseif header.channels{channel} == "Current [bwd] (A)"
