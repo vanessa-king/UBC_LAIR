@@ -608,37 +608,61 @@ saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, strcat(plot_name));
 clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2
 clearvars imageV radius targetFolder plot_name
 
-%% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
-% Edited by James October 2023
+%% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias 
 
+% Edited by James October 2023, again by Jiabin in July 2024.
 % This section visualizes a slice of dI/dV data at a user-defined bias. 
 % Features:
 % 1. Prompt the user for the bias of interest.
 % 2. Generate and save the slice plot with appropriate naming.
 % 3. Log actions using provided log blocks.
 
+
+%presets:
+dataset ='grid';              %specify the dataset to be used: e.g. grid
+variableIn1 = 'didv';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+variableIn2 = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
+
+
+% variableOut1 = 'Biases';              % return the function of excuation
+
 % Ask the user to enter the bias of interest
-bias_of_interest = input("Enter the bias of interest: ");
+bias_of_interest = 3;       %specify the bias voltage to select the coorsponding energy slice, within the range of `variableIn2`
 
-% Convert the bias_of_interest to string if it's a number
-bias_str = num2str(bias_of_interest);
 
-% Generate the first plot and return a LOGcomment
-plot_name_cell = {uniqueNamePrompt("bias_slice_" + bias_str, "", LOGpath)};
-[Biases,LOGcomment] = gridPlotSlices(didv, V_reduced, bias_of_interest, plot_name_cell);
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Naming and saving the first figure
-filename = sprintf('%s/%s.fig', LOGpath, plot_name_cell{1});
-savefig(filename);
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name_cell{1}));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT01A", LOGcomment, 0);
+% LOG data in/out
 
-% Create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name_cell{1});
-clear plot_name_cell;
+LOGcomment = sprintf ("dataset = %s; variableIn1 = %s; variableIn2 = %s; bias_of_interest = %s", dataset, variableIn1, variableIn2, bias_of_interest);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT01A", LOGcomment ,0);
 
-clear plot_name_cell;
 
+% Ask for dir of saving `figure` and the name 
+targetFolder = uigetdir([],'Choose folder to save the figure to:');
+defaultname = sprintf("bias_slice_%d_V", bias_of_interest );
+plot_name = uniqueNamePrompt(defaultname, "",targetFolder);
+
+
+% excute the function
+[~,LOGcomment] = gridPlotSlices(data.(dataset).(variableIn1),  data.(dataset).(variableIn2), bias_of_interest, plot_name);
+
+% log the function of excuation 
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
+% LOG dir/plotname.fig
+LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_name);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
+% save the figures
+savefig(strcat(targetFolder,"/",plot_name,".fig"));
+
+% function: SaveUsedBlocks
+saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
+
+% clear excess variables
+clearvars dataset variableIn1 variableIn2
+clearvars bias_of_interest targetFolder plot_name defaultname
 %% PT02A Processing-Transforming-01-A: Transforms Flat-Style Matrix Data to Nanonis Array-Style
 % This script converts Matrix-style data, typically used in generic processing, to
 % the array-style format used by Nanonis systems, facilitating compatibility and further analysis.
