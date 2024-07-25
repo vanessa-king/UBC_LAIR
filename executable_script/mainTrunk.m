@@ -397,26 +397,47 @@ clear plot_name savefigpath;
 clearvars dataset variableIn1 variableIn2 variableIn3 C variableOut1 variableOut2 variableOut3 variableOut4 variableOut5;
 
 %% PC02A Processing-Correcting-02-A; correct the grid for drift 
-% Edited by Vanessa Nov 2023
-% TO DO: have it actually take in two different topos. Make a new block
-% just for loading individual topos without a corresponding grid? 
+% Edited by Markus May 2024, Vanessa Nov 2023
+% Note: format is updated - gridDriftCorrection() needs to be updated,
+% requires a test dataset!
 
-before = grid.z_img;
-after = grid.z_img;
-theta = 0;
-[grid,LOGcomment] = gridDriftCorrection(grid, before, after, theta);
+%presets:
+datasetGrid ='grid';                %specify the dataset to be used: e.g. grid
+variableGrid ='I';                  %specify the variable to be processed: e.g. I
+datasetTopoBefore ='topoBefore';    %specify the dataset to be used: e.g. topoBefore
+variableTopoBefore ='z';            %specify the variable to be processed: e.g. z
+datasetTopoAfter ='topoAfter';      %specify the dataset to be used: e.g. topoAfter
+variableTopoAfter ='z';             %specify the variable to be processed: e.g. z
+datasetOut ='grid';                 %specify the dataset to return the data to: e.g. grid 
+variableOut ='I_driftCorr';         %specify the variable to return the data to: e.g. I (overwrite data) or I_smoothed
+theta = 0;                          %angle to rotate the grid (in degrees)
 
-%ask for plotname:
-plot_name = uniqueNamePrompt("driftCorrected","",LOGpath);
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%LOG data in/out:
+LOGcomment = sprintf("Grid in: %s.%s; topo before: %s.%s; topo after: %s.%s; data out: %s.%s;",datasetGrid ,variableGrid , datasetTopoBefore, variableTopoBefore, datasetTopoAfter, variableTopoAfter, datasetOut, variableOut);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02A", LOGcomment ,0);
 
-%save the created figures here:
-savefig(strcat(LOGpath,"/",plot_name,".fig"))
+%execute function
+[data.(datasetOut).(variableOut),LOGcomment] = gridDriftCorrection(data.(datasetGrid).(variableGrid), data.(datasetTopoBefore).(variableTopoBefore), data.(datasetTopoAfter).(variableTopoAfter), theta);
+%LOG function call
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+%ask for plotname and the folder it should be saved in:
+targetFolder = uigetdir([],'Choose folder to save the figure to:');
+plot_name = uniqueNamePrompt("driftCorrected","",targetFolder);
+%LOG saved figure name and dir
+LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_name);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
+%save the created figures here:
+savefig(strcat(targetFolder,"/",plot_name,".fig"))
 %create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
-clear plot_name;
+saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
+
+%clear excess variables that may create issues in other blocks
+clearvars datasetGrid variableGrid datasetTopoBefore variableTopoBefore datasetTopoAfter variableTopoAfter datasetOut variableOut
+clearvars plot_name targetFolder theta
+
+
 
 
 %% PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
@@ -534,33 +555,47 @@ end
 % Clear preset variables
 clearvars dataset variableIn1 variableIn2 variableIn3 savefigpath plot_name_1 plot_name_2 LayoutCase;
 %% VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
-% Edited by Vanessa October 2023
+% Edited by: M. Altthaler June 2024 ,Vanessa October 2023
 % This section of the code opens a GUI that allows you to click
 % point(s) on a grid and plot the spectra
 %
-% NOTE: IF I DON'T RUN PC01A, THIS SECTION DOESN'T RECOGNIZE V_reduced
+% NOTE: plots dIdV(V) curves. But requires matching V (V_redeuced) as voltage axis input.
 
-imageV = 0.6; %float, Voltage at which to display grid slice in no topo is provided
-n=1; %integer, Number of point spectra to plot
-offset=0; %Vertical offset for each point spectra 
-xysmooth=0.0; %float, the standard deviation of a Gaussian for smoothing xy pixels (0 is no smoothing)
-vsmooth=0.0; %float, the standard deviation of a Gaussian for smoothing the voltage sweep points (0 is no smoothing)
+%presets:
+dataset ='grid';                %specify the dataset to be used: e.g. grid
+variableIn1 = 'didv';           %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+variableIn2 = 'V_reduced';      %specify the variable to be processed as the V axis: e.g. V_reduced
 
+imageV = 0.6;                   %specify the voltage of the dIdV slice to be displayed [float]
+n=1;                            %Number of point spectra to be selected for the plot [integer]
+offset=0;                       %Vertical offset for each point spectra 
 
-LOGcomment = gridClickForSpectrum(didv, V_reduced, imageV, n, offset, xysmooth, vsmooth, grid);
-
-%ask for plotname:
-plot_name = uniqueNamePrompt("clickedSpectrum","",LOGpath);
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%LOG data in/out:
+LOGcomment = sprintf("<dataset>.<variableIn1>: %s.%s; <dataset>.<variableIn2>: %s.%s; ",dataset ,variableDataIn1 ,dataset ,variableIn2);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment ,0);
+
+%execute function FUNCTION OUTDATED???
+LOGcomment = gridClickForSpectrum(data.(dataset).(variableIn1), data.(dataset).(variableIn2), imageV, n, offset);
+%LOG function call
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment ,0);
+
+%ask for plotname and the folder it should be saved in:
+targetFolder = uigetdir([],'Choose folder to save the figure to:');
+plot_name = uniqueNamePrompt("clickedSpectrum","",targetFolder);
+%LOG saved figure name and dir
+LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_name);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 %save the created figures here:
 savefig(strcat(LOGpath,"/",plot_name,".fig"))
 
 %create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
-clear plot_name;
+saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
 
+%clear excess variables that may create issues in other blocks
+clearvars dataset variableIn1 variableIn2 imageV n offset
+clearvars targetFolder plot_name
 %% VS03A Visualize-Spectrum-03-A; circular masking;
 
 % Edited by Jiabin May 2024; Jisun Oct 2023, again in Feb 2024.
