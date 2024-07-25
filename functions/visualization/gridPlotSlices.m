@@ -8,7 +8,7 @@ function [Biases,comment] = gridPlotSlices(I, V, Biases, plotname)
 % No default values needed here.
 arguments
    I
-   V
+   V        mustBeNumeric
    Biases
    plotname
 end
