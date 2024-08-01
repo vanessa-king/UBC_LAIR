@@ -282,7 +282,7 @@ clear cont tempFile filePath fileName ext fullFileName savedLOGfileName restored
 dataset = 'grid';   % specify the dataset to be used: e.g. grid
 variableIn = 'I';  % specify the variable to be processed, e.g. I. Note that by default ‘I’ is the forward scan
 variableOut = 'I_smoothed'; % specify the variable to return the data to, e.g. I (overwrite data) or I_smoothed
-span = 3;       %size of the moving window. E.g. 3: for nearest neighbor averaging; 5 for next nearast neighbor averaging.
+span = 2;       %size of the moving window. E.g. 3: for nearest neighbor averaging; 5 for next nearast neighbor averaging.
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %LOG data in/out:
@@ -306,11 +306,11 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 % Presets
 % Define dataset and input/output variables here
 dataset = 'grid';               % specify the dataset to be used: e.g., grid
-variableIn1 = 'dIdV_bwd';     % the variable that you want to average. e.g. I_forward, I_backward
+variableIn1 = 'dIdV';     % the variable that you want to average. e.g. I_forward, I_backward
                                 % If you want to average dIdV, you need to run PD01A or PD01B first. 
                                 % Also you can input dIdV_forward or dIdV_backward to get average 
                                 % of foward or backward only average dIdV.
-variableOut1 = 'avg_dIdV_bwd';        % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
+variableOut1 = 'avg_dIdV';        % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
                                 % or avg_dIdV_fwd or avg_dIdV_bwd
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -335,11 +335,11 @@ clearvars dataset variableIn1 variableOut1;
 
 %presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
-variableIn1 = 'I_backward'; % specify the variable to be processed, e.g. I, or I_backward
+variableIn1 = 'I'; % specify the variable to be processed, e.g. I, or I_backward
                             % this is a 3d array form (x, y, V)
 variableIn2 = 'V';          % specify the variable to be processed, e.g. V or Z
                             % this is a 1d array form (V, 1)
-variableOut1 = 'dIdV_bwd';      % specify the variable to return the data to
+variableOut1 = 'dIdV';      % specify the variable to return the data to
                             % this is a 3d array form (x, y, V-1)
 variableOut2 = 'V_reduced'; % specify the variable to return the data to
                             % this is a 1d array form (V-1, 1)
@@ -521,8 +521,8 @@ clear plot_name
 % Define dataset and input/output variables here
 dataset = 'grid';       % specify which dataset to be used: e.g., grid
 variableIn1 = 'V_reduced';      % specify the first input variable, x axis. To plot dIdV, this should be V_reduced
-variableIn2 = 'avg_dIdV'; % specify the second input variable, y axis. e.g. avg_IV or avg_dIdV. Match it to what you process in PA02A, PD01A or PD01B.
-variableIn3 = 'avg_dIdV_bwd';    % If you don't want a two plot graph (e.g. foward and backward) you must set this as an emptry string, i.e. variableIn3 = ''    
+variableIn2 = 'avg_dIdV';      % specify the second input variable, y axis. e.g. avg_IV or avg_dIdV. Match it to what you process in PA02A, PD01A or PD01B.
+variableIn3 = 'avg_dIdV_bwd';       % If you don't want a two plot graph (e.g. foward and backward) you must set this as an emptry string, i.e. variableIn3 = ''    
                         % If you want to plot forward and backward separtely but together in one plot, varialbeIn2 and variableIn3 
                         % should be specified accordingly. e.g. variableIn2 = avg_IV, variableIn3 = avg_IV_bwd; variableIn2 = avg_dIdV, variableIn3 = avg_dIdV_bwd.                          
 savefigpath = '';       % This is to define the folder where the created figure to be saved. If you choose '' then 
@@ -563,7 +563,7 @@ clearvars dataset variableIn1 variableIn2 variableIn3 savefigpath plot_name_1 pl
 
 %presets:
 dataset ='grid';                %specify the dataset to be used: e.g. grid
-variableIn1 = 'didv';           %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+variableIn1 = 'dIdV';           %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
 variableIn2 = 'V_reduced';      %specify the variable to be processed as the V axis: e.g. V_reduced
 
 imageV = 0.6;                   %specify the voltage of the dIdV slice to be displayed [float]
@@ -572,7 +572,7 @@ offset=0;                       %Vertical offset for each point spectra
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %LOG data in/out:
-LOGcomment = sprintf("<dataset>.<variableIn1>: %s.%s; <dataset>.<variableIn2>: %s.%s; ",dataset ,variableDataIn1 ,dataset ,variableIn2);
+LOGcomment = sprintf("<dataset>.<variableIn1>: %s.%s; <dataset>.<variableIn2>: %s.%s; ",dataset ,variableIn1 ,dataset ,variableIn2);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment ,0);
 
 %execute function FUNCTION OUTDATED???

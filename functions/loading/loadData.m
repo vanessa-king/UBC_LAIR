@@ -12,6 +12,9 @@ function [data, commentA, commentB, commentC, commentD] = loadData(data, directi
 %   direction   is an optional input to specify the direcion 'forward' or
 %               'backward' a topo image (.sxm) is loaded
 
+%% comment: 
+% who edited it? when? 
+%%
 arguments
     data        
     direction   {mustBeText}="forward"

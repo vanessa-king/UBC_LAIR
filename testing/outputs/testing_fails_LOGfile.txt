@@ -1,0 +1,30 @@
+DATE and TIME         BLOCK   COMMENT
+01-Aug-2024 13:35:24  LI01B   Initializing log file: <LOGpath>/<LOGfile>_LOGfile.txt
+01-Aug-2024 13:35:24    ^     C:\Users\createc\Documents\GitHub\UBC_LAIR\testing\logfolder/maintrunk_testing_LOGfile.txt
+01-Aug-2024 13:35:58  LD01A   [data.grid, ...] = loadData(data,direction = forward); Selected data: <path>/<file>
+01-Aug-2024 13:35:58    ^     C:\Users\createc\Documents\GitHub\UBC_LAIR\testing\testing data\/QPImap012.3ds
+01-Aug-2024 13:37:23  PA01A   DataIn: grid.I; dataOut: grid.I_smoothed
+01-Aug-2024 13:37:23    ^     gridsmooth(data, span =  1, type = IV, method = box)|
+01-Aug-2024 13:44:34  PD01A   DataIn: dataset = grid, variableIn1 = I, variableIn2 = V; dataOut: dataset = grid, variableOut1 = dIdV_bwd, variableOut2 = V_reduced
+01-Aug-2024 13:44:40    ^     Derivative(I:[512 512 201],V:[201 1])|
+01-Aug-2024 13:44:54  PD01B   DataIn: dataset = grid, variableIn1 = I_smoothed; variableIn2 = V; C = 3.000000e-10, DataOut: dataset = grid, variableOut1 = norm_dIdV, variableOut2 = V_reduced, variableOut3 = I_corrected, variableOut4 = I_offset, variableOut5 = I_offset_std
+01-Aug-2024 13:45:12    ^     NormDerivative(I:[512 512 201],V:[201 1],C:3e-10)|
+01-Aug-2024 13:47:08    ^     plotDifferenceToMean(data:[512 512], savefigpath:C:\Users\createc\Documents\GitHub\UBC_LAIR\testing\outputs)|
+01-Aug-2024 13:47:47  VS01A   DataIn: dataset = grid, variableIn1 = V_reduced, variableIn2 = avg_dIdV, variableIn3 = avg_dIdV_bwd
+01-Aug-2024 13:48:10  PMA01A   DataIn: dataset = grid, variableIn1 = dIdV_bwd; DataOut: variableOut1 = avg_dIdV_bwd
+01-Aug-2024 13:48:10    ^     avgMaskFast(didv:[5e+02 5e+02 2e+02] x [5.1e+02 5.1e+02 2e+02] x [512 512 200], mask:[5e+02 5e+02] x [5.1e+02 5.1e+02])|
+01-Aug-2024 13:48:19  VS01A   DataIn: dataset = grid, variableIn1 = V_reduced, variableIn2 = avg_dIdV, variableIn3 = avg_dIdV_bwd
+01-Aug-2024 13:48:53  PMA01A   DataIn: dataset = grid, variableIn1 = dIdV; DataOut: variableOut1 = avg_dIdV
+01-Aug-2024 13:49:37  PD01A   DataIn: dataset = grid, variableIn1 = I, variableIn2 = V; dataOut: dataset = grid, variableOut1 = dIdV, variableOut2 = V_reduced
+01-Aug-2024 13:49:43    ^     Derivative(I:[512 512 201],V:[201 1])|
+01-Aug-2024 13:50:21  PMA01A   DataIn: dataset = grid, variableIn1 = dIdV; DataOut: variableOut1 = avg_dIdV
+01-Aug-2024 13:50:21    ^     avgMaskFast(didv:[5e+02 5e+02 2e+02] x [5.1e+02 5.1e+02 2e+02] x [512 512 200], mask:[5e+02 5e+02] x [5.1e+02 5.1e+02])|
+01-Aug-2024 13:50:25  VS01A   DataIn: dataset = grid, variableIn1 = V_reduced, variableIn2 = avg_dIdV, variableIn3 = avg_dIdV_bwd
+01-Aug-2024 13:51:35  VS01A   DataIn: dataset = grid, variableIn1 = V_reduced, variableIn2 = avg_dIdV, variableIn3 = avg_dIdV_bwd
+01-Aug-2024 13:51:51    ^     plotTwoXYGraph(bias(V):[200 1], dI/dV[a.u.]Y1:[200 1], Y2:[200 1]), plotname=Testing_ZrSiTe_1, savefigpath=C:\Users\createc\Documents\GitHub\UBC_LAIR\testing\outputs|
+01-Aug-2024 13:53:15  VS01A   DataIn: dataset = grid, variableIn1 = V, variableIn2 = I, variableIn3 = 
+01-Aug-2024 13:55:15  VS01A   DataIn: dataset = grid, variableIn1 = V_reduced, variableIn2 = dIdV, variableIn3 = 
+01-Aug-2024 13:55:38  VS01A   DataIn: dataset = grid, variableIn1 = V_reduced, variableIn2 = avg_dIdV, variableIn3 = 
+01-Aug-2024 13:56:01    ^     plotOneXYGraph(bias(V):[200 1], dI/dV[a.u.]:[200 1]), plotname=testing_fails_1, savefigpath|plotOneXYGraph(bias(V):C:\Users\createc\Documents\GitHub\UBC_LAIR\testing\outputs, dI/dV[a.u.]:
+01-Aug-2024 13:56:26  VS01A   DataIn: dataset = grid, variableIn1 = V_reduced, variableIn2 = avg_dIdV, variableIn3 = avg_dIdV_bwd
+01-Aug-2024 13:56:42    ^     plotTwoXYGraph(bias(V):[200 1], dI/dV[a.u.]Y1:[200 1], Y2:[200 1]), plotname=testing_fails, savefigpath=C:\Users\createc\Documents\GitHub\UBC_LAIR\testing\outputs|
