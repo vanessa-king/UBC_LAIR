@@ -1,0 +1,15 @@
+DATE and TIME         BLOCK   COMMENT
+01-Aug-2024 14:39:18  LI01B   Initializing log file: <LOGpath>/<LOGfile>_LOGfile.txt
+01-Aug-2024 14:39:18    ^     C:\Users\ChenD\OneDrive - phas.ubc.ca\300Science\350LAIR_Hackathon\UBC_LAIR\testing\logfolder/testing2_LOGfile.txt
+01-Aug-2024 14:40:54  LD01A   [data.grid, ...] = loadData(data,direction = forward); Selected data: <path>/<file>
+01-Aug-2024 14:40:55    ^     C:\Users\ChenD\Downloads\/QPImap012 (1).3ds
+01-Aug-2024 14:44:46  PA01A   DataIn: grid.I; dataOut: grid.I_smoothed
+01-Aug-2024 14:44:50    ^     gridsmooth(data, span =  1, type = IV, method = box)|
+01-Aug-2024 14:44:55  PMA01A   DataIn: dataset = grid, variableIn1 = dIdV; DataOut: variableOut1 = avg_dIdV
+01-Aug-2024 14:45:42  PD01A   DataIn: dataset = grid, variableIn1 = I, variableIn2 = V; dataOut: dataset = grid, variableOut1 = dIdV, variableOut2 = V_reduced
+01-Aug-2024 14:45:52    ^     Derivative(I:[512 512 201],V:[201 1])|
+01-Aug-2024 14:45:55  PMA01A   DataIn: dataset = grid, variableIn1 = dIdV; DataOut: variableOut1 = avg_dIdV
+01-Aug-2024 14:45:55    ^     avgMaskFast(didv:[5e+02 5e+02 2e+02] x [5.1e+02 5.1e+02 2e+02] x [512 512 200], mask:[5e+02 5e+02] x [5.1e+02 5.1e+02])|
+01-Aug-2024 14:46:13  PD01B   DataIn: dataset = grid, variableIn1 = I_smoothed; variableIn2 = V; C = 3.000000e-10, DataOut: dataset = grid, variableOut1 = norm_dIdV, variableOut2 = V_reduced, variableOut3 = I_corrected, variableOut4 = I_offset, variableOut5 = I_offset_std
+01-Aug-2024 14:46:51    ^     NormDerivative(I:[512 512 201],V:[201 1],C:3e-10)|
+01-Aug-2024 14:50:49    ^     plotDifferenceToMean(data:[512 512], savefigpath:C:\Users\ChenD\OneDrive - phas.ubc.ca\300Science\350LAIR_Hackathon\UBC_LAIR\testing\outputs)|
