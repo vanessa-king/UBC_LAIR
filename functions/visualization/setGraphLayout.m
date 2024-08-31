@@ -22,12 +22,12 @@ switch LayoutCase
         ax.FontSize = 20;
         ax.XLabel.String = 'bias(V)';
         ax.YLabel.String = 'I(V)[A]';
-        legend('bwd', 'fwd','location','southeast')       
+        legend('fwd', 'bwd','location','southeast')       
     case "dIdV_fwdbwd"
         ax.FontSize = 20;
         ax.XLabel.String = 'bias(V)';
         ax.YLabel.String = 'dI/dV[a.u.]';
-        legend('bwd', 'fwd','location','southeast')
+        legend('fwd', 'bwd','location','southeast')
     case "transparent_IV"
         ax.FontSize = 12;
         ax.Title.String = 'I/V Profiles with average';

@@ -43,9 +43,9 @@ fig_name = ['dI/dV slice at ',num2str(imageV),' V'];
 img = figure('Name', fig_name); 
 imagesc(fig_plot); 
 colormap('gray'); 
-hold on;
-axis xy; 
 axis image;
+axis xy;
+hold on;
 
 %second plot: spec, the spectra for the points you clicked on
 spec = figure('Name', 'dI/dV at different points'); hold on;

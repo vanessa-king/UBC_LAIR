@@ -280,8 +280,8 @@ clear cont tempFile filePath fileName ext fullFileName savedLOGfileName restored
 
 %presets:
 dataset = 'grid';   % specify the dataset to be used: e.g. grid
-variableIn = 'I';  % specify the variable to be processed, e.g. I. Note that by default ‘I’ is the forward scan
-variableOut = 'I_smoothed'; % specify the variable to return the data to, e.g. I (overwrite data) or I_smoothed
+variableIn = 'I_backward';  % specify the variable to be processed, e.g. I. Note that by default ‘I’ is the forward scan
+variableOut = 'I_smoothed_bwd'; % specify the variable to return the data to, e.g. I (overwrite data) or I_smoothed
 span = 3;       %size of the moving window. E.g. 3: for nearest neighbor averaging; 5 for next nearast neighbor averaging.
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -335,7 +335,7 @@ clearvars dataset variableIn1 variableOut1;
 
 %presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
-variableIn1 = 'I_backward'; % specify the variable to be processed, e.g. I, or I_backward
+variableIn1 = 'I_smoothed_bwd'; % specify the variable to be processed, e.g. I, or I_backward
                             % this is a 3d array form (x, y, V)
 variableIn2 = 'V';          % specify the variable to be processed, e.g. V or Z
                             % this is a 1d array form (V, 1)
@@ -484,7 +484,7 @@ clearvars plotname
 
 %presets:
 dataset = 'topo'; %specify the dataset to be used
-variableIn = 'z_flat'; % (array) z data (z_flat if flattened data desired)
+variableIn = 'z'; % (array) z data (z_flat if flattened data desired)
 variableOut = 'z_Threshold'; % (array)
 plot_histograms = true; % true if you would like to see the intermediate histogram of z to help choose your desired threshold value; false if not
 
@@ -528,7 +528,8 @@ variableIn3 = 'avg_dIdV_bwd';    % If you don't want a two plot graph (e.g. fowa
 savefigpath = '';       % This is to define the folder where the created figure to be saved. If you choose '' then 
                         % it will pop up a window for a user to select the folder to save the figure. Or you can
                         % just directly put a path here: e.g. savefigpat = LOGpath. This must be string.
-LayoutCase = 'dIdV_fwdbwd';
+LayoutCase = 'dIdV_fwdbwd'; % Both LayoutCase 'IV_fwdbwd' and 'dIdV_fwdbwd' assume that variableIn2 is for fwd and varialbeIn3 for bwd.
+                            % If you put bwd data as varialbeIn2 and fwd data as variableIn3, the label will be incorrect (reversed). 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Log input and output variables 
 LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s, variableIn3 = %s",...
@@ -563,16 +564,16 @@ clearvars dataset variableIn1 variableIn2 variableIn3 savefigpath plot_name_1 pl
 
 %presets:
 dataset ='grid';                %specify the dataset to be used: e.g. grid
-variableIn1 = 'didv';           %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+variableIn1 = 'dIdV';           %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
 variableIn2 = 'V_reduced';      %specify the variable to be processed as the V axis: e.g. V_reduced
 
-imageV = 0.6;                   %specify the voltage of the dIdV slice to be displayed [float]
+imageV = 0.2;                   %specify the voltage of the dIdV slice to be displayed [float]
 n=1;                            %Number of point spectra to be selected for the plot [integer]
 offset=0;                       %Vertical offset for each point spectra 
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %LOG data in/out:
-LOGcomment = sprintf("<dataset>.<variableIn1>: %s.%s; <dataset>.<variableIn2>: %s.%s; ",dataset ,variableDataIn1 ,dataset ,variableIn2);
+LOGcomment = sprintf("<dataset>.<variableIn1>: %s.%s; <dataset>.<variableIn2>: %s.%s; ",dataset ,variableIn1 ,dataset ,variableIn2);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment ,0);
 
 %execute function FUNCTION OUTDATED???
@@ -604,14 +605,14 @@ clearvars targetFolder plot_name
 
 %presets:
 dataset ='grid';              %specify the dataset to be used: e.g. grid
-variableIn1 = 'didv';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+variableIn1 = 'dIdV';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
 variableIn2 = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
 
 variableOut1 = 'circular_mask';              % return the function of excuation
 variableOut2 = 'Num_in_mask';
 
 imageV = 0.15;  % bias voltage of image slice
-radius = 3;     % radius R 
+radius = 2;     % radius R 
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -655,14 +656,14 @@ clearvars imageV radius targetFolder plot_name
 
 %presets:
 dataset ='grid';              %specify the dataset to be used: e.g. grid
-variableIn1 = 'didv';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+variableIn1 = 'dIdV';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
 variableIn2 = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
 
 
 % variableOut1 = 'Biases';              % return the function of excuation
 
 % Ask the user to enter the bias of interest
-bias_of_interest = 3;       %specify the bias voltage to select the coorsponding energy slice, within the range of `variableIn2`
+bias_of_interest = 0;       %specify the bias voltage to select the coorsponding energy slice, within the range of `variableIn2`
 
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -739,9 +740,9 @@ clearvars dataset variableIn variableOut1 variableOut2 variableOut3 variableOut4
 
 % Presets:
 dataset = 'grid';   % specify the dataset to be used; e.g, grid
-variableIn1 = 'I_smoothed'; % specify the variable to be processed; e.g., IV or dIdV array
-variableIn2 = 'V'; % specify the variable to be processed; e.g., voltage or reduced voltage array
-variableIn3 = 'avg_IV'; % specify the variable to be processed; e.g., averaged IV or dIdV array
+variableIn1 = 'dIdV'; % specify the variable to be processed; e.g., IV or dIdV array
+variableIn2 = 'V_reduced'; % specify the variable to be processed; e.g., voltage or reduced voltage array
+variableIn3 = 'avg_dIdV'; % specify the variable to be processed; e.g., averaged IV or dIdV array
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
