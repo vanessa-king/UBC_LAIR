@@ -293,12 +293,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01A", LOGcomment ,0);
 [data.(dataset).(variableOut), LOGcomment] = smoothData(data.(dataset).(variableIn),span,'IV');
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
-% if (~avg_forward_and_backward)
-%     [grid.I_Forward,LOGcomment] = gridSmooth(grid.I_Forward,'grid.I_Forward',span);
-%     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0); 
-%     [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,'grid.I_Backward',span);
-%     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-% end
+clearvars dataset variableIn variableOut span;
 %% PA02A Processing-Averaging-Mask-02-A; average I-V or dI/dV according to a mask
 % Edited by Jisun Kim Oct 2023, again in Feb 2024, Dong Chen June 2024
 % This section of code averages the I-V data according to a given mask.
