@@ -293,12 +293,8 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA01A", LOGcomment ,0);
 [data.(dataset).(variableOut), LOGcomment] = smoothData(data.(dataset).(variableIn),span,'IV');
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
-% if (~avg_forward_and_backward)
-%     [grid.I_Forward,LOGcomment] = gridSmooth(grid.I_Forward,'grid.I_Forward',span);
-%     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0); 
-%     [grid.I_Backward,LOGcomment] = gridSmooth(grid.I_Backward,'grid.I_Backward',span);
-%     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-% end
+clearvars dataset variableIn variableOut span
+
 %% PA02A Processing-Averaging-Mask-02-A; average I-V or dI/dV according to a mask
 % Edited by Jisun Kim Oct 2023, again in Feb 2024, Dong Chen June 2024
 % This section of code averages the I-V data according to a given mask.
@@ -326,7 +322,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PMA01A", LOGcomment, 0);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % Clear preset variables
-clearvars dataset variableIn1 variableOut1;
+clearvars dataset variableIn1 variableOut1
 
 %% PD01A Processing-Derivative-01-A; create a regular dIdV. 
 % Edited by: Jisun November 2023, again in May 2024
@@ -514,21 +510,23 @@ clear plot_name
 
 %% VS01A Visualize-Spectrum-01-A; plot I-V or dI/dV
 % Edited by Jisun Kim Oct 2023, again in Feb 2024, Dong Chen June 2024, Jisun Kim July 2024
-% This section of code plots I versus V, dI/dV versus V for all I-V curves.
+% This section of code plots average I versus V or average dI/dV versus V.
+% You have an option to plot forward I (or dIdV) and backward I (or dIdV) separately but together in one plot.
 % NOTE: IF I DON'T RUN PD01A or PD01B, THIS SECTION DOESN'T RECOGNIZE V_reduced or dIdV
 
 % Presets
 % Define dataset and input/output variables here
-dataset = 'grid';       % specify which dataset to be used: e.g., grid
-variableIn1 = 'V_reduced';      % specify the first input variable, x axis. To plot dIdV, this should be V_reduced
-variableIn2 = 'avg_dIdV'; % specify the second input variable, y axis. e.g. avg_IV or avg_dIdV. Match it to what you process in PA02A, PD01A or PD01B.
+dataset = 'grid';           % specify which dataset to be used: e.g., grid
+variableIn1 = 'V_reduced';  % specify the first input variable, x axis. To plot dIdV, this should be V_reduced
+variableIn2 = 'avg_dIdV';   % specify the second input variable, y axis. e.g. avg_IV or avg_dIdV. Match it to what you process in PA02A, PD01A or PD01B.
 variableIn3 = 'avg_dIdV_bwd';    % If you don't want a two plot graph (e.g. foward and backward) you must set this as an emptry string, i.e. variableIn3 = ''    
-                        % If you want to plot forward and backward separtely but together in one plot, varialbeIn2 and variableIn3 
-                        % should be specified accordingly. e.g. variableIn2 = avg_IV, variableIn3 = avg_IV_bwd; variableIn2 = avg_dIdV, variableIn3 = avg_dIdV_bwd.                          
+                            % If you want to plot forward and backward separtely but together in one plot, varialbeIn2 and variableIn3 
+                            % should be specified accordingly. e.g. variableIn2 = avg_IV, variableIn3 = avg_IV_bwd; variableIn2 = avg_dIdV, variableIn3 = avg_dIdV_bwd.                          
 savefigpath = '';       % This is to define the folder where the created figure to be saved. If you choose '' then 
                         % it will pop up a window for a user to select the folder to save the figure. Or you can
                         % just directly put a path here: e.g. savefigpat = LOGpath. This must be string.
-LayoutCase = 'dIdV_fwdbwd';
+LayoutCase = 'dIdV_fwdbwd'; % Both LayoutCase 'IV_fwdbwd' and 'dIdV_fwdbwd' assume that variableIn2 is for fwd and varialbeIn3 for bwd.
+                            % If you put bwd data as varialbeIn2 and fwd data as variableIn3, the label will be incorrect (reversed). 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Log input and output variables 
 LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s, variableIn3 = %s",...
