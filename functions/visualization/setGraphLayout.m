@@ -46,5 +46,18 @@ switch LayoutCase
         ax.XLabel.String = 'Bias Voltage [V]';
         ax.YLabel.String = 'dI/dV [a.u.]';
         axis square;
+    case "topoImage"
+        ax.FontSize = 12;
+        ax.Title.String = 'topoImage';
+        ax.XLabel.String = 'x';
+        ax.YLabel.String = 'y';
+        axis xy;
+    case "gridsliceImage"
+        ax.FontSize = 12;
+        ax.Title.String = 'gridsliceImage';
+        ax.XLabel.String = 'x';
+        ax.YLabel.String = 'y';
+        axis xy;
+
 
 end
