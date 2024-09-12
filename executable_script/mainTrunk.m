@@ -508,6 +508,46 @@ clearvars dataset variableIn variableOut
 clearvars n plot
 clear plot_name
 
+%% VS000 Simple Visualize-2D-Image; 2D Image Plotting;
+% Edited by Dong Chen Sep 2024.
+% This section of code generates a 2D image of data using the specified layout format.
+% The layout can be 'gridsliceImage' or 'topoImage'. The image will be saved to a specified folder.
+
+% Presets:
+LayoutCase = 'topoImage';  % specify the layout format: 'gridsliceImage' or 'topoImage'
+dataset = 'topo';               % specify the dataset to be used: e.g. grid
+variableIn = 'z';    % specify the variable containing the data to be plotted: e.g. dataVariable
+
+% Variables for function execution
+savefigpath = "";               % specify a directory to save the figure, or leave blank to select manually
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% LOG data in/out
+LOGcomment = sprintf("LayoutCase = %s; dataset = %s; variableIn = %s; ", LayoutCase, dataset, variableIn);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS000", LOGcomment, 0);
+
+% Execute the function
+[data.(dataset).figureHandle, data.(dataset).plotName, data.(dataset).savePath, LOGcomment] = ...
+    plot2DImage(LayoutCase, data.(dataset).(variableIn), savefigpath);
+
+% Log the execution of the function
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+% Save the figure
+savefigpath = data.(dataset).savePath;
+plot_name = data.(dataset).plotName;
+
+% LOG dir/plotname.fig
+LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", savefigpath, plot_name);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+% Save the figure path to log
+saveUsedBlocksLog(LOGpath, LOGfile, savefigpath, strcat(plot_name));
+
+% Clear excess variables
+clearvars LayoutCase dataset variableIn savefigpath plot_name
+
 %% VS01A Visualize-Spectrum-01-A; plot I-V or dI/dV
 % Edited by Jisun Kim Oct 2023, again in Feb 2024, Dong Chen June 2024, Jisun Kim July 2024
 % This section of code plots average I versus V or average dI/dV versus V.
