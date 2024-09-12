@@ -529,7 +529,7 @@ savefigpath = "";               % specify a directory to save the figure, or lea
 
 % LOG data in/out
 LOGcomment = sprintf("LayoutCase = %s; dataset = %s; variableIn = %s; ", LayoutCase, dataset, variableIn);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03B", LOGcomment, 0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS000", LOGcomment, 0);
 
 % Execute the function
 [data.(dataset).figureHandle, data.(dataset).plotName, data.(dataset).savePath, LOGcomment] = ...
