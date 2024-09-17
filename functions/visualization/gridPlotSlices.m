@@ -8,7 +8,7 @@ function [Biases,comment] = gridPlotSlices(I, V, Biases, plotname)
 % No default values needed here.
 arguments
    I
-   V        mustBeNumeric
+   V
    Biases
    plotname
 end
@@ -18,8 +18,6 @@ comment = sprintf("gridPlotSlices(bias=%.5f)|", Biases);
     % load colourmap
     color_scale_resolution = 1000; % 1000 evenly spaced colour points
     cm_magma = magma(color_scale_resolution);
-
-    I = flip(permute(I, [1, 3, 2]), 2);
 
     N = length(Biases);
 
@@ -38,7 +36,7 @@ comment = sprintf("gridPlotSlices(bias=%.5f)|", Biases);
         figure('Name', plotname{k});
 
         clims = [0, 3E-9];   
-        imagesc(squeeze(I(temp_ind, :, :)), clims);
+        imagesc(squeeze(I(:, :, temp_ind)), clims);
         colorbar;
         colormap(cm_magma);
         axis image;
