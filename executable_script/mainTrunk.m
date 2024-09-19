@@ -335,7 +335,7 @@ variableIn1 = 'I'; % specify the variable to be processed, e.g. I, or I_backward
                             % this is a 3d array form (x, y, V)
 variableIn2 = 'V';          % specify the variable to be processed, e.g. V or Z
                             % this is a 1d array form (V, 1)
-variableOut1 = 'dIdV_bwd';      % specify the variable to return the data to
+variableOut1 = 'dIdV';      % specify the variable to return the data to
                             % this is a 3d array form (x, y, V-1)
 variableOut2 = 'V_reduced'; % specify the variable to return the data to
                             % this is a 1d array form (V-1, 1)
@@ -601,11 +601,11 @@ clearvars dataset variableIn1 variableIn2 variableIn3 savefigpath plot_name_1 pl
 
 %presets:
 dataset ='grid';                %specify the dataset to be used: e.g. grid
-variableIn1 = 'dIdV_bwd';           %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+variableIn1 = 'dIdV';           %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
 variableIn2 = 'V_reduced';      %specify the variable to be processed as the V axis: e.g. V_reduced
 
 imageV = 0.6;                   %specify the voltage of the dIdV slice to be displayed [float]
-n=1;                            %Number of point spectra to be selected for the plot [integer]
+n=2;                            %Number of point spectra to be selected for the plot [integer]
 offset=0;                       %Vertical offset for each point spectra 
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
