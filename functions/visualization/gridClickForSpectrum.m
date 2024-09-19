@@ -7,7 +7,7 @@ function [comment] = gridClickForSpectrum(didv, V_reduced, imageV, offset, n, po
 %
 % Edited: M. Altthaler 05/2024; Vanessa 2023
 %
-%   OPT TBD:    make fucntion accept a list of point coordinates to be
+%   OPT TBD:    make function accept a list of point coordinates to be
 %               plotted. This feature is untested! (05/2024)
 %
 %Arguments:
@@ -61,7 +61,7 @@ yy = sqrt(radius^2-xx.^2);
 colours = 'rgbcmyk'; 
 
 %init append (x,y) coordinates to the comment
-commentAppend = 'selceted points (x,y): ';
+commentAppend = 'selected points (x,y): ';
 comment = strcat(comment,commentAppend);
 
 
@@ -82,7 +82,7 @@ if isempty(pointsList)
     end
 else
     %plot pointsList
-    for k = 1:lenght(pointsList)
+    for k = 1:length(pointsList)
         figure(img)
         position = pointsList(k,:); %assing k-th point of the list to position instead of klicking
         plot(position(1)+xx,position(2)+yy,colours(mod(k-1,7)+1))
