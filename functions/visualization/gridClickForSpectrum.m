@@ -22,14 +22,14 @@ arguments
     didv        {mustBeNumeric}
     V_reduced   {mustBeVector}
     imageV      {mustBeNumeric}
-    offset      {mustBeNumeric}
-    n           {mustBeNumericOrLogical}=2
+    offset      {mustBeNumeric}=0
+    n           {mustBeNumericOrLogical,mustBePositive}=2
     pointsList  {mustBeNumeric}=[]
 end
 
 %logComment
-formatSpec = "gridClickForSpectrum(<dataIn>, <VaxIn>, imageV=%d, n=%d, offset=%d)|";
-comment = sprintf(formatSpec, imageV, n, offset);
+formatSpec = "gridClickForSpectrum(<dataIn>, <VaxIn>, imageV=%d, offset=%d, n=%d)|";
+comment = sprintf(formatSpec, imageV, offset, n);
 
 %regular function processing:
 
