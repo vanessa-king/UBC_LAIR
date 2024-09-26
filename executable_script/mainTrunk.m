@@ -713,7 +713,6 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT01A", LOGcomment ,0);
 
 % Ask for dir of saving `figure` and the name 
 targetFolder = uigetdir([],'Choose folder to save the figure to:');
-%defaultname = sprintf("bias_slice_%d_V", bias_of_interest );
 defaultname = sprintf("bias_slice");
 plot_name = uniqueNamePrompt(defaultname, "",targetFolder);
 
