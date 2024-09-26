@@ -50,7 +50,7 @@ tall_mask = fig_plot > height_threshold;
 short_mask = fig_plot <= height_threshold;
 
 % Display the thresholded topography with a colorbar
-figure('Name', 'Topology');  %change name of plot
+figure('Name', 'Topography');  %change name of plot
 imagesc(fig_plot);
 colormap('gray')
 colorbar
