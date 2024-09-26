@@ -38,13 +38,13 @@ if plot == 1
     figure;
     subplot(1,3,1)
     imagesc(z'); axis image; axis xy;
-    title('Raw Topology')
+    title('Raw Topography')
     subplot(1,3,2)
     imagesc(plane'); axis image; axis xy;
     title('Fitted Plane')
     subplot(1,3,3)
     imagesc(z_flat'); axis image; axis xy;
-    title('Plane Subtracted Topology')
+    title('Plane Subtracted Topography')
     colormap(gray);
 end
 
