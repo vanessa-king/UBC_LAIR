@@ -683,7 +683,7 @@ clearvars imageV radius targetFolder plot_name
 
 %% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias 
 
-% Edited by James October 2023, again by Jiabin in July 2024.
+% Edited by James October 2023, Jiabin July 2024, Rysa Sept 2024
 % This section visualizes a slice of dI/dV data at a user-defined bias. 
 % Features:
 % 1. Prompt the user for the bias of interest.
@@ -693,14 +693,14 @@ clearvars imageV radius targetFolder plot_name
 
 %presets:
 dataset ='grid';              %specify the dataset to be used: e.g. grid
-variableIn1 = 'didv';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+variableIn1 = 'dIdV';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
 variableIn2 = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
 
 
 % variableOut1 = 'Biases';              % return the function of excuation
 
 % Ask the user to enter the bias of interest
-bias_of_interest = 3;       %specify the bias voltage to select the coorsponding energy slice, within the range of `variableIn2`
+bias_of_interest = [-2,0.5,1.5];       %specify the bias voltage (or list of voltages) to select slice, within the range of `variableIn2`
 
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -713,22 +713,25 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT01A", LOGcomment ,0);
 
 % Ask for dir of saving `figure` and the name 
 targetFolder = uigetdir([],'Choose folder to save the figure to:');
-defaultname = sprintf("bias_slice_%d_V", bias_of_interest );
+%defaultname = sprintf("bias_slice_%d_V", bias_of_interest );
+defaultname = sprintf("bias_slice");
 plot_name = uniqueNamePrompt(defaultname, "",targetFolder);
 
-
 % excute the function
-[~,LOGcomment] = gridPlotSlices(data.(dataset).(variableIn1),  data.(dataset).(variableIn2), bias_of_interest, plot_name);
+[plot_names,~,LOGcomment] = gridPlotSlices(data.(dataset).(variableIn1),  data.(dataset).(variableIn2), bias_of_interest, plot_name);
 
 % log the function of excuation 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
-% LOG dir/plotname.fig
-LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_name);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+for plt = 1:length(plot_names)
+    % LOG dir/plotname.fig
+    LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_names{plt});
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
-% save the figures
-savefig(strcat(targetFolder,"/",plot_name,".fig"));
+    % save the figures
+    savefig(strcat(targetFolder,"/",plot_names{plt},".fig"));
+
+end
 
 % function: SaveUsedBlocks
 saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
