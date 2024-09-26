@@ -33,8 +33,12 @@ end
 switch fileExt
     case '.Z_flat'
         %load matrix topo
+        disp("<name>.Z_flat files are not supported yet. Work in progress! No data was loaded");
+        commentC = "<name>.Z_flat files are not supported yet. Work in progress! No data was loaded";
     case '.I(V)_flat'
         %load matrix grid
+        disp("<name>.I(V)_flat files are not supported yet. Work in progress! No data was loaded");
+        commentC = "<name>.I(V)_flat files are not supported yet. Work in progress! No data was loaded";
     case '.3ds'
         %load 3ds file -> Nanonis grid
         [grid, commentC] = load_grid_Nanonis(filePath,fullFileName);
@@ -45,12 +49,8 @@ switch fileExt
         data.(fieldName)= topo;
     case '.dat'
         %load dat file -> Nanonis point spectrum
-    % case '.mat'
-    %     %load .mat file -> Matlab workspace
-    %     load(strcat(filePath,fileName,fileExt));
-    %     %Note this option allows you to load a previously saved workspace.  
-    %     %Only use it if you saved a workspace created by loading data via
-    %     %this block before!
+        disp("<name>.dat files are not supported yet. Work in progress! No data was loaded");
+        commentC = "<name>.dat files are not supported yet. Work in progress! No data was loaded";
     otherwise
         disp("No file of appropriate data type selected");
         commentC = "No file of appropriate data type selected";
