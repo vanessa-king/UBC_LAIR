@@ -47,6 +47,7 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
         % Display an topo image 
         figure()
         p1=image(topo,'CDataMapping','scaled'); 
+        axis xy
         axis square
         hold on
 
@@ -73,6 +74,7 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
         % theta=0; % horizontal line
         figure()
         p1=image(topo,'CDataMapping','scaled'); 
+        axis xy
         axis square
         hold on
 
