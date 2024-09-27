@@ -515,11 +515,11 @@ clear plot_name
 
 % Presets:
 LayoutCase = 'topoImage';  % specify the layout format: 'gridsliceImage' or 'topoImage'
-dataset = 'topo';               % specify the dataset to be used: e.g. grid
+dataset = 'UPS';               % specify the dataset to be used: e.g. grid
 variableIn = 'z';    % specify the variable containing the data to be plotted: e.g. dataVariable
 
 % Variables for function execution
-savefigpath = "";               % specify a directory to save the figure, or leave blank to select manually
+savefigpath = "/Users/vanessa/Desktop/UBC/Lab/Generic_Data_Processing_Code/Test_Data/Hackathon_test_topo/"; % specify a directory to save the figure, or leave blank to select manually
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

@@ -1,5 +1,6 @@
 function [header, data] = loadsxm(fn, varargin)
 %Nanonis-made SXM file loader
+% Edited by D. Cohn, Sept 2024
 % Input:
 %   fn: string of the filename
 %   varargin: optional int describing which data set to return.
@@ -73,13 +74,26 @@ while 1
                                header.(lower(s1)) = sscanf(s2, '%f');
                % data info:
                case 'DATA_INFO'
-                               s = '';
-                               s2=strtrim(fgetl(fid));
-                               while length(s2)>2
-                                              s = sprintf('%s\n%s', s, s2);
-                                              s2 = strtrim(fgetl(fid));
-                               end
-                               header.data_info = s;
+                   % parse header row
+                   header_row = strtrim(fgetl(fid));
+                   num_fields = length(split(header_row));
+                   field_names = transpose(split(header_row));
+                   
+                   % parse values
+                   values = cell(0, num_fields);
+
+                   while true
+                        value_row = strtrim(fgetl(fid));
+
+                        if length(split(value_row)) < 2
+                            break
+                        end
+
+                        values = [values; transpose(split(value_row))];          
+                   end
+
+                   header.data_info = cell2table(values, VariableNames=field_names);
+                               
                case 'SCANIT_END'
                                break;
     otherwise % treat as strings
@@ -107,8 +121,8 @@ end
 % read the data if requested
 if nargin > 1
                im_nr = varargin{1};
-               size = prod(header.scan_pixels)*4;   % 4 Bytes per pixel
-               fseek(fid, im_nr*size, 0);
+               size_inBytes = prod(header.scan_pixels)*4;   % 4 Bytes per pixel
+               fseek(fid, im_nr*size_inBytes, 0);
                
                pix = header.scan_pixels;
                data = fread(fid, [pix(1) pix(2)], 'float');
