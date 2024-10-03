@@ -441,7 +441,7 @@ clearvars plot_name targetFolder theta
 % This section of code subtracts a plane to 'flatten' the image
 
 %presets:
-dataset = 'topo'; %specify the dataset to be used
+dataset = 'topoSupTwoAfter'; %specify the dataset to be used
 variableIn1= 'x'; % (array) x axis
 variableIn2 = 'y'; % (array) y axis
 variableIn3 = 'z'; % (array) data
@@ -515,11 +515,11 @@ clear plot_name
 
 % Presets:
 LayoutCase = 'topoImage';  % specify the layout format: 'gridsliceImage' or 'topoImage'
-dataset = 'UPS';               % specify the dataset to be used: e.g. grid
-variableIn = 'z';    % specify the variable containing the data to be plotted: e.g. dataVariable
+dataset = 'topoSupTwoAfter';               % specify the dataset to be used: e.g. grid
+variableIn = 'z_flat';    % specify the variable containing the data to be plotted: e.g. dataVariable
 
 % Variables for function execution
-savefigpath = "/Users/vanessa/Desktop/UBC/Lab/Generic_Data_Processing_Code/Test_Data/Hackathon_test_topo/"; % specify a directory to save the figure, or leave blank to select manually
+savefigpath = ""; % specify a directory to save the figure, or leave blank to select manually
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

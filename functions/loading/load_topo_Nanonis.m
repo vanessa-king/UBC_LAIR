@@ -52,6 +52,10 @@ end
 topo.x_position = header.scan_offset(1);
 topo.y_position = header.scan_offset(2);
 
+%Get the available channels of data
+channels = topo.header.data_info{:,'Name'};
+
+
 %This section is to determine if we have a partial image and remove NaN
 %values if so. Note that this wasn't necessary for x since it's always full
 
