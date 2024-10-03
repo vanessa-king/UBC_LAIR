@@ -1,11 +1,11 @@
 function [fieldName] = fieldNamePrompt(fieldNameIn)
 %Prompts user to give a field name:
 %   Asks for user input to set the field name. The input can either be a
-%   prest name or a free input. Free inputs may only contain up to 20
-%   letters, i.e. characters: a-z, A-Z. Any other characters will be
-%   removed from the string without warning!
+%   prest name or a free input. Free inputs may only contain up to 64
+%   letters, numbers and underscores, i.e. characters: a-z, A-Z, 0-9, _. 
+%   Any other characters will be removed from the string without warning!
 
-% M. Altthaler, April 2024
+% M. Altthaler, April 2024 & October 2024
 
 arguments
     fieldNameIn {mustBeText}= ""
@@ -20,7 +20,7 @@ end
         disp('3: <name> = topoBefore');
         disp('4: <name> = topoAfter');
         disp('5: <name> = IVcurve');
-        disp('A freely chosen <name> may only contain capital and non-capital letters!')
+        disp('A freely chosen <name> may only contain capital (A-Z) and non-capital (a-z) letters numbers (0-9) and underscores (_)!')
         str = input('Please type the <name> you desire:' ,"s");
         switch str
             case '1'
@@ -36,12 +36,12 @@ end
             otherwise
                 %free name assignment
                 %filter space and other fobidden chars!
-                str = regexprep(str,'[^a-zA-Z\s]','');
+                str = regexprep(str,'[^a-zA-Z0-9_\s]','');
                 str = erase(str, " ");
-                if strlength(str) <21
+                if strlength(str) <65
                     fieldName = str;
                 else
-                    disp('Name exceeds limit of 20 characters');
+                    disp('Name exceeds limit of 64 characters');
                 end
         end
     else 
@@ -72,10 +72,10 @@ end
                 %filter space and other fobidden chars!
                 str = regexprep(str,'[^a-zA-Z\s]','');
                 str = erase(str, " ");
-                if strlength(str) <21
+                if strlength(str) <65
                     fieldName = str;
                 else
-                    disp('Name exceeds limit of 20 characters');
+                    disp('Name exceeds limit of 64 characters');
                 end
         end    
     end    
