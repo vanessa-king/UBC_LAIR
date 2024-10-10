@@ -19,6 +19,7 @@ function [mask,comment,startPoint, endPoint, polcoord] = gridMaskLineSegment(top
 
 %   Nov. 2023   Jiabin Y., 
 %   edited Dec. 2023 Markus Altthaler
+%   edited Oct. 2024   Dong Chen
 
 
 %  add an argument validation
@@ -128,7 +129,7 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
         end 
         
         % prompt: ask the user to input proper angle
-        disp('Specify the angle of the line in degrees (0 is horizontal, 90  degrees is vertical)')
+        disp('Specify the angle of the line in degrees (0 is horizontal, 90  degrees is vertical, CCW as positive direction)')
         angle=input('Please input the angle in degrees:');
         %catch no input:
         if isempty(angle)

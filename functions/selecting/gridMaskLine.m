@@ -17,6 +17,7 @@ function [mask, comment, BoundaryPoint1, BoundaryPoint2, polcoord] = gridMaskLin
 %   comment     log comment
 
 %   Dec, 2023   Dong Chen
+%   Oct. 2024   Dong Chen
 
 
 %  add an argument validation
@@ -27,7 +28,8 @@ arguments
     polcoord    {mustBeNumeric}=[]
 end
 
-[~,~,startPoint,endPoint,polcoord]=gridMaskLineSegment(topo,pointA,pointB,polcoord);
+[~,comment,startPoint,endPoint,polcoord]=gridMaskLineSegment(topo,pointA,pointB,polcoord);
+comment = append('Line mask generated based on the line segment defined by ', comment);
 
 %% Find the two Points that sit on the boundary of the topo. 
 
@@ -62,11 +64,8 @@ line_seg_y = [Pt1_beyond(2), Pt2_beyond(2)];
 BoundaryPoint1=[round(BoundaryPoints_x(1)),round(BoundaryPoints_y(1))];
 BoundaryPoint2=[round(BoundaryPoints_x(2)),round(BoundaryPoints_y(2))];
 
-% display the intersections 
-figure()
-mapshow(xbox,ybox,'DisplayType','polygon','LineStyle','none')
-mapshow(line_seg_x,line_seg_y,'Marker','+')
-mapshow(BoundaryPoints_x,BoundaryPoints_y,'DisplayType','point','Marker','o')
+% draw the line on the figure
+line([BoundaryPoint1(1),BoundaryPoint2(1)],[BoundaryPoint1(2),BoundaryPoint2(2)],'Color','red','linewidth', 1.5);
 
 % make the mask 
 [mask,~] =createLineSegmentMask(size(topo), BoundaryPoint1, BoundaryPoint2);
