@@ -51,6 +51,7 @@ switch LayoutCase
         ax.Title.String = 'topoImage';
         ax.XLabel.String = 'x';
         ax.YLabel.String = 'y';
+        colormap('gray')
         axis image
         axis xy;
     case "gridsliceImage"
