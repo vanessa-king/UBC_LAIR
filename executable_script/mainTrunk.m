@@ -508,7 +508,7 @@ clearvars dataset variableIn variableOut
 clearvars n plot
 clear plot_name
 
-%% VT01A Visualize Topograph(2D-Image); 2D Image Plotting;
+%% VT02A Visualize Topograph(2D-Image); 2D Image Plotting;
 % Edited by Dong Chen Sep 2024.
 % This section of code generates a 2D image of data using the specified layout format.
 % The layout can be 'gridsliceImage' or 'topoImage'. The image will be saved to a specified folder.
