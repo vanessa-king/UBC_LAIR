@@ -1,17 +1,11 @@
-function [header, data] = loadsxm(fn, varargin)
+function [header, data] = loadsxm(fn)
 %Nanonis-made SXM file loader
-% Edited by D. Cohn, Sept 2024
+% Edited by V. King Oct 2024, D. Cohn, Sept 2024
 % Input:
 %   fn: string of the filename
-%   varargin: optional int describing which data set to return.
-%   Without a second argument, only the header is returned.
-%   With a second argument n, the return value data contains
-%   the n-th data set of the scan.
-%   n is calculated 2*channel number + 0/1 depending on
-%   whether forward of backward data should be loaded.
 % Output:
 %   header: structure containing all header information from the file
-%   data: array containing dataset
+%   data: array containing all datasets
  
 data=''; header='';
  
@@ -73,6 +67,7 @@ while 1
                                s2=fgetl(fid);
                                header.(lower(s1)) = sscanf(s2, '%f');
                % data info:
+               % section edited by D. Cohn, Sept 2024 (Ask V.King)
                case 'DATA_INFO'
                    % parse header row
                    header_row = strtrim(fgetl(fid));
@@ -118,14 +113,8 @@ while s1~=[26 4]
                s1(2) = s2;
 end
  
-% read the data if requested
-if nargin > 1
-               im_nr = varargin{1};
-               size_inBytes = prod(header.scan_pixels)*4;   % 4 Bytes per pixel
-               fseek(fid, im_nr*size_inBytes, 0);
-               
-               pix = header.scan_pixels;
-               data = fread(fid, [pix(1) pix(2)], 'float');
-end
+% Read all data as one long column array
+% section edited by V. King, Oct 2024
+data = fread(fid, 'float');
  
 fclose(fid);
