@@ -37,7 +37,7 @@ end
 
 %ask for user input of name and tag
 %user specified figure name
-prompt = strcat("Save plot as [",defaultName,"]:");
+prompt = strcat("Save file as [",defaultName,"]:");
 name = input(prompt,"s");
 if isempty(name)
     name = defaultName;

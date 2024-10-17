@@ -200,12 +200,15 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SW01A", LOGcomment ,0);
 saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, fileName); 
 
 clear targetFolder fileName
-%% LW01A Load-Workspace-01A; Loads a saved workspace from a .mat file
+%% LW01A Load-Workspace-01A; Loads a saved workspace from a .mat file 
 %Edited: M. Altthaler July,2024;
 %This block loads a work space (all assigend variable) from a 
 % <dir>/<fileName>.mat file. The corresponding copy of the original LOGfile 
 % <dir>/<fileName>_LOGfile.txt (automatically created when saving a 
-% workspace with block SW01A) is required to load a block! 
+% workspace with block SW01A) is required in the same folder to load a 
+% workspace! 
+% If a workspace is 'imported' from another device and the original LOGpath
+% directory does not exist, the user is aked to reassign it via GUI. 
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 cont = input("Loading a workspace clears your current workspace! Do you want to continue? Y/N [Y]:","s");
@@ -232,7 +235,15 @@ if cont=='Y'|cont=='y'
             %check if LOGpath and LOGfile variable exist in the loaded workspace
             if exist('LOGfile','var') && exist('LOGpath','var') && exist('data','var')
                 %valid workspace
-                clear targetFolder fileName %they always get saved SW01A as they are needed in the save command (but not outside the block) 
+                clear targetFolder fileName %they always get saved in SW01A as they are needed in the save command (but not outside the block)
+                %check if the restored LOGpath exists on this device - if
+                %not a new directory has to be assigned via GUI
+                if ~isfolder(LOGpath)
+                    %LOGpath does not exist on local machine
+                    clear LOGpath 
+                    disp('Select folder for the updated LOG path on this PC via GUI')
+                    LOGpath = uigetdir([],'Select folder for the updated LOG path on this PC:');
+                end
                 %restore LOG in <LOGpath>/<LOGfile>_LOGfile.txt from <dir>/<name>_LOGfile.txt
                 restoredLOG = strcat(LOGpath,'/',LOGfile,'_LOGfile.txt');
                 copyfile(savedLOGfileName, restoredLOG)
