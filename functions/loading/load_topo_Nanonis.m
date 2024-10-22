@@ -87,6 +87,11 @@ if ~any(isnan(z_all),'all') %we have a full topo
             topo.z = data(:,:,channel);
             topo.z_backward = data(:,:,channel+1);
 
+            %Apply orientation transformation
+            topo.z = permute(topo.z, [2 1 3]);
+            topo.z_backward = permute(topo.z_backward, [2 1 3]);
+            topo.z_backward = flip(topo.z_backward,2);
+
         elseif channels(channel) == "Current"
             topo.I = data(:,:,channel);
             topo.I_backward = data(:,:,channel+1);

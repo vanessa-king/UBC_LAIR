@@ -514,12 +514,13 @@ clear plot_name
 % The layout can be 'gridsliceImage' or 'topoImage'. The image will be saved to a specified folder.
 
 % Presets:
+
 LayoutCase = 'topoImage';  % specify the layout format: 'gridsliceImage' or 'topoImage'
-dataset = 'topoSupTwoAfter';               % specify the dataset to be used: e.g. grid
-variableIn = 'z_flat';    % specify the variable containing the data to be plotted: e.g. dataVariable
+dataset = 'UCSbackwardFlipTest';               % specify the dataset to be used: e.g. grid
+variableIn = 'z_backward_test2';    % specify the variable containing the data to be plotted: e.g. dataVariable
 
 % Variables for function execution
-savefigpath = ""; % specify a directory to save the figure, or leave blank to select manually
+savefigpath = "/Users/vanessa/Desktop/UBC/Lab/Generic_Data_Processing_Code/Test_Data/Hackathon_test_topo/"; % specify a directory to save the figure, or leave blank to select manually
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
