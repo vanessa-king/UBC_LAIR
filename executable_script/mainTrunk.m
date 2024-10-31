@@ -1,46 +1,70 @@
 %% Test script for data processing with logging
 
 %% Block logging
-    %%   log file info
-    
-    % every block needs a unique identifier BLOCK (5 char long!) 
-    % Format:   ABXXZ
-    %      A:   L = loading, P = processing, V = visulalizing
-    %      B:   subidentifiers (e.g. A = averaging, P = plot, M = masking, ...) TBD! 
-    %     XX:   1, 2, 3, ..., 99 (running number for consecutive blocks)
-    %      Z:   a, b, c, ... (alternate abc for either or blocks)
 
-    % Block header format: (every block starts with this line!) 
-    % %% ABXXZ Axxx-Bxxx-XX-Z; <short description>
-    % note: Axxx stands for the spelled out form: e.g. "L -> Loading". Bxxx
-    % is treated the same way. See block list for full examples. 
+% This section outlines the guidelines for naming and logging each block in the code.
 
-    % ToDo: a full list of all 'codes' B->Bxxx 
+% 1. Block Identifier Format
+%    Each block must have a unique 5-character identifier of the form: ABXXZ
+%       - A:   Category of the block:
+%              L = Loading (e.g., reading/importing data)
+%              P = Processing (e.g., data transformation, filtering)
+%              V = Visualizing (e.g., plotting/generating figures)
+%              S = Saving (e.g., saving workspace)
+%       - B:   Subcategory of the block, based on the task being performed:
+%              Examples (based on block list as of Oct 2024): 
+%               A = Averaging
+%               D = Data
+%               F = Flatten
+%               G = Grid
+%               I = Initialize 
+%               S = Spectrum
+%               T = Threshold
+%               W = Workspace
+%       - XX:  Running number for consecutive blocks (01, 02, ..., 99)
+%       - Z:   Alternating letter for variations of a block (a, b, c, ...)
 
-    % The logUsedBlocks() function logs the time and date, block identifyer
-    % and a LOGcomment. The LOGcomment must log all functions used in the 
-    % block and their (user set) parameters so the data can be reproduced:
-    % LOGcomment = "funA(A = parA, B = parB); "
-    % If logUsedBlocks()is used multiple times per block to log inividual
-    % functions only the first instance logs the blockidentifier (ABXXZ),
-    % subsequently: "  ^  " is used as the idetifyer indicating multiple
-    % lines in the logfile are from the same block. 
+% 2. Block Header Format
+%    Each block starts with a block header in this format:
+%       %% ABXXZ Axxx-Bxxx-XX-Z; <short description of the block’s function>
+%       - Axxx: Spelled-out form of the main category (e.g., V -> Visualizing)
+%       - Bxxx: Spelled-out form of the subcategory (e.g., S -> Spectrum)
+%       - XX:   Running number
+%       - Z:    Variation letter for related blocks
+%    See block list for full examples.
 
-    % If any data output is generated (figures, plots, ...) they must be 
-    % saved from the block and saveUsedBlocksLog() must be used to create a
-    % duplicate of the log that is saved with the saved data. These log 
-    % files allow us to reproduce data with the same verison of the code!
-    % If multiple plots are created within one block and the data is 
-    % altered in between (e.g. the same function is called multiple times
-    % with different parameters) every instace must be logged and saved!
-    % E.g. if funA and funB create a plot but alter the data:
-    % funA() -> logUsedBlocks(... funA ...) -> saveUsedBlocksLog(... FigA)
-    % funB() -> logUsedBlocks(... funB ...) -> saveUsedBlocksLog(... FigB)
+% 3. Using the logUsedBlocks() Function
+%       - The logUsedBlocks() function logs: the time and date of execution; the block identifier (ABXXZ);
+%         and the LOGcomment a string summarizing all functions used and their parameters.
+%    
+%    Format of LOGcomment:
+%        - LOGcomment = "functionA(param1 = value1, param2 = value2); functionB(param = value);"
+%    
+%    When multiple functions are logged within the same block, only the 
+%    first call logs the block identifier (ABXXZ). Subsequent logs use the symbol "  ^  ".
 
-    % If a figure, ... is supposed to be saved use the uniqueNamePrompt()
-    % function to give it a default name. It automatically allows the user
-    % to overwrite the name by the response to the promtp. If a file of the
-    % same name already exists a 3 digit running number is appended.
+% 4. Saving Figures or Data
+%    If a block generates output (e.g., figures), use uniqueNamePrompt() to assign a default name.
+%       - This function allows the user to change the default name.
+%       - If a file of the same name already exists, a 3-digit running number is appended.
+%    
+%    Save and log the output using savefig() and saveUsedBlocksLog():
+%       Example:
+%          figName = uniqueNamePrompt("SmoothedData", "", LOGpath);
+%          savefig(figName);
+%          saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, figName);
+
+% 5. Handling Multiple Functions in a Block
+%    If multiple functions are called within a block, log each call individually.
+%    If a function generates output, log and save it using saveUsedBlocksLog().
+%    Example:
+%       filteredData = filterData(data, filterParams);
+%       LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PF01A", "filterData(params);", 0);
+%       saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, "FilteredData");
+
+
+% This log file and block naming system ensures reproducibility and proper 
+% tracking of each block’s function calls, parameters, and saved outputs.
 %% Block List
 %Loading
     % LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
