@@ -1,4 +1,4 @@
-function [data, commentA, commentB, commentC, commentD] = loadData(data, direction)
+function [data, commentA, commentB, commentC, commentD] = loadData(data)
 %Load STM data from UI selected file of variable formats (.3ds, .sxm,) 
 %   Select data file using the UI. Basen on the file extension the 
 %   appropriate specific loading function for that dataype is chosen. 
@@ -8,13 +8,8 @@ function [data, commentA, commentB, commentC, commentD] = loadData(data, directi
 %   Requires the toplevel data struct variable to be parsed. In this case 
 %   the function adds the field data.<name> to it. 
 
-%   Optional arguments (to be expanded)
-%   direction   is an optional input to specify the direcion 'forward' or
-%               'backward' a topo image (.sxm) is loaded
-
 arguments
     data        
-    direction   {mustBeText}="forward"
 end
 
 %select data via UI
@@ -45,7 +40,7 @@ switch fileExt
         data.(fieldName) = grid;
     case '.sxm'
         %load smx file -> Nanonis topo
-        [topo, commentC] = load_topo_Nanonis(filePath, fullFileName, direction);
+        [topo, commentC] = load_topo_Nanonis(filePath, fullFileName);
         data.(fieldName)= topo;
     case '.dat'
         %load dat file -> Nanonis point spectrum
@@ -60,7 +55,7 @@ end
 data.(fieldName).dataSetName = fieldName;
 
 %log function call
-commentA = sprintf("[data.%s, ...] = loadData(data,direction = %s); Selected data: <path>/<file>", fieldName, direction);
+commentA = sprintf("[data.%s, ...] = loadData(data); Selected data: <path>/<file>", fieldName);
 
 %log selected file
 commentB = sprintf("%s/%s", filePath, fullFileName);
