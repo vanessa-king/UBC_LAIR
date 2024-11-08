@@ -1,6 +1,7 @@
 function [masks, comment] = gridDirectionalMask(data)
 %Average grid along a given direction with interactive width selection
-%
+% wishlist: 1. come up with better name!!
+%           2. add optional input for width and initial line input
 % Arguments:
 %   data        2D or 3D array containing the data.
 %
@@ -29,7 +30,7 @@ perpAngle = deg2rad(polcoord(2)) + pi/2;  % Convert degrees to radians and add 9
 % Initialize width
 width = 10;
 
-% Create interactive rectangle for width selection
+% Create figure with both button and text field
 figure('WindowButtonMotionFcn', @updateRectangle);
 image(data, 'CDataMapping', 'scaled');
 axis square
@@ -48,8 +49,21 @@ dragHandles = [];
 updateRectangle();
 createDragHandles();
 
-% Add button for confirmation
-uicontrol('Style', 'pushbutton', 'String', 'Confirm Width', ...
+% Add width display/edit field
+widthField = uicontrol('Style', 'edit', ...
+    'String', num2str(width), ...
+    'Position', [10 50 100 30], ...
+    'Callback', @updateWidthFromText);
+
+% Add width label
+uicontrol('Style', 'text', ...
+    'String', 'Width:', ...
+    'Position', [10 80 100 20], ...
+    'BackgroundColor', get(gcf, 'Color'));
+
+% Add confirm button
+uicontrol('Style', 'pushbutton', ...
+    'String', 'Confirm Width', ...
     'Position', [10 10 100 30], ...
     'Callback', @confirmWidth);
 
@@ -119,21 +133,94 @@ comment = sprintf('gridDirectionalMask(datasize:%s x %s, width:%d)|%s', ...
 
     function updateDragging(~, ~)
         if isDragging
-            % Get current mouse position
+            % Get current point in axis coordinates
             currentPos = get(gca, 'CurrentPoint');
             mouseX = currentPos(1,1);
             mouseY = currentPos(1,2);
             
-            % Calculate new width based on perpendicular distance to line
+            % Get axis limits
+            xlims = xlim;
+            ylims = ylim;
+            
+            % Check if mouse is within axis limits
+            if mouseX < xlims(1) || mouseX > xlims(2) || ...
+               mouseY < ylims(1) || mouseY > ylims(2)
+                return;  % Skip update if mouse is outside axis
+            end
+            
+            % Calculate potential new width
             newWidth = 2 * abs((mouseY-startPoint(2))*(endPoint(1)-startPoint(1)) - ...
                 (mouseX-startPoint(1))*(endPoint(2)-startPoint(2))) / ...
                 norm(endPoint-startPoint);
             
-            % Update width and visualization
+            % Calculate potential corner positions
+            lineVector = [endPoint(1)-startPoint(1), endPoint(2)-startPoint(2)];
+            perpVector = [-lineVector(2), lineVector(1)];
+            perpVector = perpVector / norm(perpVector) * (newWidth/2);
+            
+            corners = [
+                startPoint + perpVector;  % top left
+                endPoint + perpVector;    % top right
+                endPoint - perpVector;    % bottom right
+                startPoint - perpVector   % bottom left
+            ];
+            
+            % Check if any corner would be out of bounds
+            for i = 1:4
+                if corners(i,1) < xlims(1) || corners(i,1) > xlims(2) || ...
+                   corners(i,2) < ylims(1) || corners(i,2) > ylims(2)
+                    return;  % Skip update if any corner would be outside
+                end
+            end
+            
+            % If we get here, the new width is valid
             width = newWidth;
+            % Update width display
+            set(widthField, 'String', num2str(round(width, 2)));
             updateRectangle();
             createDragHandles();
         end
+    end
+
+    function updateWidthFromText(src, ~)
+        % Get width from text field
+        newWidth = str2double(get(src, 'String'));
+        
+        % Validate input
+        if isnan(newWidth) || newWidth <= 0
+            % Invalid input, revert to current width
+            set(src, 'String', num2str(round(width, 2)));
+            return;
+        end
+        
+        % Calculate potential corner positions
+        lineVector = [endPoint(1)-startPoint(1), endPoint(2)-startPoint(2)];
+        perpVector = [-lineVector(2), lineVector(1)];
+        perpVector = perpVector / norm(perpVector) * (newWidth/2);
+        
+        corners = [
+            startPoint + perpVector;
+            endPoint + perpVector;
+            endPoint - perpVector;
+            startPoint - perpVector
+        ];
+        
+        % Check if any corner would be out of bounds
+        xlims = xlim;
+        ylims = ylim;
+        for i = 1:4
+            if corners(i,1) < xlims(1) || corners(i,1) > xlims(2) || ...
+               corners(i,2) < ylims(1) || corners(i,2) > ylims(2)
+                % Invalid width, revert to current width
+                set(src, 'String', num2str(round(width, 2)));
+                return;
+            end
+        end
+        
+        % If we get here, the new width is valid
+        width = newWidth;
+        updateRectangle();
+        createDragHandles();
     end
 
     function updateRectangle()

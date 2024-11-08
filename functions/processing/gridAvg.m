@@ -3,7 +3,7 @@ function [avg_X, comment] = gridAvg(X, mask)
 % Usually it's either I(V) or dI/dV(V) from the grid measurement so it's a 3D matrix. 
 % For example, grid.I has a size of I data points (same size of number_bias_layer) x grid size x grid size
 % The function was re-written to have an option to accept a mask. 
-% Edited by Jisun Feb 2024, Dong June 2024 
+% Edited by Jisun Feb 2024, D ong June 2024 
 
 arguments
     X 
