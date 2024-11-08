@@ -15,6 +15,9 @@ function [mask,comment,startPoint, endPoint, polcoord] = gridMaskLineSegment(top
 
 %Output
 %   mask        mask of selected area
+%   startPoint  [x1,y1] absolute Carthesian coordinate of start point
+%   endPoint    [x2,y2] absolute Carthesian coordinate of end point
+%   polcoord    [r,theta] polar coordinate of end point relative to start point, theta is in degrees
 %   comment     log comment
 
 %   Nov. 2023   Jiabin Y., 
@@ -65,8 +68,16 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
         % calculate the polar angle based on the start and end point. 
         v=endPoint-startPoint;
         u=[1 0];
-        polcoord=acos(dot(v,u)/norm(v));
-    
+        r = norm(v);  % Calculate radius (length of the vector)
+        theta = rad2deg(acos(dot(v,u)/norm(v)));  % Convert angle to degrees
+
+        % Check if we need to adjust the angle based on y-component
+        if v(2) < 0
+            theta = 360 - theta;  % Adjust for points below the x-axis
+        end
+
+        polcoord = [r, theta];  % Store both radius and angle
+
         comment = sprintf('gridMaskLineSegment(topo: %d x %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], endpoint[%d,%d];', size(topo, 1), size(topo, 2), startPoint(1), startPoint(2), endPoint(1), endPoint(2));
     else
         % click on topo once, and input r and theta
@@ -160,7 +171,15 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
         % calculate the polar angle based on the start and end point. 
         v=endPoint-startPoint;
         u=[1 0];
-        polcoord=acos(dot(v,u)/norm(v));
+        r = norm(v);  % Calculate radius (length of the vector)
+        theta = rad2deg(acos(dot(v,u)/norm(v)));  % Convert angle to degrees
+
+        % Check if we need to adjust the angle based on y-component
+        if v(2) < 0
+            theta = 360 - theta;  % Adjust for points below the x-axis
+        end
+
+        polcoord = [r, theta];  % Store both radius and angle
 
         comment = sprintf('gridMaskLineSegment(topo: %d x %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], r=%d, theta=%d;', size(topo, 1), size(topo, 2), startPoint(1), startPoint(2), radius, angle);
     end
@@ -186,8 +205,16 @@ elseif (~isempty(pointA) && ~isempty(pointB)) || (~isempty(pointA) && ~isempty(p
         % calculate the polar angle based on the start and end point. 
         v=endPoint-startPoint;
         u=[1 0];
-        polcoord=acos(dot(v,u)/norm(v));
-        
+        r = norm(v);  % Calculate radius (length of the vector)
+        theta = rad2deg(acos(dot(v,u)/norm(v)));  % Convert angle to degrees
+
+        % Check if we need to adjust the angle based on y-component
+        if v(2) < 0
+            theta = 360 - theta;  % Adjust for points below the x-axis
+        end
+
+        polcoord = [r, theta];  % Store both radius and angle
+
         comment = sprintf('gridMaskLineSegment(topo: %d x %d, point1=[%d,%d],point2=[%d,%d], polcoord=[])', size(topo, 1), size(topo, 2), pointA(1), pointA(2), pointB(1), pointB(2));
     else 
         % use arguments point1 and polcoord
@@ -207,8 +234,16 @@ elseif (~isempty(pointA) && ~isempty(pointB)) || (~isempty(pointA) && ~isempty(p
         % calculate the polar angle based on the start and end point. 
         v=endPoint-startPoint;
         u=[1 0];
-        polcoord=acos(dot(v,u)/norm(v));
-        
+        r = norm(v);  % Calculate radius (length of the vector)
+        theta = rad2deg(acos(dot(v,u)/norm(v)));  % Convert angle to degrees
+
+        % Check if we need to adjust the angle based on y-component
+        if v(2) < 0
+            theta = 360 - theta;  % Adjust for points below the x-axis
+        end
+
+        polcoord = [r, theta];  % Store both radius and angle
+
         comment = sprintf('gridMaskLineSegment(topo: %d x %d, point1=[%d,%d],point2=[], polcoord=[%d,%d])', size(topo, 1), size(topo, 2), pointA(1), pointA(2), polcoord(1), polcoord(2));
     end
 else
