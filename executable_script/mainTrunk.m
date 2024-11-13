@@ -313,11 +313,11 @@ clearvars dataset variableIn variableOut span
 % Presets
 % Define dataset and input/output variables here
 dataset = 'grid';               % specify the dataset to be used: e.g., grid
-variableIn1 = 'dIdV_bwd';     % the variable that you want to average. e.g. I_forward, I_backward
+variableIn1 = 'dIdV';     % the variable that you want to average. e.g. I_forward, I_backward
                                 % If you want to average dIdV, you need to run PD01A or PD01B first. 
                                 % Also you can input dIdV_forward or dIdV_backward to get average 
                                 % of foward or backward only average dIdV.
-variableOut1 = 'avg_dIdV_bwd';        % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
+variableOut1 = 'avg_dIdV';        % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
                                 % or avg_dIdV_fwd or avg_dIdV_bwd
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -342,7 +342,7 @@ clearvars dataset variableIn1 variableOut1
 
 %presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
-variableIn1 = 'I'; % specify the variable to be processed, e.g. I, or I_backward
+variableIn1 = 'I_smoothed'; % specify the variable to be processed, e.g. I, or I_backward
                             % this is a 3d array form (x, y, V)
 variableIn2 = 'V';          % specify the variable to be processed, e.g. V or Z
                             % this is a 1d array form (V, 1)
@@ -525,9 +525,9 @@ clear plot_name
 % The layout can be 'gridsliceImage' or 'topoImage'. The image will be saved to a specified folder.
 
 % Presets:
-LayoutCase = 'topoImage';  % specify the layout format: 'gridsliceImage' or 'topoImage'
-dataset = 'topo';               % specify the dataset to be used: e.g. grid
-variableIn = 'z';    % specify the variable containing the data to be plotted: e.g. dataVariable
+LayoutCase = 'gridsliceImage';  % specify the layout format: 'gridsliceImage' or 'topoImage'
+dataset = 'grid';               % specify the dataset to be used: e.g. grid
+variableIn = 'data_slice';    % specify the variable containing the data to be plotted: e.g. dataVariable
 
 % Variables for function execution
 savefigpath = "";               % specify a directory to save the figure, or leave blank to select manually
@@ -652,24 +652,26 @@ clearvars targetFolder plot_name
 % It then plots the average dI/dV on that point. The user may toggle R and energy slice.
 
 %presets:
-dataset ='grid';              %specify the dataset to be used: e.g. grid
-variableIn1 = 'didv';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
-variableIn2 = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
+dataset ='topo';            % specify the dataset to be used: e.g. grid
+variableIn1 = 'z';       % specify the data (2D or 3D) to use to create the mask
+radius = 3;                 % radius R: the size of the circular mask
+%optional variable inputs
+ = '';             % this is neccesary when varialbleIn1 is a 3D data. 
+                            % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
+imageV = '';                % this is neccesary when varialbleIn1 is a 3D data. 
+                            % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
 
 variableOut1 = 'circular_mask';              % return the function of excuation
-variableOut2 = 'Num_in_mask';
-
-imageV = 0.15;  % bias voltage of image slice
-radius = 3;     % radius R 
+variableOut2 = 'num_in_mask';
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % LOG data in/out
-LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1,variableIn2, variableOut1, variableOut2);
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; radius = %s; V_reduced = %s; imageV = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1, radius, variableIn2, imageV, variableOut1, variableOut2);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
 
 % excute the function
-[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = gridMaskPoint(data.(dataset).(variableIn1),  data.(dataset).(variableIn2), imageV, radius);
+[data.(dataset).(variableOut1), data.(dataset).(variableOut2), data_slice, LOGcomment] = maskPoint(data.(dataset).(variableIn1),  radius);
 
 % log the function of excuation 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
@@ -691,6 +693,48 @@ saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, strcat(plot_name));
 % clear excess variables
 clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2
 clearvars imageV radius targetFolder plot_name
+
+%% VS03B Visualize-Spectrum-03-B; rectangular masking;
+% Edited by Jisun Oct 2024
+% This section of code creates a rectangular mask. The user clicks two points that define 
+% a single rectangle (presumably, opposite corners). 
+% It then plots the average dI/dV of the selected area.
+
+%presets:
+dataset ='grid';              %specify the dataset to be used: e.g. grid
+variableIn1 = 'didv';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+variableIn2 = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
+
+variableOut1 = 'rectangular_mask';              % return the function of excuation
+variableOut2 = 'Num_in_mask';
+
+imageV = 0.15;  % bias voltage of image slice
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% LOG data in/out
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1,variableIn2, variableOut1, variableOut2);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03B", LOGcomment ,0);
+
+% excute the function
+[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = gridMaskRectangle(data.(dataset).(variableIn1),  data.(dataset).(variableIn2), imageV, radius);
+
+B_mask = gridMaskSquare(didv, V_reduced, 0.0019);
+
+% takes the average of the dI/dV spectra in the selected area
+[~, B_sts] = gridAvgMask(didv, B_mask);
+
+% plots the spectra at the spots where the masks were applied
+figure; hold on;
+set(gca,'DefaultLineLineWidth',2)
+set(gca,'FontSize',20)
+plot(V_reduced, B_sts); 
+xlim([-0.05, 0.05])
+%legend('Donor','Acceptor','Au')
+legend('average didv on square')
+xlabel('Bias (V)')
+ylabel('dI/dV')
+hold off
 
 %% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias 
 

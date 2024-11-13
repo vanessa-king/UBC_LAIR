@@ -12,7 +12,7 @@ function [comment] = gridClickForSpectrum(didv, V_reduced, imageV, offset, n, po
 %
 %Arguments:
 %   didv:       3D Matrix with dI/dV data in the format: (x,y,V) 
-%   V_reduced:  reduced vector with bias voltages (see gridCorrNorm for definition of V_reduced)
+%   V_reduced:  reduced vector with bias voltages (see Derivative function in PD01A for definition of V_reduced)
 %   imageV:     float, Voltage at which to display image
 %   offset:     Vertical offset for each point spectra 
 %   n:          integer, Number of point spectra to plot (optional, default: 2)
