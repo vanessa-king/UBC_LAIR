@@ -1,19 +1,30 @@
-function [masks, comment] = gridDirectionalMask(data)
+function [masks, comment] = gridDirectionalMask(data, connected, startPoint, endPoint)
 %Average grid along a given direction with interactive width selection
-% wishlist: 1. come up with better name!!
-%           2. add optional input for width and initial line input
 % Arguments:
 %   data        2D or 3D array containing the data.
+%   connected   logical flag for side connectivity (optional, default false)
+%   startPoint  [x1,y1] start point coordinates (optional)
+%   endPoint    [x2,y2] end point coordinates (optional)
 %
 % Returns:
 %   masks       3D array of logical masks (data_dim x data_dim x L)
 %   comment     Comment for logging the function call.
-%
-% August 2024 - Dong Chen
-% Nov. 2024 - Dong Chen
+
+arguments
+    data
+    connected logical = false
+    startPoint {mustBeNumeric, mustBePositive} = []
+    endPoint {mustBeNumeric, mustBePositive} = []
+end
 
 % Get the main line L using gridMaskLineSegment
-[mainMask, mainComment, startPoint, endPoint, polcoord] = gridMaskLineSegment(data);
+if isempty(startPoint) || isempty(endPoint)
+    % Interactive mode if no points provided
+    [mainMask, mainComment, startPoint, endPoint, polcoord] = gridMaskLineSegment(data, [], [], [], connected);
+else
+    % Use provided points
+    [mainMask, mainComment, startPoint, endPoint, polcoord] = gridMaskLineSegment(data, startPoint, endPoint, [], connected);
+end
 
 if isempty(startPoint) || isempty(endPoint)
     error('Line selection was cancelled or invalid');
@@ -148,10 +159,10 @@ comment = sprintf('gridDirectionalMask(datasize:%s x %s, width:%d)|%s', ...
                 return;  % Skip update if mouse is outside axis
             end
             
-            % Calculate potential new width
-            newWidth = 2 * abs((mouseY-startPoint(2))*(endPoint(1)-startPoint(1)) - ...
+            % Calculate potential new width and round to nearest integer
+            newWidth = round(2 * abs((mouseY-startPoint(2))*(endPoint(1)-startPoint(1)) - ...
                 (mouseX-startPoint(1))*(endPoint(2)-startPoint(2))) / ...
-                norm(endPoint-startPoint);
+                norm(endPoint-startPoint));
             
             % Calculate potential corner positions
             lineVector = [endPoint(1)-startPoint(1), endPoint(2)-startPoint(2)];
@@ -175,21 +186,21 @@ comment = sprintf('gridDirectionalMask(datasize:%s x %s, width:%d)|%s', ...
             
             % If we get here, the new width is valid
             width = newWidth;
-            % Update width display
-            set(widthField, 'String', num2str(round(width, 2)));
+            % Update width display with rounded integer
+            set(widthField, 'String', num2str(width));
             updateRectangle();
             createDragHandles();
         end
     end
 
     function updateWidthFromText(src, ~)
-        % Get width from text field
-        newWidth = str2double(get(src, 'String'));
+        % Get width from text field and round to nearest integer
+        newWidth = round(str2double(get(src, 'String')));
         
         % Validate input
         if isnan(newWidth) || newWidth <= 0
             % Invalid input, revert to current width
-            set(src, 'String', num2str(round(width, 2)));
+            set(src, 'String', num2str(width));
             return;
         end
         
@@ -212,7 +223,7 @@ comment = sprintf('gridDirectionalMask(datasize:%s x %s, width:%d)|%s', ...
             if corners(i,1) < xlims(1) || corners(i,1) > xlims(2) || ...
                corners(i,2) < ylims(1) || corners(i,2) > ylims(2)
                 % Invalid width, revert to current width
-                set(src, 'String', num2str(round(width, 2)));
+                set(src, 'String', num2str(width));
                 return;
             end
         end

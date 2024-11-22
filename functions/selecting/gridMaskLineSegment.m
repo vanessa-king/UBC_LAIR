@@ -1,4 +1,4 @@
-function [mask,comment,startPoint, endPoint, polcoord] = gridMaskLineSegment(topo,pointA, pointB, polcoord)
+function [mask,comment,startPoint, endPoint, polcoord] = gridMaskLineSegment(topo,pointA, pointB, polcoord, connected)
 %Returns a mask representing a line segment. 
 %   Creates a mask of matching size to the topo image. The line segment is 
 %   defined by the start and end point, or the start point and relative polar
@@ -12,6 +12,7 @@ function [mask,comment,startPoint, endPoint, polcoord] = gridMaskLineSegment(top
 %   pointA      [x1,y1] absolute Carthesian coordinate of start point (optional)
 %   pointB      [x2,y2] absolute Carthesian coordinate of end point (optional)
 %   polcoord    [r,theta] polar coordinate of end point relative to start point, theta is in degrees (optional)
+%   connected   logical flag to ensure side connectivity (optional, default false)
 
 %Output
 %   mask        mask of selected area
@@ -23,6 +24,7 @@ function [mask,comment,startPoint, endPoint, polcoord] = gridMaskLineSegment(top
 %   Nov. 2023   Jiabin Y., 
 %   edited Dec. 2023 Markus Altthaler
 %   edited Oct. 2024   Dong Chen
+%   edited Nov. 2024   Dong Chen
 
 
 %  add an argument validation
@@ -31,6 +33,7 @@ arguments
     pointA      {mustBeNumeric, mustBePositive}=[]
     pointB      {mustBeNumeric, mustBePositive}=[]
     polcoord    {mustBeNumeric, mustBePositive}=[]
+    connected   logical = false
 end
 
 
@@ -251,10 +254,12 @@ else
 
 end
 
-%actually creating the mask; note: the returned lower level comment is 
-%omitted as the log comments that the function returns are assigned above
-%based on the use case
-[mask,~] =createLineSegmentMask(size(topo), startPoint,endPoint);
+%actually creating the mask
+if connected
+    [mask] = createLineSegmentMask_connected(size(topo), startPoint, endPoint);
+else
+    [mask,~] = createLineSegmentMask(size(topo), startPoint, endPoint);
+end
 mask = logical(mask); %set datatype
 
 

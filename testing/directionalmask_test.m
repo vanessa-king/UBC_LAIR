@@ -10,7 +10,7 @@ if ~exist('data', 'var')
 end
 
 %% Display original data
-data_used = data.grid.I(:,:,100);
+data_used = randn(100,100);
 figure('Name', 'Original Data');
 imagesc(data_used);
 colorbar;
@@ -18,7 +18,10 @@ axis square;
 title('Original Data - Select a line and adjust width');
 
 %% Call gridDirectionalMask
-[masks, comment] = gridDirectionalMask(data_used);
+connected = 1; 
+startPoint = [10,13];
+endPoint = [70,33];
+[masks, comment] = gridDirectionalMask(data_used, connected, startPoint, endPoint);
 
 %% Display first and last masks
 % Get dimensions
