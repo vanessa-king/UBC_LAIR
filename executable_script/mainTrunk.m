@@ -548,23 +548,24 @@ clear plot_name
 % This section of code generates a 2D image of data using the specified layout format.
 % The layout can be 'gridsliceImage' or 'topoImage'. The image will be saved to a specified folder.
 
+%Dong Chen 2024/??; M. Altthaler 2024/12
+
 % Presets:
-LayoutCase = 'topoImage';  % specify the layout format: 'gridsliceImage' or 'topoImage'
-dataset = 'topo';               % specify the dataset to be used: e.g. grid
-variableIn = 'z';    % specify the variable containing the data to be plotted: e.g. dataVariable
+LayoutCase = 'topoImage';   % specify the layout format: 'gridsliceImage' or 'topoImage'
+dataset = 'topo';           % specify the dataset to be used: e.g. grid
+variableIn = 'z';           % specify the variable containing the data to be plotted: e.g. dataVariable
 
 % Variables for function execution
-savefigpath = "";               % specify a directory to save the figure, or leave blank to select manually
+savefigpath = "";           % specify a directory to save the figure, or leave blank to select manually
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % LOG data in/out
 LOGcomment = sprintf("LayoutCase = %s; dataset = %s; variableIn = %s; ", LayoutCase, dataset, variableIn);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS000", LOGcomment, 0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT02A", LOGcomment, 0);
 
 % Execute the function
-[data.(dataset).figureHandle, data.(dataset).plotName, data.(dataset).savePath, LOGcomment] = ...
-    plot2DImage(LayoutCase, data.(dataset).(variableIn), savefigpath);
+[data.(dataset).figureHandle, data.(dataset).plotName, data.(dataset).savePath, LOGcomment] = plot2DImage(LayoutCase, data.(dataset).(variableIn), savefigpath);
 
 % Log the execution of the function
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);

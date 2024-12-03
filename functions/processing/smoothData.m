@@ -5,7 +5,6 @@ function [smoothed_data, comment] = smoothData(data, span, type, method)
 %   higher, if necessary. 
 
 %   data        data to be smoothed, a 3D matrix of format data(x,y,V)
-%   data_name   name string: <dataset>.<variable>, e.g. grid.I
 %   span        size of the window applyed for smooting. Must be odd (will be reduced by 1 or even values) 
 %   type        'IV':   applies smoothing to 3rd dim (i.e. V) [default: 'IV']
 %               'topo': applies smoothing to 1st and 2nd dim (i.e. xy)
@@ -32,7 +31,8 @@ switch type
         smoothed_data = smooth3(data,method,[1,1,span]);
     case 'topo'
         smoothed_data = smooth3(data,method,[span,span,1]);
+    otherwise
+        disp("Invalid type: choose IV or topo");
 end
-
-
+ 
 end
