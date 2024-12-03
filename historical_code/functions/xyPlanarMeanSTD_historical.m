@@ -1,4 +1,4 @@
-function [mean_out,STD_out,comment] = xyPlanarMeanSTD(data,mask)
+function [mean_out,STD_out,comment] = xyPlanarMeanSTD_historical(data,mask)
 %Mean and STD of the planes along the 3rd dim of masked data
 %   For a 3D data set data(x,y,z) the mean and standard deviation in the xy
 %   plane are calculated for all elements as denoted by the xy plane mask.
