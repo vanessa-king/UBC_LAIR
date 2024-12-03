@@ -348,12 +348,12 @@ variableOut1 = 'avg_dIdV_bwd';        % specify the first output variable. e.g. 
 % Log input and output variables
 LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s; DataOut: variableOut1 = %s", ...
     dataset, variableIn1, variableOut1);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PMA01A", LOGcomment, 0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA02A", LOGcomment, 0);
 
 % Main code execution section
 
 % This makes the averaged "I versus V" plot
-[~, data.(dataset).(variableOut1), LOGcomment] = avgMaskFast(data.(dataset).(variableIn1));
+[~, data.(dataset).(variableOut1), LOGcomment] = avgXYmask(data.(dataset).(variableIn1));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % Clear preset variables
