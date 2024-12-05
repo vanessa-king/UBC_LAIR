@@ -1,4 +1,4 @@
-function [smoothed_data, comment] = smoothData(data, span, type, method)
+function [smoothed_data, comment] = smoothData(data, span, type, method, sd)
 %GRIDSMOOTH Applies moving-average smoothing on data.
 %   It needs to be an odd integer. Deafult is 3 (nearest neighbor
 %   averaging) but you can use 5 for next nearest neighbor averaging. Or
@@ -17,6 +17,7 @@ arguments
    span         {mustBeNumeric}=3   
    type         {mustBeText}='IV'   % 
    method       {mustBeText}='box'  %'box' or 'gaussian' (ref. doc. smooth3)
+   sd           {mustbenum}=0.65    % standard deviation for 'gaussian' (ref. doc. smooth3)
 end
 
 % enforce odd window size
@@ -28,9 +29,9 @@ comment = sprintf("gridsmooth(data, span =  %d, type = %s, method = %s)|",span ,
 
 switch type
     case 'IV'
-        smoothed_data = smooth3(data,method,[1,1,span]);
+        smoothed_data = smooth3(data,method,[1,1,span],sd);
     case 'topo'
-        smoothed_data = smooth3(data,method,[span,span,1]);
+        smoothed_data = smooth3(data,method,[span,span,1],sd);
     otherwise
         disp("Invalid type: choose IV or topo");
 end
