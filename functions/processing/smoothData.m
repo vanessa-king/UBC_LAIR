@@ -10,7 +10,7 @@ function [smoothed_data, comment] = smoothData(data, span, type, method)
 %               'topo': applies smoothing to 1st and 2nd dim (i.e. xy)
 %   method      'box' or 'gaussian' (ref. doc. smooth3), [default: 'box']
 
-% M. Altthaler, April 2024 
+% M. Altthaler, April 2024; edited M. Altthaler 2024/12
 
 arguments
    data                             
