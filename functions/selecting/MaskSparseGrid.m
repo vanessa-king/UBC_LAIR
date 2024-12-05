@@ -9,7 +9,7 @@ function [mask,comment] = MaskSparseGrid(dataDimSize,stepSizeX,stepSizeY,numX,nu
 %   numX            max number in x, e.g. for 7: x -> 1,4,7
 %   numY            max number in y, e.g. for 9: x -> 1,4,7
 
-% M. Altthaler, March 2024
+% M. Altthaler, March 2024; edited M. Altthaler 2024/12
 
 arguments 
     dataDimSize     {mustBeNumeric}

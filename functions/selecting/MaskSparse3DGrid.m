@@ -11,7 +11,7 @@ function [mask,comment] = MaskSparse3DGrid(dataDimSize,stepSizeX,stepSizeY,stepS
 %   numY            max number in y, e.g. for 9: y -> 1,4,7
 %   numZ            max number in z, e.g. for 6: z -> 1,3,5
 
-% M. Altthaler, March 2024 
+% M. Altthaler, March 2024; edited M. Altthaler 2024/12
 
 arguments 
     dataDimSize     {mustBeNumeric}
