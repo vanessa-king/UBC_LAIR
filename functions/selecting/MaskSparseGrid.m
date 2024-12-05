@@ -30,11 +30,11 @@ if N == 2
     %coordinate grid up to data limits or max values numXYZ
     [X,Y] = meshgrid(1:dataDimSize(1),1:dataDimSize(2));
     %set 1's for XYcoords of appropriate step size
-    X = mod((X+stepSizeX-1),stepSizeX); %X layers of 1's in the mask are 0 
-    Y = mod((Y+stepSizeY-1),stepSizeY); %Y layers of 1's in the mask are 0
+    X = mod((X'+stepSizeX-1),stepSizeX); %X layers of 1's in the mask are 0 
+    Y = mod((Y'+stepSizeY-1),stepSizeY); %Y layers of 1's in the mask are 0
     dsc = (X==0 & Y==0); % superposition of XY
     clear X Y
-    mask(dsc==1)=1;
+    mask(dsc==1)=1; 
     %max number numXY
     if numX < dataDimSize(1)
         mask(numX+1:dataDimSize(1),:,:)=0;
