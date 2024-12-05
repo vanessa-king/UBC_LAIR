@@ -8,6 +8,8 @@ function [data, commentA, commentB, commentC, commentD] = loadData(data)
 %   Requires the toplevel data struct variable to be parsed. In this case 
 %   the function adds the field data.<name> to it. 
 
+% M. Altthaler 2024; V. King 2024
+
 arguments
     data        
 end
