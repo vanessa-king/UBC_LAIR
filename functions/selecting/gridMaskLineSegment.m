@@ -36,8 +36,6 @@ arguments
     connected   logical = false
 end
 
-
-
 if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
     % define line via user input points/values
     disp('The line segment for the mask can be defined by:');
@@ -53,8 +51,8 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
 
         % Display an topo image 
         figure()
-        p1=image(topo,'CDataMapping','scaled'); 
-        axis square
+        p1=image(permute(topo, [2,1,3]),'CDataMapping','scaled'); 
+        axis xy
         hold on
 
         selectedTwoPoints=ginputAllPlatform(2);
@@ -87,8 +85,7 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
 
         % theta=0; % horizontal line
         figure()
-        p1=image(topo,'CDataMapping','scaled'); 
-        axis square
+        p1=image(permute(topo, [2,1,3]),'CDataMapping','scaled'); 
         hold on
 
         % define the start point
