@@ -1,26 +1,33 @@
-function [f, plot_name, savefigpath, comment] = plot2DImage(LayoutCase, data, savefigpath)
+function [f, plot_name, saveFigPath, comment] = plot2DImage(LayoutCase, data, saveFigPath)
 %This function plots a 2D Image of the data.
 % LayoutCase will determin the format of the Image(grid or topo) this function generates.
 % If you need a specific format for your Image, which is not already in
 % setGraphLayout function, please add your format there. This way, your
 % preferred formatting won't change anyone else's graph output. 
 
- arguments
-    LayoutCase  {mustBeText} %string "gridsliceImage" or "topoImage"
-    data                    %topo or grid slice
-    savefigpath     {mustBeText}="" %string, optional input
- end
+%Dong Chen 2024/??; M. Altthaler 2024/12
 
-% When the savefigath is not specified, it will pop up a window for a user to select the folder where the figure is saved.
-if savefigpath == ""
-    savefigpath = uigetdir([],"Select a folder to save the figure");
+arguments
+    LayoutCase      {mustBeText}        %string "gridsliceImage" or "topoImage"
+    data                                %topo or grid slice
+    saveFigPath     {mustBeText}=''     %string, optional input
 end
 
- f = figure();
- imagesc(data);
- [ax] = setGraphLayout(LayoutCase);
+    % conditional user propt to specify the folder to save the figure in
+    if isempty(saveFigPath) 
+        saveFigPath = uigetdir([],"Select a folder to save the figure");
+    end
+    % check if data is a 2D - matrix && and has non-zero dimensions
+    if ismatrix(data) && all(size(data))
+     f = figure();
+     imagesc(permute(data,[2,1]));
+     [ax] = setGraphLayout(LayoutCase);
+    
+     plot_name = uniqueNamePrompt(strcat(LayoutCase),"",saveFigPath);
+     savefig(f, strcat(saveFigPath,"/",plot_name,".fig"))
+     comment = sprintf(strcat("plot2DImage(datadimension=:%s), plotname=%s, savefigpath|"),mat2str(size(data)),plot_name, saveFigPath);
+    else
+        disp("Invalid dimensions of image. This function accepts only 2D data!");
+    end
 
- plot_name = uniqueNamePrompt(strcat(LayoutCase),"",savefigpath);
- savefig(f, strcat(savefigpath,"/",plot_name,".fig"))
- comment = sprintf(strcat("plot2DImage(datadimension=:%s), plotname=%s, savefigpath|"),mat2str(size(data)),plot_name, savefigpath);
 end

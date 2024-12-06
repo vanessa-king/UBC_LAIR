@@ -1,4 +1,4 @@
-function [mean_out,STD_out,comment] = xyPlanarMeanSTD(data,mask)
+function [mean_out,STD_out,comment] = xyPlanarMeanSTD_historical(data,mask)
 %Mean and STD of the planes along the 3rd dim of masked data
 %   For a 3D data set data(x,y,z) the mean and standard deviation in the xy
 %   plane are calculated for all elements as denoted by the xy plane mask.
@@ -19,7 +19,7 @@ if ismatrix(mask)
     mask(mask==0) = NaN;
     data = data.*mask;
     mean_out = mean(data,[1,2],"omitnan");
-    STD_out = std(data,1,[1,2],"omitmissing"); %note TBD is w=0 or w=1 is the right way to do it (see documentation for details)
+    STD_out = std(data,1,[1,2],"omitnan"); %note TBD is w=0 or w=1 is the right way to do it (see documentation for details)
 else
     disp('Mask dimensions incompatible')
 end

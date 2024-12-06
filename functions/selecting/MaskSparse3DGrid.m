@@ -11,7 +11,7 @@ function [mask,comment] = MaskSparse3DGrid(dataDimSize,stepSizeX,stepSizeY,stepS
 %   numY            max number in y, e.g. for 9: y -> 1,4,7
 %   numZ            max number in z, e.g. for 6: z -> 1,3,5
 
-% M. Altthaler, March 2024 
+% M. Altthaler, March 2024; edited M. Altthaler 2024/12
 
 arguments 
     dataDimSize     {mustBeNumeric}
@@ -34,9 +34,9 @@ if N == 3
     %coordinate grid up to data limits or max values numXYZ
     [X,Y,Z] = meshgrid(1:dataDimSize(1),1:dataDimSize(2),1:dataDimSize(3));
     %set 1's for XYZ coords of appropriate step size
-    X = mod((X+stepSizeX-1),stepSizeX); %X layers of 1's in the mask are 0 
-    Y = mod((Y+stepSizeY-1),stepSizeY); %Y layers of 1's in the mask are 0
-    Z = mod((Z+stepSizeZ-1),stepSizeZ); %Z layers of 1's in the mask are 0
+    X = mod((permute(X,[2,1,3])+stepSizeX-1),stepSizeX); %X layers of 1's in the mask are 0 
+    Y = mod((permute(Y,[2,1,3])+stepSizeY-1),stepSizeY); %Y layers of 1's in the mask are 0
+    Z = mod((permute(Z,[2,1,3])+stepSizeZ-1),stepSizeZ); %Z layers of 1's in the mask are 0
     dsc = (X==0 & Y==0 & Z==0); % superposition of XYZ
     clear X Y Z 
     mask(dsc==1)=1;
