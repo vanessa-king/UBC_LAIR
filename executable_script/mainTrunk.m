@@ -842,3 +842,67 @@ saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(figName));
 
 % Clear preset variables
 clearvars dataset variableIn1 variableIn2 variableIn3 figName step_size numx numy;
+%% VG01A gridslice viewer for all grids (including the non-square one)
+% Edited by Jiabin Nov 2024.
+% This section processes 3D dIdV data into image slices and visualizes the stack.
+
+% Prompt for range type selection
+%   Dynamic range adjusts the contrast of each image slice individually, 
+        % based on its own maximum and minimum values.
+%   Global range applies a consistent color scale across all slices, 
+        % using the global minimum and maximum values.
+
+%presets:
+dataset = 'grid'; %specify the dataset to be used
+variableIn1 = 'dIdV_smoothed'; %specify the variable data(x,y,V) a V slice is taken from: e.g. dIdV
+variableIn2 = 'points'; %specify the variable to be processed as the number of slice cuts
+variableIn3 = 'invgray'; %specify the colormap to be used
+    % Common MATLAB colormaps include:
+    % - 'parula' (default MATLAB colormap)
+    % - 'jet' (classic rainbow colormap)
+    % - 'hsv' (circular color spectrum)
+    % - 'cool' (cyan to magenta)
+    % - 'hot' (black-red-yellow-white)
+    % - 'gray' (grayscale)
+    % - 'bone' (gray with a blue tinge)
+    % - 'copper' (dark to light copper tone)
+nestedStructure = true; % Set to true if variableIn2 is nested under 'header'
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+while true
+    rangeChoice = upper(input('Select color range type you want (G/g for Global, D/d for Dynamic): ', 's'));
+    if strcmp(rangeChoice, 'G')
+        rangeType = 'global';
+        break;
+    elseif strcmp(rangeChoice, 'D')
+        rangeType = 'dynamic';
+        break;
+    else
+        fprintf('Invalid selection. Please enter G or D.\n');
+    end
+end
+
+% LOG data in/out
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableIn3 = %s; nestedStructure = %s; rangeType = %s", ...
+    dataset, variableIn1, variableIn2, variableIn3, mat2str(nestedStructure), rangeType);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VG01A", LOGcomment, 0);
+
+% Prepare input data
+inputData1 = data.(dataset).(variableIn1);
+if nestedStructure
+    inputData2 = data.(dataset).header.(variableIn2);
+else
+    inputData2 = data.(dataset).(variableIn2);
+end
+
+
+% Cartesian coordinate mapping
+gridStackResult = gridSliceViewer(inputData1, inputData2, rangeType, variableIn3);
+
+% Convert gridStackResult to string if it's not already
+if ~ischar(gridStackResult) && ~isstring(gridStackResult)
+    gridStackResult = jsonencode(gridStackResult);
+end
+
+clearvars dataset variableIn1 variableIn2 variableIn3 targetFolder plot_name nestedStructure inputData1 inputData2 gridStackResult
