@@ -5,7 +5,7 @@
     
     % every block needs a unique identifier BLOCK (5 char long!) 
     % Format:   ABXXZ
-    %      A:   L = loading, P = processing, V = visulalizing
+    %      A:   L = loading, S= selecting, P = processing, V = visulalizing
     %      B:   subidentifiers (e.g. A = averaging, P = plot, M = masking, ...) TBD! 
     %     XX:   1, 2, 3, ..., 99 (running number for consecutive blocks)
     %      Z:   a, b, c, ... (alternate abc for either or blocks)
@@ -51,6 +51,8 @@
     % LS02A Load-Spectra-01-A; load grid and topo from Nanonis
     % SW01A Save-Workspace-01A; Save the current workspace
     % LW01A Load-Workspace-01A; Loads a saved workspace from a .mat file
+%Selecting 
+    % SM01A Select-Mask-directional-01-A; select a directional mask(with/without binning)
 %Processing
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
     % PA02A Processing-Averaging-Mask-02-A; average I-V or dI/dV according to a mask
@@ -284,6 +286,69 @@ else  % n, N, and all other inputs
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LW01A", LOGcomment, 0);
 end
 clear cont tempFile filePath fileName ext fullFileName savedLOGfileName restoredLOG
+%% SM01A Selecting-Mask-directional-01-A; creates directional masks for data analysis
+% Edited by Dong Chen in Dec 2024
+%
+% This section creates masks along a user-defined direction with specified width
+% and optionally combines them using binning parameters.
+%
+% The masks can be used for:
+% - Averaging data along specific directions
+% - Analyzing patterns in specific orientations
+% - Creating binned data for statistical analysis
+
+%presets:
+dataset = 'grid';           % specify the dataset to be used: e.g. grid
+variableIn = 'I';          % specify the variable to be processed   
+variableOut = 'directional_masks';     % specify the variable to store the masks
+connected = false;         % flag for side connectivity in mask generation
+
+% Optional parameters (comment out if not needed):
+startPoint = [];           % [x,y] coordinates of start point, empty for interactive
+endPoint = [];            % [x,y] coordinates of end point, empty for interactive
+bin_size = 3;             % number of masks to combine in each bin
+bin_sep = 2;              % separation between consecutive bins
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%LOG data in/out:
+LOGcomment = sprintf("DataIn: %s.%s; dataOut: %s.%s", ...
+    dataset, variableIn, dataset, variableOut);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM01A", LOGcomment, 0);
+
+% Get input data
+inputData = data.(dataset).(variableIn);
+
+% Check if input is 3D
+if ndims(inputData) == 3
+    % Display 3D dataset
+    fprintf('3D dataset detected. Please select a slice for mask creation.\n');
+    d3gridDisplay(inputData, 'dynamic');
+    
+    % Prompt user for slice selection
+    slice_idx = input('Enter the slice number to use: ');
+    while isempty(slice_idx) || slice_idx < 1 || slice_idx > size(inputData, 3)
+        fprintf('Invalid slice number. Please enter a number between 1 and %d\n', size(inputData, 3));
+        slice_idx = input('Enter the slice number to use: ');
+    end
+    
+    % Extract the selected slice
+    inputData = inputData(:,:,slice_idx);
+    fprintf('Using slice %d for mask creation\n', slice_idx);
+end
+
+% Create directional masks
+[data.(dataset).(variableOut), data.(dataset).([variableOut '_combined']), LOGcomment] = ...
+    maskDirectional(inputData, ...
+    'connected', connected, ...
+    'startPoint', startPoint, ...
+    'endPoint', endPoint, ...
+    'bin_size', bin_size, ...
+    'bin_sep', bin_sep);
+
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+% Clean up variables
+clearvars dataset variableIn variableOut connected startPoint endPoint bin_size bin_sep inputData slice_idx 
 %% PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
 %Edited by M. Altthaler April 2024; James October 2023; Jisun October 2023
 

@@ -4,18 +4,18 @@ function [masks, masks_combined, comment] = maskDirectional(data, varargin)
 % combines them using specified binning parameters.
 %
 % Arguments:
-%   data        2D or 3D array containing the data
-%   varargin    Optional arguments:
-%               - connected: logical flag for side connectivity (default false)
-%               - startPoint: [x1,y1] start point coordinates
-%               - endPoint: [x2,y2] end point coordinates
-%               - bin_size: Number of slices to combine per bin
-%               - bin_sep: Separation between start of each bin
+%   data            2D or 3D array containing the data
+%   varargin        Optional arguments:
+%                   - connected: logical flag for side connectivity (default false)
+%                   - startPoint: [x1,y1] start point coordinates
+%                   - endPoint: [x2,y2] end point coordinates
+%                   - bin_size: Number of slices to combine per bin
+%                   - bin_sep: Separation between start of each bin
 %
 % Returns:
 %   masks           3D array of original masks (data_dim x data_dim x L)
 %   masks_combined  3D array of combined masks (if bin parameters provided)
-%                  or empty array (if no bin parameters)
+%                   or empty array (if no bin parameters)
 %   comment         String containing function call information
 %
 % Example:
@@ -25,6 +25,8 @@ function [masks, masks_combined, comment] = maskDirectional(data, varargin)
 %   [masks, masks_combined, comment] = maskDirectional(data, 'bin_size', 3, 'bin_sep', 2)
 %
 % See also: maskSingleDirectional, combineMasks
+% Dec 2024 - Dong Chen
+
 
 % Parse optional inputs
 p = inputParser;

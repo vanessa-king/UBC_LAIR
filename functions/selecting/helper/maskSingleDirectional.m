@@ -9,6 +9,7 @@ function [masks, comment] = maskSingleDirectional(data, connected, startPoint, e
 % Returns:
 %   masks       3D array of logical masks (data_dim x data_dim x L)
 %   comment     Comment for logging the function call.
+% Dec 2024 - Dong Chen
 
 arguments
     data
@@ -64,7 +65,7 @@ colorbar;
 title(sprintf('Sum of All Perpendicular Masks (width=%d)', UI_STATE.width));
 
 % Create comment for logging
-comment = sprintf('gridDirectionalMask(datasize:%s x %s, width:%d)|%s', ...
+comment = sprintf('maskSingleDirectional(datasize:%s x %s, width:%d)|%s', ...
     mat2str(size(data,1)), mat2str(size(data,2)), UI_STATE.width, mainComment);
 
 % Clear global state
