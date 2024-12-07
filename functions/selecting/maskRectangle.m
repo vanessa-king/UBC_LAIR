@@ -1,9 +1,8 @@
-function [mask, num_in_mask, comment] = maskPoint(data, radius, V_reduced, imageV)
-%Description: maskPoint creates a circular mask of a specified radius around the clicked point.
+function [mask, num_in_mask, comment] = maskRectangle(data, V_reduced, imageV)
+%Description: maskRectangle creates a rectangular mask by either manual input of corner points or by clicking the coner points. 
 
 % Parameters
 %   data: 2D or 3D data
-%   radius: float, radius of mask (pixels)
 %   V_reduced: reduced vector with bias voltages(see Derivative function in PD01A for definition of V_reduced); this is
 %   an optional input for the case where the "data" has a 3D structure, e.g. didv. 
 %   imageV: this is an optional input for the case where the "data" has a 3D structure, e.g. didv. 
@@ -11,7 +10,6 @@ function [mask, num_in_mask, comment] = maskPoint(data, radius, V_reduced, image
 
 arguments
     data        
-    radius      {mustBeNumeric,mustBePositive}
     V_reduced   = []                    % optional, only for 3D data
     imageV      = []                    % optional, only for 3D data
 end
@@ -51,31 +49,54 @@ axis xy;
 
 % Prompt the user for input method in the command window
 disp('Choose input method:');
-disp('1: Specify coordinates (x, y) manually.');
-disp('2: Click on the plot to select the center.');
+disp('1: Specify coordinates (x1, y1, x2, y2) manually.');
+disp('2: Click on the plot to select two corner points.');
 choice = input('Enter your choice (1 or 2): ');
 
 if choice == 1
     % User specifies coordinates
-    pos = input('Enter the coordinates as [x, y]: ');
+    fprintf = ('Enter the rectangle corners as [x1, y1, x2, ys]:\n');
+    coords = input('Coordinates: '); % Manual input of corners
+    if numel(coords) ~= 4
+        error('You must provide four values: [x1, y1, x2, y2].');
+    end
+    x1 = coords(1);
+    y1 = coords(2);
+    x2 = coords(3);
+    y2 = coords(4);
 elseif choice == 2
-    % User clicks to select the center
-    pos = round(ginputAllPlatform(1)); % Click to select center point
+    % User clicks to select two corner points
+    fprintf('Click two points on the plot to define the rectangle corners.\n');
+    points = round(ginputAllPlatform(2)); % Select two points
+    x1 = points(1, 1);
+    y1 = points(1, 2);
+    x2 = points(2, 1);
+    y2 = points(2, 2);
 else
     error('Invalid choice. Please enter 1 or 2.');
 end
 
-% Draw the mask circle on the image
-xx = -radius:0.01:radius;
-yy = sqrt(radius^2-xx.^2);
-plot(pos(1) + xx, pos(2) + yy,'g','LineWidth',0.6)
-plot(pos(1) + xx, pos(2) - yy,'g','LineWidth',0.6)
+% Ensure coordinates are within bounds
+[rows, cols] = size(data_slice);
+x1 = max(1, min(cols, x1));
+x2 = max(1, min(cols, x2));
+y1 = max(1, min(rows, y1));
+y2 = max(1, min(rows, y2));
 
-% Create mask matrix and apply circular mask centered at pos
-mask = zeros(size(data_slice,1),size(data_slice,2));
-[X, Y] = meshgrid(1:size(data_slice, 2), 1:size(data_slice, 1)); % Similar to imagesc, we need to input (y,x) in order to 
-                                                                 % creat a proper mesh corresponding to our data format.
-mask((X - pos(2)).^2 + (Y - pos(1)).^2 <= radius^2) = 1;    % For the same reason stated above, the input here needs to be (y,x).
+% Sort coordinates to define the rectangle correctly
+x_min = min(x1, x2);
+x_max = max(x1, x2);
+y_min = min(y1, y2);
+y_max = max(y1, y2);
+
+% Highlight the rectangle on the plot
+rectangle('Position', [x_min, y_min, x_max - x_min, y_max - y_min], ...
+          'EdgeColor', 'g', 'LineWidth', 0.6);
+
+% Create the mask matrix
+mask = false(size(data_slice));
+mask(y_min:y_max, x_min:x_max) = true;  % Similar to imagesc, we need to input (y,x) in order to 
+                                        % creat a proper mesh corresponding to our data format.
 
 % Count number of points in the mask
 num_in_mask = nnz(mask);
@@ -84,12 +105,12 @@ hold off;
 
 % Include details in the comment output 
 if dimData == 3
-    comment = sprintf("maskPoint(data:%s, radius=%s, x=%s, y=%s, V_reduced:%s, imageV=%s)", ...
-                      mat2str(size(data)), num2str(radius), num2str(pos(1)), num2str(pos(2)), ...
+    comment = sprintf("maskRectangle(data:%s, x1=%d, y1=%d, x2=%d, y2=%d, V_reduced:%s, imageV=%s)", ...
+                      mat2str(size(data)), x1, y1, x2, y2, ...
                       mat2str(size(V_reduced)), num2str(imageV));
 else
-    comment = sprintf("maskPoint(data:%s, radius=%s, x=%s, y=%s)", ...
-                      mat2str(size(data)), num2str(radius), num2str(pos(1)), num2str(pos(2)));
+    comment = sprintf("maskRectangle(data:%s, x1=%d, y1=%d, x2=%d, y2=%d)", ...
+                      mat2str(size(data)), x1, y1, x2, y2);
 end
 end
 
