@@ -44,16 +44,9 @@ if EnergyLayer > size(data, 3) + 1
     error('EnergyLayer cannot be larger than the number of layers in the input data plus one');
 end
 
-% Pre-allocate Grid array
-Grid = zeros(size(data, 1), size(data, 2), EnergyLayer-1);
-
-% Process each layer of the dIdV data
-for k = 1:EnergyLayer-1
-    Grid(:,:,k) = data(:,:,k);
-end
-
+% Grid: output variable to be dispalyed by imshow3D
 % Transpose and flip to match Cartesian coordinates
-Grid = permute(Grid, [2 1 3]);  % Swap x and y dimensions
+Grid = permute(data, [2 1 3]);  % Swap x and y dimensions
 Grid = flip(Grid, 1);  % Flip vertically to match Cartesian orientation
 
 % Initialize visualization
