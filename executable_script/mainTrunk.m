@@ -848,7 +848,7 @@ clearvars dataset variableIn1 variableIn2 variableIn3 figName step_size numx num
 
 % Prompt for range type selection
 %   Dynamic range adjusts the contrast of each image slice individually, 
-        % based on its own maximum and minimum values.
+        % based on: mean(xy laer) +- 8*std(xy layer).
 %   Global range applies a consistent color scale across all slices, 
         % using the global minimum and maximum values.
 
