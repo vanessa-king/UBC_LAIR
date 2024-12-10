@@ -4,6 +4,10 @@ function [LOGpath,LOGfile] = setLogFile(fileBool)
 %   user is prompted to set a file name, which is set to be unique via
 %   appending a running number. The optional variable fileBool defines if a
 %   file is chosen or a folder. It defaults to chosing a folder.
+%   If the execution is aborted returns [0, 0]
+
+%   M. Altthaler 2022; edited 2024/12
+
 arguments
     fileBool logical =0
 end
@@ -11,10 +15,19 @@ end
     if fileBool == 0
         %uigetdir + name prompt
         LOGpath = uigetdir();
-        LOGfile = uniqueLOGNamePrompt(LOGpath,'NewProject');
+        if LOGpath == 0
+            LOGfile = 0;
+        else
+            LOGfile = uniqueLOGNamePrompt(LOGpath,'NewProject');
+        end
     elseif fileBool == 1
-        %uigetfile sets the name
-        [LOGpath,LOGfile,~] = selectData();
+        %uigetfile sets the dir and name
+        [LOGpath,TempFile,~] = selectData();
+        if LOGpath == 0
+            LOGfile = 0;
+        else
+            LOGfile = uniqueLOGNamePrompt(LOGpath,TempFile);
+        end
     end
 
 end
@@ -49,7 +62,7 @@ function [nameString] = uniqueLOGNamePrompt(filepath, defaultName)
 
 
 arguments
-    filepath        {mustBeText}=""
+    filepath        {mustBeText}=''
     defaultName     {mustBeText}="Project"
 end
 

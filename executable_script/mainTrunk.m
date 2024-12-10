@@ -138,8 +138,33 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01A", LOGcomment, 1);
 % 0: UI to choose <paths> and an input prompt for the log file <name>
 % 1: UI to select a file, the file <name> and <paths> set the log file 
 % Note: _LOGfile.txt will be appended to the chosen name!
-[LOGpath,LOGfile] = setLogFile(0);
 
+typeBool = 0;
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%if existent: save previous [LOGpath,LOGfile] to temporary variables
+if exist('LOGpath','var') && exist('LOGfile','var') 
+    tempLOGpath = LOGpath;
+    tempLOGfile = LOGfile;
+end
+
+%select new [LOGpath,LOGfile]
+[LOGpath,LOGfile] = setLogFile(typeBool);
+clearvars typeBool
+
+% catch exception: no valid (re)assignment of [LOGpath,LOGfile]
+if LOGpath == 0
+    %restore [LOGpath,LOGfile] from temp. variables or clear them to reset 
+    if exist('tempLOGpath','var') && exist('tempLOGfile','var')
+        LOGpath = tempLOGpath;
+        LOGfile = tempLOGfile;  
+        clearvars tempLOGpath tempLOGfile
+    else
+        clearvars LOGpath LOGfile 
+    end
+    %suppress logging block execution due to no action
+    return
+end
 % Initialize LogFile 
 %initialize LOG file & log name and directory
 LOGcomment = "Initializing log file: <LOGpath>/<LOGfile>_LOGfile.txt";
@@ -150,6 +175,8 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 % initialize empty data struct 
 data = {};
 
+%delete temp variables
+clearvars tempLOGpath tempLOGfile
 
 %% LD01A Load-Data-01-A; Load data (grid, topo, ...) via UI file selection
 % Edited by M. Altthaler, April 2024
