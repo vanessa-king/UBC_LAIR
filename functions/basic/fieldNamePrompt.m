@@ -70,7 +70,7 @@ end
             otherwise
                 %free name assignment
                 %filter space and other fobidden chars!
-                str = regexprep(str,'[^a-zA-Z\s]','');
+                str = regexprep(str,'[^a-zA-Z0-9_\s]','');
                 str = erase(str, " ");
                 if strlength(str) <65
                     fieldName = str;
