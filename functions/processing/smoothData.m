@@ -17,7 +17,7 @@ arguments
    span         {mustBeNumeric}=3   
    type         {mustBeText}='IV'   % 
    method       {mustBeText}='box'  %'box' or 'gaussian' (ref. doc. smooth3)
-   sd           {mustbenum}=0.65    % standard deviation for 'gaussian' (ref. doc. smooth3)
+   sd           {mustBeNumeric}=0.65    % standard deviation for 'gaussian' (ref. doc. smooth3)
 end
 
 % enforce odd window size
