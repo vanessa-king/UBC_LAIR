@@ -65,6 +65,16 @@ else
     error('Invalid choice. Please enter 1 or 2.');
 end
 
+% Check if the circle is within the image boundaries
+x_min = pos(1) - radius;
+x_max = pos(1) + radius;
+y_min = pos(2) - radius;
+y_max = pos(2) + radius;
+
+if x_min < 1 || y_min < 1 || x_max > size(data_slice, 1) || y_max > size(data_slice, 2)
+    error('The circle exceeds the image boundaries. Please select a point closer to the center of the image.');
+end
+
 % Draw the mask circle on the image
 xx = -radius:0.01:radius;
 yy = sqrt(radius^2-xx.^2);

@@ -291,8 +291,8 @@ clear cont tempFile filePath fileName ext fullFileName savedLOGfileName restored
 
 %presets:
 dataset = 'grid';   % specify the dataset to be used: e.g. grid
-variableIn = 'I';  % specify the variable to be processed, e.g. I. Note that by default ‘I’ is the forward scan
-variableOut = 'I_smoothed'; % specify the variable to return the data to, e.g. I (overwrite data) or I_smoothed
+variableIn = 'I_backward';  % specify the variable to be processed, e.g. I. Note that by default ‘I’ is the forward scan
+variableOut = 'I_bwd_smoothed'; % specify the variable to return the data to, e.g. I (overwrite data) or I_smoothed
 span = 3;       %size of the moving window. E.g. 3: for nearest neighbor averaging; 5 for next nearast neighbor averaging.
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -313,11 +313,11 @@ clearvars dataset variableIn variableOut span
 % Presets
 % Define dataset and input/output variables here
 dataset = 'grid';               % specify the dataset to be used: e.g., grid
-variableIn1 = 'dIdV';     % the variable that you want to average. e.g. I_forward, I_backward
+variableIn1 = 'dIdV_bwd';     % the variable that you want to average. e.g. I_forward, I_backward
                                 % If you want to average dIdV, you need to run PD01A or PD01B first. 
                                 % Also you can input dIdV_forward or dIdV_backward to get average 
                                 % of foward or backward only average dIdV.
-variableOut1 = 'avg_dIdV';        % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
+variableOut1 = 'avg_dIdV_bwd';        % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
                                 % or avg_dIdV_fwd or avg_dIdV_bwd
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -342,11 +342,11 @@ clearvars dataset variableIn1 variableOut1
 
 %presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
-variableIn1 = 'I_smoothed'; % specify the variable to be processed, e.g. I, or I_backward
+variableIn1 = 'I_bwd_smoothed'; % specify the variable to be processed, e.g. I, or I_backward
                             % this is a 3d array form (x, y, V)
 variableIn2 = 'V';          % specify the variable to be processed, e.g. V or Z
                             % this is a 1d array form (V, 1)
-variableOut1 = 'dIdV';      % specify the variable to return the data to
+variableOut1 = 'dIdV_bwd';      % specify the variable to return the data to
                             % this is a 3d array form (x, y, V-1)
 variableOut2 = 'V_reduced'; % specify the variable to return the data to
                             % this is a 1d array form (V-1, 1)
@@ -584,7 +584,7 @@ LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s, 
     dataset, variableIn1, variableIn2, variableIn3);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01A", LOGcomment, 0);
 
-if variableIn3 == ""
+if isempty(variableIn3)
     % This makes the averaged "I versus V" plot
     [~, plot_name_1, savefigpath, LOGcomment] = plotOneXYGraph(LayoutCase, data.(dataset).(variableIn1), data.(dataset).(variableIn2), savefigpath);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
@@ -667,10 +667,10 @@ variableOut2 = 'num_in_mask';
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % LOG data in/out
-LOGcomment = sprintf("dataset = %s; variableIn1 = %s; radius = %s; variableIn2 = %s; imageV = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1, radius, variableIn2, imageV, variableOut1, variableOut2);
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; radius = %s; variableIn2 = %s; imageV = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1, num2str(radius), variableIn2, num2str(imageV), variableOut1, variableOut2);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
 
-if variableIn2 == "" && imageV == ""
+if isempty(variableIn2) || isempty(imageV)
     % excute the function
     [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPoint(data.(dataset).(variableIn1), radius);
 
@@ -709,7 +709,7 @@ clearvars imageV radius targetFolder plot_name
 
 %presets:
 dataset ='grid';              %specify the dataset to be used: e.g. grid
-variableIn1 = 'dIdV';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+variableIn1 = 'dIdV';         % specify the data (2D or 3D) to use to create the mask
 %optional variable inputs
 variableIn2 = 'V_reduced';  % this is neccesary when varialbleIn1 is a 3D data.
                             % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
@@ -721,16 +721,16 @@ variableOut2 = 'Num_in_mask';
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % LOG data in/out
-LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1,variableIn2, variableOut1, variableOut2);
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1, variableIn2, num2str(imageV), variableOut1, variableOut2);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03B", LOGcomment ,0);
 
-if variableIn2 == "" && imageV == ""
+if isempty(variableIn2) || isempty(imageV)
     % excute the function
     [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskRectangle(data.(dataset).(variableIn1));
 
 else
     % excute the function
-    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskRectagle(data.(dataset).(variableIn1), data.(dataset).(variableIn2), imageV);
+    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskRectangle(data.(dataset).(variableIn1), data.(dataset).(variableIn2), imageV);
 
 end
 

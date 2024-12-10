@@ -64,10 +64,6 @@ if choice == 1
     y1 = coords(2);
     x2 = coords(3);
     y2 = coords(4);
-     % Check if clicked points are within data bounds
-    if x1 < 1 || x2 < 1 || y1 < 1 || y2 < 1 || x1 > size(data_slice, 1) || x2 > size(data_slice, 1) || y1 > size(data_slice, 2) || y2 > size(data_slice, 2)
-        error('Selected points must be within the dimensions of the data.');
-    end
 elseif choice == 2
     % User clicks to select two corner points
     disp('Click two points on the plot to define the rectangle corners.');
@@ -76,13 +72,16 @@ elseif choice == 2
     y1 = points(1, 2);
     x2 = points(2, 1);
     y2 = points(2, 2);
-     % Check if clicked points are within data bounds
-    if x1 < 1 || x2 < 1 || y1 < 1 || y2 < 1 || x1 > size(data_slice, 1) || x2 > size(data_slice, 1) || y1 > size(data_slice, 2) || y2 > size(data_slice, 2)
-        error('Selected points must be within the dimensions of the data.');
-    end
 else
     error('Invalid choice. Please enter 1 or 2.');
 end
+
+% Ensure coordinates are within bounds
+[rows, cols] = size(data_slice);
+x1 = max(1, min(cols, x1));
+x2 = max(1, min(cols, x2));
+y1 = max(1, min(rows, y1));
+y2 = max(1, min(rows, y2));
 
 % Sort coordinates to define the rectangle correctly
 x_min = min(x1, x2);
@@ -96,7 +95,8 @@ rectangle('Position', [x_min, y_min, x_max - x_min, y_max - y_min], ...
 
 % Create the mask matrix
 mask = zeros(size(data_slice,1),size(data_slice,2));
-mask(x_min:x_max, y_min:y_max) = 1;  
+mask(y_min:y_max, x_min:x_max) = 1;  % Similar to imagesc, we need to input (y,x) in order to 
+                                     % creat a proper mesh corresponding to our data format.
 
 % Count number of points in the mask
 num_in_mask = nnz(mask);
