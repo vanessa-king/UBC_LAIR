@@ -306,8 +306,8 @@ connected = false;         % flag for side connectivity in mask generation
 % Optional parameters (comment out if not needed):
 startPoint = [];           % [x,y] coordinates of start point, empty for interactive
 endPoint = [];            % [x,y] coordinates of end point, empty for interactive
-bin_size = 3;             % number of masks to combine in each bin
-bin_sep = 2;              % separation between consecutive bins
+bin_size = 2;             % number of masks to combine in each bin
+bin_sep = 3;              % separation between consecutive bins
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %LOG data in/out:
@@ -317,24 +317,6 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM01A", LOGcomment, 0);
 
 % Get input data
 inputData = data.(dataset).(variableIn);
-
-% Check if input is 3D
-if ndims(inputData) == 3
-    % Display 3D dataset
-    fprintf('3D dataset detected. Please select a slice for mask creation.\n');
-    d3gridDisplay(inputData, 'dynamic');
-    
-    % Prompt user for slice selection
-    slice_idx = input('Enter the slice number to use: ');
-    while isempty(slice_idx) || slice_idx < 1 || slice_idx > size(inputData, 3)
-        fprintf('Invalid slice number. Please enter a number between 1 and %d\n', size(inputData, 3));
-        slice_idx = input('Enter the slice number to use: ');
-    end
-    
-    % Extract the selected slice
-    inputData = inputData(:,:,slice_idx);
-    fprintf('Using slice %d for mask creation\n', slice_idx);
-end
 
 % Create directional masks
 [data.(dataset).(variableOut), data.(dataset).([variableOut '_combined']), LOGcomment] = ...

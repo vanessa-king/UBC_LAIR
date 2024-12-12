@@ -27,6 +27,23 @@ function [masks, masks_combined, comment] = maskDirectional(data, varargin)
 % See also: maskSingleDirectional, combineMasks
 % Dec 2024 - Dong Chen
 
+% Check if input is 3D
+if ndims(data) == 3
+    % Display 3D dataset
+    fprintf('3D dataset detected. Please select a slice for mask creation.\n');
+    d3gridDisplay(data, 'dynamic');
+    
+    % Prompt user for slice selection
+    slice_idx = input('Enter the slice number to use: ');
+    while isempty(slice_idx) || slice_idx < 1 || slice_idx > size(data, 3)
+        fprintf('Invalid slice number. Please enter a number between 1 and %d\n', size(data, 3));
+        slice_idx = input('Enter the slice number to use: ');
+    end
+    
+    % Extract the selected slice
+    data = data(:,:,slice_idx);
+    fprintf('Using slice %d for mask creation\n', slice_idx);
+end
 
 % Parse optional inputs
 p = inputParser;
