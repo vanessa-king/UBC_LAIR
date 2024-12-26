@@ -18,8 +18,7 @@ cm_inferno = inferno(color_scale_resolution);
 cm_magma = magma(color_scale_resolution);
 cm_plasma = plasma(color_scale_resolution);
 
-didv_flip = flip( 
-[~,imN] = min(abs(V_reduced-imageV));
+didv_flip = flip([~,imN] = min(abs(V_reduced-imageV));
 
 img = figure('Name', ['Image of states at ',num2str(imageV),' V']);
 clims = [0,3E-9];
