@@ -37,13 +37,13 @@ z_flat = imsubtract(z,plane); % new topography image
 if plot == 1
     figure;
     subplot(1,3,1)
-    imagesc(z'); axis image; axis xy;
+    imagesc(z'); axis image; axis xy; %takes transpose of image to plot
     title('Raw Topography')
     subplot(1,3,2)
-    imagesc(plane'); axis image; axis xy;
+    imagesc(plane'); axis image; axis xy; %takes transpose of image to plot
     title('Fitted Plane')
     subplot(1,3,3)
-    imagesc(z_flat'); axis image; axis xy;
+    imagesc(z_flat'); axis image; axis xy; %takes transpose of image to plot
     title('Plane Subtracted Topography')
     colormap(gray);
 end

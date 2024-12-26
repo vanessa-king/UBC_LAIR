@@ -43,21 +43,20 @@ if plot_histograms
 end
 
 %create a threshold image based on the selected threshold
-z_img = flip(permute(topo,[2 1]),1);
-fig_plot = imresize(z_img, [57, 57]);
+%fig_plot= topo;
 
-tall_mask = fig_plot > height_threshold;
-short_mask = fig_plot <= height_threshold;
+tall_mask = topo > height_threshold;
+short_mask = topo <= height_threshold;
 
 % Display the thresholded topography with a colorbar
 figure('Name', 'Topography');  %change name of plot
-imagesc(fig_plot);
+imagesc(topo'); %takes transpose of image to plot
 colormap('gray')
 colorbar
 axis square
 
 % Create a binary contour based on tall and short regions
-contour = fig_plot;
+contour = topo;
 contour(tall_mask) = 1;
 contour(short_mask) = 0;
 
@@ -65,7 +64,7 @@ contour(short_mask) = 0;
 [boundary_x, boundary_y] = pixelatedContour(contour);
 % Plot the boundary on the topography figure
 hold on
-plot(boundary_x,boundary_y,'g','LineWidth',2);
+plot(boundary_y,boundary_x,'g','LineWidth',2); axis image; axis xy
 hold off
 
 % define struct for return of function (alternativley return these 5 values
