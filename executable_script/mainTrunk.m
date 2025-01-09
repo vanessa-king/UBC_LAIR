@@ -337,11 +337,11 @@ clearvars dataset variableIn variableOut span
 % Presets
 % Define dataset and input/output variables here
 dataset = 'grid';               % specify the dataset to be used: e.g., grid
-variableIn1 = 'dIdV_bwd';     % the variable that you want to average. e.g. I_forward, I_backward
+variableIn1 = 'I_smoothed';     % the variable that you want to average. e.g. I_forward, I_backward
                                 % If you want to average dIdV, you need to run PD01A or PD01B first. 
                                 % Also you can input dIdV_forward or dIdV_backward to get average 
                                 % of foward or backward only average dIdV.
-variableOut1 = 'avg_dIdV_bwd';        % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
+variableOut1 = 'avg_IV';        % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
                                 % or avg_dIdV_fwd or avg_dIdV_bwd
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -353,7 +353,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA02A", LOGcomment, 0);
 % Main code execution section
 
 % This makes the averaged "I versus V" plot
-[~, data.(dataset).(variableOut1), LOGcomment] = avgXYmask(data.(dataset).(variableIn1));
+[~, data.(dataset).(variableOut1), ~, LOGcomment] = avgXYmask(data.(dataset).(variableIn1));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % Clear preset variables
@@ -366,7 +366,7 @@ clearvars dataset variableIn1 variableOut1
 
 %presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
-variableIn1 = 'I'; % specify the variable to be processed, e.g. I, or I_backward
+variableIn1 = 'I_smoothed'; % specify the variable to be processed, e.g. I, or I_backward
                             % this is a 3d array form (x, y, V)
 variableIn2 = 'V';          % specify the variable to be processed, e.g. V or Z
                             % this is a 1d array form (V, 1)
@@ -585,7 +585,7 @@ saveUsedBlocksLog(LOGpath, LOGfile, savefigpath, strcat(plot_name));
 clearvars LayoutCase dataset variableIn savefigpath plot_name
 
 %% VS01A Visualize-Spectrum-01-A; plot I-V or dI/dV
-% Edited by Jisun Kim Oct 2023, again in Feb 2024, Dong Chen June 2024, Jisun Kim July 2024
+% Edited by Jisun Kim Oct 2023, again in Feb 2024, Dong Chen June 2024, Jisun Kim July and Dec 2024
 % This section of code plots average I versus V or average dI/dV versus V.
 % You have an option to plot forward I (or dIdV) and backward I (or dIdV) separately but together in one plot.
 % NOTE: IF I DON'T RUN PD01A or PD01B, THIS SECTION DOESN'T RECOGNIZE V_reduced or dIdV
@@ -609,7 +609,7 @@ LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s, 
     dataset, variableIn1, variableIn2, variableIn3);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01A", LOGcomment, 0);
 
-if variableIn3 == ""
+if isempty(variableIn3)
     % This makes the averaged "I versus V" plot
     [~, plot_name_1, savefigpath, LOGcomment] = plotOneXYGraph(LayoutCase, data.(dataset).(variableIn1), data.(dataset).(variableIn2), savefigpath);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
@@ -672,29 +672,38 @@ clearvars dataset variableIn1 variableIn2 imageV n offset
 clearvars targetFolder plot_name
 %% VS03A Visualize-Spectrum-03-A; circular masking;
 
-% Edited by Jiabin May 2024; Jisun Oct 2023, again in Feb 2024.
+% Edited by Jiabin May 2024; Jisun Oct 2023, again in Feb 2024, again in Dec 2024.
 % This section of code creates a circular mask of radius R around a clicked point. 
 % It then plots the average dI/dV on that point. The user may toggle R and energy slice.
 
 %presets:
-dataset ='grid';              %specify the dataset to be used: e.g. grid
-variableIn1 = 'didv';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
-variableIn2 = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
+dataset ='grid';            % specify the dataset to be used: e.g. grid
+variableIn1 = 'dIdV';       % specify the data (2D or 3D) to use to create the mask
+radius = 3;                 % radius R: the size of the circular mask
+%optional variable inputs
+variableIn2 = 'V_reduced';  % this is neccesary when varialbleIn1 is a 3D data.
+                            % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
+imageV = 0.15;                % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
+                            % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
 
 variableOut1 = 'circular_mask';              % return the function of excuation
-variableOut2 = 'Num_in_mask';
-
-imageV = 0.15;  % bias voltage of image slice
-radius = 3;     % radius R 
+variableOut2 = 'num_in_mask';
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % LOG data in/out
-LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1,variableIn2, variableOut1, variableOut2);
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; radius = %s; variableIn2 = %s; imageV = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1, num2str(radius), variableIn2, num2str(imageV), variableOut1, variableOut2);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
 
-% excute the function
-[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = gridMaskPoint(data.(dataset).(variableIn1),  data.(dataset).(variableIn2), imageV, radius);
+if isempty(variableIn2) || isempty(imageV)
+    % excute the function
+    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPoint(data.(dataset).(variableIn1), radius);
+
+else
+    % excute the function
+    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPoint(data.(dataset).(variableIn1), radius, data.(dataset).(variableIn2), imageV);
+
+end
 
 % log the function of excuation 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
@@ -717,6 +726,59 @@ saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, strcat(plot_name));
 clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2
 clearvars imageV radius targetFolder plot_name
 
+%% VS03B Visualize-Spectrum-03-B; rectangular masking;
+% Edited by Jisun Dec 2024
+% This section of code creates a rectangular mask. The user clicks two points that define 
+% a single rectangle (presumably, opposite corners). 
+% It then plots the average dI/dV of the selected area.
+
+%presets:
+dataset ='grid';              %specify the dataset to be used: e.g. grid
+variableIn1 = 'dIdV';         % specify the data (2D or 3D) to use to create the mask
+%optional variable inputs
+variableIn2 = 'V_reduced';  % this is neccesary when varialbleIn1 is a 3D data.
+                            % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
+imageV = 0.15;                % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
+                            % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
+variableOut1 = 'rectangular_mask';              % return the function of excuation
+variableOut2 = 'Num_in_mask';
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% LOG data in/out
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1, variableIn2, num2str(imageV), variableOut1, variableOut2);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03B", LOGcomment ,0);
+
+if isempty(variableIn2) || isempty(imageV)
+    % excute the function
+    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskRectangle(data.(dataset).(variableIn1));
+
+else
+    % excute the function
+    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskRectangle(data.(dataset).(variableIn1), data.(dataset).(variableIn2), imageV);
+
+end
+
+% log the function of excuation 
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
+% Ask for dir of saving `figure` and the name 
+targetFolder = uigetdir([],'Choose folder to save the figure to:');
+plot_name = uniqueNamePrompt("rectangular mask","",targetFolder);
+
+% LOG dir/plotname.fig
+LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_name);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+    
+% save the figures
+savefig(strcat(targetFolder,"/",plot_name,".fig"));
+
+% function: SaveUsedBlocks
+saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, strcat(plot_name));
+
+% clear excess variables
+clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2
+clearvars imageV targetFolder plot_name
 %% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias 
 
 % Edited by James October 2023, Jiabin July 2024, Rysa Sept 2024
