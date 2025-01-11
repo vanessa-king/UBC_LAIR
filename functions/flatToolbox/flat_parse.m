@@ -1,4 +1,5 @@
 function flat=flat_parse(File)
+%Edited by V.K. Dec 5, 2024 so that it works nicely with load_grid_Matrix.m
 %F=FLAT_PARSE(FILE) 
 %This function parses a complete FLAT-File specified in "File" and returns 
 %its contents in a structure F. 
@@ -34,17 +35,7 @@ function flat=flat_parse(File)
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     %open a file
-    Path='';
-	if nargin==0,
-        [File,Path]=uigetfile('*flat', 'Get Matrix-Data');
-        if File~=0
-            [Path File]
-        else
-            error('No File selected.')
-        end
-	end
-	fid=fopen([Path,File]);
-    %disp(fid)
+	fid=fopen(File);
 	
     %####Start parsing (see Vernissage 1.1 Documentation)...
     %Check magic string...
@@ -232,12 +223,12 @@ function flat=flat_parse(File)
     fclose(fid);
     
     
-    %#### Transporm data into nicer format...
+    %#### Transform data into nicer format...
     %Apply TransferFunctions...
     if(strcmp(flat.TF.name,'TFF_Linear1D'))
-        flat.phys_data=(flat.data-flat.TF.parameter.Offset)/flat.TF.parameter.Factor;
+        flat.phys_data =(flat.data-flat.TF.parameter.Offset)/flat.TF.parameter.Factor;
     elseif(strcmp(flat.TF.name,'TFF_MultiLinear1D'))
-        flat.phys_data=(flat.TF.parameter.Raw_1-flat.TF.parameter.PreOffset)*(flat.data-flat.TF.parameter.Offset)/(flat.TF.parameter.NeutralFactor*flat.TF.parameter.PreFactor);
+        flat.phys_data =(flat.TF.parameter.Raw_1-flat.TF.parameter.PreOffset)*(flat.data-flat.TF.parameter.Offset)/(flat.TF.parameter.NeutralFactor*flat.TF.parameter.PreFactor);
     else
         warning('FLAT:Parse','Unknown TransferFunction! Providing raw data only...');
     end

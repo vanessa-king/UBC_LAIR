@@ -1,18 +1,15 @@
-function [grid,comment] = load_grid_Matrix(folder, gridFileName, average_forward_and_backward, bias_direction)
+function [grid,comment] = load_grid_Matrix(folder, gridFileName)
 % Description: loads Matrix-style grid data
 %   Loads the files in either the upward or downward direction, to create "grid". 
 %   Only one of upward or downward should be used. This code can handle a partial grid
 % Parameters:
 %   folder: folder to data
-%   file: the filename of the data, including the extension
-%   average_forward_and_backward: boolean, whether or not to average the
-%   bias sweeps, or save them separate
+%   gridFileName: the filename of the data, including the extension
+
 
 arguments
     folder                   {mustBeFolder}
     gridFileName             {mustBeText}
-    average_forward_and_backward = true
-    bias_direction = 'forward'
 end
 
 %output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
@@ -20,13 +17,15 @@ end
 %('=<VARn_value>') of variables that decide/affect how the function
 %processes data (e.g. order of fit, ...) 
 %Note convert all <VARn_value> to strings; 
-comment = sprintf("load_grid_Matrix(folder=%s, gridFileName=%s, average_forward_and_backward=%s, bias_direction=%s)|", folder, gridFileName, mat2str(average_forward_and_backward), bias_direction);
+comment = sprintf("load_grid_Matrix(filePath=%s, gridFileName=%s)|", folder, gridFileName);
 
-%here the regular function 'begins' with data processing
-%parse a FLAT-File and return its contents in a structure, and then transform the FLAT data into a matrix
+%regular function processing:
 
-flat = flat_parse([folder '/' gridFileName]);
-matrix = flat2matrix(flat); % this is a 4-d matrix: I, V, x, and y
+addpath(folder)
+flat = flat_parse(gridFileName);
+[matrix, header] = flat2matrix(flat); % this is a 4-d matrix: I, V, x, and y
+
+grid.header = header;
 
 Iraw = matrix{1}; % matrix is 4-dimensional
 Vraw = matrix{2};
@@ -44,9 +43,9 @@ else %only forward was done
     Itmp = Iraw;
 end
 
-%check if forward and backward scans in y were done
+%check if up and down scans were done
 if find(abs(diff(sign(diff(yraw))))) 
-    %forward and backward scans were done. Only keep forward copy of the y values
+    %up and down scans were done. Only keep forward copy of the y values
     grid.y_all = yraw(1:length(yraw)/2);
     I_dbl = Itmp(:,:,1:length(yraw)/2);    
 else %only forward was done
@@ -56,14 +55,11 @@ end
 
 %check if forward and backward bias scans were done
 if find(abs(diff(sign(diff(Vraw))))) 
-    %forward and backward bias scans were done. Only keep forward copy of bias values
+    %forward and backward bias scans were done
     NV = length(Vraw)/2; 
     grid.V = Vraw(1:NV);
-    grid.I_all = (I_dbl(1:NV,:,:)+flip(I_dbl(NV+1:2*NV,:,:),1))/2; 
-    if (~average_forward_and_backward) %if we want the sweeps separate
-        grid.I_Forward_all = I_dbl(1:NV,:,:);
-        grid.I_Backward_all = flip(I_dbl(NV+1:2*NV,:,:),1);
-    end
+    grid.I_all = I_dbl(1:NV,:,:);
+    grid.I_backward_all = flip(I_dbl(NV+1:2*NV,:,:),1);
 else %only forward was done
     grid.V = Vraw;
     grid.I_all = I_dbl;
@@ -71,11 +67,13 @@ end
 
 % This section is to remove NaN values from a partial grid. 
 
-%ratio = grid.reduced_topo_size/size(grid.y_img_all,1);
+%ratio = grid.reduced_topo_size/size(topo.y_all,1);
 %reduced_grid_size = ceil(ratio*size(grid.y_all,1));
-%grid.y = grid.y_all(1:reduced_grid_size,1);
+%grid.y = grid.y_all(1:reduced_grid_size,1);k
 %grid.I = grid.I_all(:,:,1:reduced_grid_size);
 %grid.I_Forward = grid.I_Forward_all(:,:,1:reduced_grid_size);
 %grid.I_Backward = grid.I_Backward_all(:,:,1:reduced_grid_size);
+
+
 
 end

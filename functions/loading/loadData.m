@@ -28,12 +28,12 @@ end
 switch fileExt
     case '.Z_flat'
         %load matrix topo
-        disp("<name>.Z_flat files are not supported yet. Work in progress! No data was loaded");
-        commentC = "<name>.Z_flat files are not supported yet. Work in progress! No data was loaded";
+        [topo, commentC] = load_topo_Matrix(filePath, fullFileName);
+        data.(fieldName) = topo;
     case '.I(V)_flat'
         %load matrix grid
-        disp("<name>.I(V)_flat files are not supported yet. Work in progress! No data was loaded");
-        commentC = "<name>.I(V)_flat files are not supported yet. Work in progress! No data was loaded";
+        [grid, commentC] = load_grid_Matrix(filePath, fullFileName);
+        data.(fieldName) = grid;
     case '.3ds'
         %load 3ds file -> Nanonis grid
         [grid, commentC] = load_grid_Nanonis(filePath,fullFileName);
