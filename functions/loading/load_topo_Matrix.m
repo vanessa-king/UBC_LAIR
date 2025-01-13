@@ -1,4 +1,4 @@
-function [topo, comment] = load_topo_Matrix(folder,topoFileName)
+function topo = load_topo_Matrix(folder,topoFileName)
 %Wrapper function for loading topos from Matrix (.Z_flat)
 %   Based on the old function 'topoLoadData.m'.
 %   Uses flat_parse and flat2matrix functions, processes the data into a structure 
@@ -14,21 +14,14 @@ arguments
     topoFileName    {mustBeText}
 end
 
-%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
-%Never plot data (e.g. the whole gird) in the comment, only plot the values
-%('=<VARn_value>') of variables that decide/affect how the function
-%processes data (e.g. order of fit, ...) 
-%Note convert all <VARn_value> to strings; 
-comment = sprintf("load_topo_Matrix(folder=%s, topoFileName=%s)|", folder, topoFileName);
-
 %regular function processing:
 
 addpath(folder);
 flat = flat_parse(topoFileName);
-[matrix, header] = flat2matrix(flat); 
+topo.header = rmfield(flat,'phys_data'); %define header as everything but the data
+[matrix, matrix_header] = flat2matrix(flat); 
+topo.header.matrix_header = matrix_header; %add header defined in flat2matrix
 rmpath(folder);
-
-topo.header = header;
 
 % treatment of image data, by converting matrices into nanometers
 % xraw and yraw are converted here as a clunky way of plotting in nm

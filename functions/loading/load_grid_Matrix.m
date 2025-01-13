@@ -1,4 +1,4 @@
-function [grid,comment] = load_grid_Matrix(folder, gridFileName)
+function [grid, grid_topo,comment] = load_grid_Matrix(folder, gridFileName)
 % Description: loads Matrix-style grid data
 %   Loads the files in either the upward or downward direction, to create "grid". 
 %   Only one of upward or downward should be used. This code can handle a partial grid
@@ -12,20 +12,14 @@ arguments
     gridFileName             {mustBeText}
 end
 
-%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
-%Never plot data (e.g. the whole grid) in the comment, only plot the values
-%('=<VARn_value>') of variables that decide/affect how the function
-%processes data (e.g. order of fit, ...) 
-%Note convert all <VARn_value> to strings; 
-comment = sprintf("load_grid_Matrix(filePath=%s, gridFileName=%s)|", folder, gridFileName);
-
 %regular function processing:
 
 addpath(folder)
 flat = flat_parse(gridFileName);
-[matrix, header] = flat2matrix(flat); % this is a 4-d matrix: I, V, x, and y
-
-grid.header = header;
+grid.header = rmfield(flat, 'phys_data'); %define header as everything but the data
+[matrix, matrix_header] = flat2matrix(flat); % this is a 4-d matrix: I, V, x, and y
+grid.header.matrix_header = matrix_header; %add header defined in flat2matrix
+rmpath(folder);
 
 Iraw = matrix{1}; % matrix is 4-dimensional
 Vraw = matrix{2};
@@ -74,6 +68,13 @@ end
 %grid.I_Forward = grid.I_Forward_all(:,:,1:reduced_grid_size);
 %grid.I_Backward = grid.I_Backward_all(:,:,1:reduced_grid_size);
 
-
+%%% Corresponding Topo
+%select data via UI
+[filePath, fileName, fileExt] = selectData();
+topoFileName = strcat(fileName, fileExt);
+%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
+comment = sprintf("load_grid_Matrix(folder=%s, topoFileName=%s)|", filePath, topoFileName);
+%Now, load the corresponding topo
+grid_topo = load_topo_Matrix(filePath, topoFileName);
 
 end

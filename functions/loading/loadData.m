@@ -1,4 +1,4 @@
-function [data, commentA, commentB, commentC, commentD] = loadData(data)
+function [data, commentA, commentB, commentC, logC] = loadData(data)
 %Load STM data from UI selected file of variable formats (.3ds, .sxm,) 
 %   Select data file using the UI. Basen on the file extension the 
 %   appropriate specific loading function for that dataype is chosen. 
@@ -11,6 +11,9 @@ function [data, commentA, commentB, commentC, commentD] = loadData(data)
 arguments
     data        
 end
+
+logC = 0; %default is not to use commentC
+commentC = ''; %default is not to use commentC
 
 %select data via UI
 [filePath, fileName, fileExt] = selectData();
@@ -28,19 +31,21 @@ end
 switch fileExt
     case '.Z_flat'
         %load matrix topo
-        [topo, commentC] = load_topo_Matrix(filePath, fullFileName);
+        topo = load_topo_Matrix(filePath, fullFileName);
         data.(fieldName) = topo;
     case '.I(V)_flat'
         %load matrix grid
-        [grid, commentC] = load_grid_Matrix(filePath, fullFileName);
+        [grid, grid_topo, commentC] = load_grid_Matrix(filePath, fullFileName);
         data.(fieldName) = grid;
+        data.(strcat(fieldName,'_topo')) = grid_topo;
+        logC = 1;
     case '.3ds'
         %load 3ds file -> Nanonis grid
-        [grid, commentC] = load_grid_Nanonis(filePath,fullFileName);
+        grid = load_grid_Nanonis(filePath,fullFileName);
         data.(fieldName) = grid;
     case '.sxm'
-        %load smx file -> Nanonis topo
-        [topo, commentC] = load_topo_Nanonis(filePath, fullFileName);
+        %load sxm file -> Nanonis topo
+        topo = load_topo_Nanonis(filePath, fullFileName);
         data.(fieldName)= topo;
     case '.dat'
         %load dat file -> Nanonis point spectrum
@@ -59,6 +64,8 @@ commentA = sprintf("[data.%s, ...] = loadData(data); Selected data: <path>/<file
 
 %log selected file
 commentB = sprintf("%s/%s", filePath, fullFileName);
+
+
 
 
 end
