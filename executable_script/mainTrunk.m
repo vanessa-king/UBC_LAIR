@@ -366,7 +366,7 @@ clearvars dataset variableIn1 variableOut1
 
 %presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
-variableIn1 = 'I_smoothed'; % specify the variable to be processed, e.g. I, or I_backward
+variableIn1 = 'I'; % specify the variable to be processed, e.g. I, or I_backward
                             % this is a 3d array form (x, y, V)
 variableIn2 = 'V';          % specify the variable to be processed, e.g. V or Z
                             % this is a 1d array form (V, 1)
@@ -629,47 +629,52 @@ end
 % Clear preset variables
 clearvars dataset variableIn1 variableIn2 variableIn3 savefigpath plot_name_1 plot_name_2 LayoutCase;
 %% VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
-% Edited by: M. Altthaler June 2024 ,Vanessa October 2023
+% Edited by: James Day January 2025, M. Altthaler June 2024, Vanessa October 2023
 % This section of the code opens a GUI that allows you to click
 % point(s) on a grid and plot the spectra
 %
 % NOTE: plots dIdV(V) curves. But requires matching V (V_redeuced) as voltage axis input.
 
-%presets:
-dataset ='grid';                %specify the dataset to be used: e.g. grid
-variableIn1 = 'dIdV';           %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
-variableIn2 = 'V_reduced';      %specify the variable to be processed as the V axis: e.g. V_reduced
-
-imageV = 0.6;                   %specify the voltage of the dIdV slice to be displayed [float]
-n=2;                            %Number of point spectra to be selected for the plot [integer]
-offset=0;                       %Vertical offset for each point spectra 
+% Presets:
+dataset = 'grid';                % specify the dataset to be used: e.g., grid
+variableIn1 = 'dIdV';            % specify the variable data(x, y, V) a V slice is taken from: e.g., didv
+variableIn2 = 'V_reduced';       % specify the variable to be processed as the V axis: e.g., V_reduced
+imageV = 0.25;                    % specify the voltage of the dI/dV slice to be displayed
+offset = 0;                      % vertical offset for each point spectrum
+n = 3;                           % number of points to be selected for the plot (can exit early by pressing Enter)
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%LOG data in/out:
-LOGcomment = sprintf("<dataset>.<variableIn1>: %s.%s; <dataset>.<variableIn2>: %s.%s; ",dataset ,variableIn1 ,dataset ,variableIn2);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment ,0);
+% LOG data in/out:
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s", dataset, variableIn1, variableIn2);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment, 0);
 
-%execute function FUNCTION OUTDATED???
-LOGcomment = gridClickForSpectrum(data.(dataset).(variableIn1), data.(dataset).(variableIn2), imageV, offset, n);
-%LOG function call
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment ,0);
+% Execute the `clickForSpectrum` function
+try
+    LOGcomment = clickForSpectrum(data.(dataset).(variableIn1), data.(dataset).(variableIn2), imageV, offset, n);
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+    
+    % Ask for the plot name and the folder to save it in
+    targetFolder = uigetdir([], 'Choose folder to save the figure to:');
+    plot_name = uniqueNamePrompt("clickedSpectrum", "", targetFolder);
+    
+    % LOG saved figure name and dir
+    LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_name);
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+    
+    % Save the created figure here
+    savefig(strcat(LOGpath, "/", plot_name, ".fig"));
+    
+    % Create a copy of the log corresponding to the saved figure
+    saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
 
-%ask for plotname and the folder it should be saved in:
-targetFolder = uigetdir([],'Choose folder to save the figure to:');
-plot_name = uniqueNamePrompt("clickedSpectrum","",targetFolder);
-%LOG saved figure name and dir
-LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_name);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-%save the created figures here:
-savefig(strcat(LOGpath,"/",plot_name,".fig"))
-
-%create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
-
-%clear excess variables that may create issues in other blocks
-clearvars dataset variableIn1 variableIn2 imageV n offset
-clearvars targetFolder plot_name
+    % Clear variables to avoid conflicts
+    clearvars dataset variableIn1 variableIn2 imageV n offset targetFolder plot_name
+catch ME
+    % Handle unexpected errors gracefully
+    disp("An error occurred during point selection or spectrum plotting:");
+    disp(ME.message);
+    disp("Plots will not be saved.");
+end
 %% VS03A Visualize-Spectrum-03-A; circular masking;
 
 % Edited by Jiabin May 2024; Jisun Oct 2023, again in Feb 2024, again in Dec 2024.
