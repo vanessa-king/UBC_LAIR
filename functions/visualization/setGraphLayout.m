@@ -62,5 +62,4 @@ switch LayoutCase
         axis image
         axis xy;
 
-
 end

@@ -341,12 +341,12 @@ variableIn1 = 'dIdV';                   % the variable that you want to average.
                                         % If you want to average dIdV, you need to run PD01A or PD01B first. 
                                         % Also you can input dIdV_forward or dIdV_backward to get average 
                                         % of foward or backward only average dIdV.
-variableIn2 = 'circular_mask_StepEdge3';  % Mask to apply to data
+variableIn2 = 'circular_mask_StepEdge2';  % Mask to apply to data
                                         % No mask: 'None'
 
-variableOut1 = 'dIdV_StepEdge3';                % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
+variableOut1 = 'dIdV_StepEdge2';                % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
                                         % or avg_dIdV_fwd or avg_dIdV_bwd
-variableOut2 = 'dIdV_StepEdge3_STD';               % standard deviation
+variableOut2 = 'dIdV_StepEdge1_STD';               % standard deviation
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Log input and output variables
@@ -702,10 +702,10 @@ radius = 3;                 % radius R: the size of the circular mask
 %optional variable inputs
 variableIn2 = 'V_reduced';  % this is neccesary when varialbleIn1 is a 3D data.
                             % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
-imageV = -2.15;                % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
+imageV = -1.95;                % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
                             % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
 
-variableOut1 = 'circular_mask_StepEdge3';              % return the function of excuation
+variableOut1 = 'circular_mask_BL4';              % return the function of excuation
 variableOut2 = 'num_in_mask';
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -817,7 +817,7 @@ variableIn2 = 'V_reduced';    %specify the variable to be processed as the V axi
 % variableOut1 = 'Biases';              % return the function of excuation
 
 % Ask the user to enter the bias of interest
-bias_of_interest = [-2.15];       %specify the bias voltage (or list of voltages) to select slice, within the range of `variableIn2`
+bias_of_interest = [-1.95];       %specify the bias voltage (or list of voltages) to select slice, within the range of `variableIn2`
 
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
