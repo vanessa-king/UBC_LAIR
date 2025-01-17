@@ -31,7 +31,7 @@ function [masks, masks_combined, comment] = maskDirectional(data, varargin)
 if ndims(data) == 3
     % Display 3D dataset
     fprintf('3D dataset detected. Please select a slice for mask creation.\n');
-    d3gridDisplay(data, 'dynamic');
+    gridSliceViewer(data, 1,'dynamic');
     
     % Prompt user for slice selection
     slice_idx = input('Enter the slice number to use: ');
