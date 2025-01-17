@@ -1,4 +1,4 @@
-function [mask,comment,startPoint, endPoint, polcoord] = gridMaskLineSegment(topo,pointA, pointB, polcoord)
+function [mask,comment,startPoint, endPoint, polcoord] = gridMaskLineSegment(topo,pointA, pointB, polcoord, connected)
 %Returns a mask representing a line segment. 
 %   Creates a mask of matching size to the topo image. The line segment is 
 %   defined by the start and end point, or the start point and relative polar
@@ -12,14 +12,19 @@ function [mask,comment,startPoint, endPoint, polcoord] = gridMaskLineSegment(top
 %   pointA      [x1,y1] absolute Carthesian coordinate of start point (optional)
 %   pointB      [x2,y2] absolute Carthesian coordinate of end point (optional)
 %   polcoord    [r,theta] polar coordinate of end point relative to start point, theta is in degrees (optional)
+%   connected   logical flag to ensure side connectivity (optional, default false)
 
 %Output
 %   mask        mask of selected area
+%   startPoint  [x1,y1] absolute Carthesian coordinate of start point
+%   endPoint    [x2,y2] absolute Carthesian coordinate of end point
+%   polcoord    [r,theta] polar coordinate of end point relative to start point, theta is in degrees
 %   comment     log comment
 
 %   Nov. 2023   Jiabin Y., 
 %   edited Dec. 2023 Markus Altthaler
 %   edited Oct. 2024   Dong Chen
+%   edited Nov. 2024   Dong Chen
 
 
 %  add an argument validation
@@ -28,9 +33,8 @@ arguments
     pointA      {mustBeNumeric, mustBePositive}=[]
     pointB      {mustBeNumeric, mustBePositive}=[]
     polcoord    {mustBeNumeric, mustBePositive}=[]
+    connected   logical = false
 end
-
-
 
 if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
     % define line via user input points/values
@@ -47,8 +51,8 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
 
         % Display an topo image 
         figure()
-        p1=image(topo,'CDataMapping','scaled'); 
-        axis square
+        p1=image(permute(topo, [2,1,3]),'CDataMapping','scaled'); 
+        axis xy
         hold on
 
         selectedTwoPoints=ginputAllPlatform(2);
@@ -65,16 +69,23 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
         % calculate the polar angle based on the start and end point. 
         v=endPoint-startPoint;
         u=[1 0];
-        polcoord=acos(dot(v,u)/norm(v));
-    
+        r = norm(v);  % Calculate radius (length of the vector)
+        theta = rad2deg(acos(dot(v,u)/norm(v)));  % Convert angle to degrees
+
+        % Check if we need to adjust the angle based on y-component
+        if v(2) < 0
+            theta = 360 - theta;  % Adjust for points below the x-axis
+        end
+
+        polcoord = [r, theta];  % Store both radius and angle
+
         comment = sprintf('gridMaskLineSegment(topo: %d x %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], endpoint[%d,%d];', size(topo, 1), size(topo, 2), startPoint(1), startPoint(2), endPoint(1), endPoint(2));
     else
         % click on topo once, and input r and theta
 
         % theta=0; % horizontal line
         figure()
-        p1=image(topo,'CDataMapping','scaled'); 
-        axis square
+        p1=image(permute(topo, [2,1,3]),'CDataMapping','scaled'); 
         hold on
 
         % define the start point
@@ -160,7 +171,15 @@ if isempty(pointA) && isempty(pointB)  && isempty(polcoord)
         % calculate the polar angle based on the start and end point. 
         v=endPoint-startPoint;
         u=[1 0];
-        polcoord=acos(dot(v,u)/norm(v));
+        r = norm(v);  % Calculate radius (length of the vector)
+        theta = rad2deg(acos(dot(v,u)/norm(v)));  % Convert angle to degrees
+
+        % Check if we need to adjust the angle based on y-component
+        if v(2) < 0
+            theta = 360 - theta;  % Adjust for points below the x-axis
+        end
+
+        polcoord = [r, theta];  % Store both radius and angle
 
         comment = sprintf('gridMaskLineSegment(topo: %d x %d, point1=[],point2=[], polcoord=[]), startpoint=[%d,%d], r=%d, theta=%d;', size(topo, 1), size(topo, 2), startPoint(1), startPoint(2), radius, angle);
     end
@@ -186,8 +205,16 @@ elseif (~isempty(pointA) && ~isempty(pointB)) || (~isempty(pointA) && ~isempty(p
         % calculate the polar angle based on the start and end point. 
         v=endPoint-startPoint;
         u=[1 0];
-        polcoord=acos(dot(v,u)/norm(v));
-        
+        r = norm(v);  % Calculate radius (length of the vector)
+        theta = rad2deg(acos(dot(v,u)/norm(v)));  % Convert angle to degrees
+
+        % Check if we need to adjust the angle based on y-component
+        if v(2) < 0
+            theta = 360 - theta;  % Adjust for points below the x-axis
+        end
+
+        polcoord = [r, theta];  % Store both radius and angle
+
         comment = sprintf('gridMaskLineSegment(topo: %d x %d, point1=[%d,%d],point2=[%d,%d], polcoord=[])', size(topo, 1), size(topo, 2), pointA(1), pointA(2), pointB(1), pointB(2));
     else 
         % use arguments point1 and polcoord
@@ -207,8 +234,16 @@ elseif (~isempty(pointA) && ~isempty(pointB)) || (~isempty(pointA) && ~isempty(p
         % calculate the polar angle based on the start and end point. 
         v=endPoint-startPoint;
         u=[1 0];
-        polcoord=acos(dot(v,u)/norm(v));
-        
+        r = norm(v);  % Calculate radius (length of the vector)
+        theta = rad2deg(acos(dot(v,u)/norm(v)));  % Convert angle to degrees
+
+        % Check if we need to adjust the angle based on y-component
+        if v(2) < 0
+            theta = 360 - theta;  % Adjust for points below the x-axis
+        end
+
+        polcoord = [r, theta];  % Store both radius and angle
+
         comment = sprintf('gridMaskLineSegment(topo: %d x %d, point1=[%d,%d],point2=[], polcoord=[%d,%d])', size(topo, 1), size(topo, 2), pointA(1), pointA(2), polcoord(1), polcoord(2));
     end
 else
@@ -216,10 +251,12 @@ else
 
 end
 
-%actually creating the mask; note: the returned lower level comment is 
-%omitted as the log comments that the function returns are assigned above
-%based on the use case
-[mask,~] =createLineSegmentMask(size(topo), startPoint,endPoint);
+%actually creating the mask
+if connected
+    [mask] = createLineSegmentMask_connected(size(topo), startPoint, endPoint);
+else
+    [mask,~] = createLineSegmentMask(size(topo), startPoint, endPoint);
+end
 mask = logical(mask); %set datatype
 
 

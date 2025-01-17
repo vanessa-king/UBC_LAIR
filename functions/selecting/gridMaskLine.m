@@ -1,4 +1,4 @@
-function [mask, comment, BoundaryPoint1, BoundaryPoint2, polcoord] = gridMaskLine(topo, pointA, pointB, polcoord)
+function [mask, comment, BoundaryPoint1, BoundaryPoint2, polcoord] = gridMaskLine(topo, pointA, pointB, polcoord, connected)
 %Returns a mask representing a line. 
 %   Creates a mask of matching size to the topo image. The line is defined
 %   by two points or relative polar coordinates. If the optional parameters
@@ -11,6 +11,7 @@ function [mask, comment, BoundaryPoint1, BoundaryPoint2, polcoord] = gridMaskLin
 %   pointA      [x1,y1] absolute Carthesian coordinate of point 1 (optional)
 %   pointB      [x2,y2] absolute Carthesian coordinate of point 2 (optional)
 %   polcoord    [theta] angle of the line, theta is in degrees (optional)
+%   connected   logical flag to ensure side connectivity (optional, default false)
 
 %Output
 %   mask        mask of selected area
@@ -26,6 +27,7 @@ arguments
     pointA      {mustBeNumeric, mustBePositive}=[]
     pointB      {mustBeNumeric, mustBePositive}=[]
     polcoord    {mustBeNumeric}=[]
+    connected   logical = false
 end
 
 [~,comment,startPoint,endPoint,polcoord]=gridMaskLineSegment(topo,pointA,pointB,polcoord);
@@ -68,6 +70,10 @@ BoundaryPoint2=[round(BoundaryPoints_x(2)),round(BoundaryPoints_y(2))];
 line([BoundaryPoint1(1),BoundaryPoint2(1)],[BoundaryPoint1(2),BoundaryPoint2(2)],'Color','red','linewidth', 1.5);
 
 % make the mask 
-[mask,~] =createLineSegmentMask(size(topo), BoundaryPoint1, BoundaryPoint2);
+if connected
+    [mask] = createLineSegmentMask_connected(size(topo), BoundaryPoint1, BoundaryPoint2);
+else
+    [mask,~] = createLineSegmentMask(size(topo), BoundaryPoint1, BoundaryPoint2);
+end
 mask = logical(mask); %set datatype
 end
