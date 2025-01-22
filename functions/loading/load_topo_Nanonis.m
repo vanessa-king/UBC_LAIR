@@ -1,5 +1,6 @@
-function [topo, comment] = load_topo_Nanonis(folder, topoFileName)
+function topo = load_topo_Nanonis(folder, topoFileName)
 %Wrapper function for loading topos from Nanonis
+%   V.K. - 2024
 %   Uses the Nanonis-made loadsxm.m function, processes the data into a structure 
 %   Known possible channels: 'Z', 'Current', and 'LI_D1_X_1_omega'.
 %   One extra channel of unknown name will be saved as 'other_channel'.
@@ -17,13 +18,6 @@ arguments
     folder          {mustBeText}
     topoFileName    {mustBeText}
 end
-
-%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
-%Never plot data (e.g. the whole gird) in the comment, only plot the values
-%('=<VARn_value>') of variables that decide/affect how the function
-%processes data (e.g. order of fit, ...) 
-%Note convert all <VARn_value> to strings; 
-comment = sprintf("load_topo_Nanonis(folder=%s, topoFileName=%s)|", folder, topoFileName);
 
 %regular function processing:
 

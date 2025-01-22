@@ -1,4 +1,4 @@
-function [grid, comment] = load_grid_Nanonis(folder,gridFileName)
+function grid = load_grid_Nanonis(folder,gridFileName)
 %Wrapper function for loading grids from Nanonis
 %   Uses the Nanonis-made load3ds.m function, processes the data into a structure 
 % Input: 
@@ -12,13 +12,6 @@ arguments
     folder          {mustBeText}
     gridFileName    {mustBeText}
 end
-
-%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
-%Never plot data (e.g. the whole gird) in the comment, only plot the values
-%('=<VARn_value>') of variables that decide/affect how the function
-%processes data (e.g. order of fit, ...) 
-%Note convert all <VARn_value> to strings; 
-comment = sprintf("load_grid_Nanonis(folder=%s, gridFileName=%s)|", folder, gridFileName);
 
 %regular function processing:
 

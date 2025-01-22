@@ -1,5 +1,6 @@
-function [data,labels,units,s]=flat2matrix(flat)
+function [data, header]=flat2matrix(flat)
 %FLAT2MATRIX Transform FLAT data into a matrix
+%   Edited by Vanessa, Jan 2025
 %   [DATA, LABELS, UNITS, S] = FLAT2MATRIX(FLAT) transforms the N
 %   dimensional FLAT data into a matrix and creates axis vectors for a flat
 %   structure. 
@@ -71,6 +72,7 @@ end
        
 %return data, labels and units...
 data={phys_data, axis_tics{:}};
-labels={flat.channel_name, axis_name{:}};
-units={flat.channel_unit, axis_unit_name{:}};
+header.labels={flat.channel_name, axis_name{:}};
+header.units={flat.channel_unit, axis_unit_name{:}};
+header.size=s;
     

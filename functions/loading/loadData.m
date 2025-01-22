@@ -1,4 +1,4 @@
-function [data, commentA, commentB, commentC, commentD] = loadData(data)
+function [data, commentA, commentB, commentC, logC] = loadData(data)
 %Load STM data from UI selected file of variable formats (.3ds, .sxm,) 
 %   Select data file using the UI. Basen on the file extension the 
 %   appropriate specific loading function for that dataype is chosen. 
@@ -8,11 +8,14 @@ function [data, commentA, commentB, commentC, commentD] = loadData(data)
 %   Requires the toplevel data struct variable to be parsed. In this case 
 %   the function adds the field data.<name> to it. 
 
-% M. Altthaler 2024; V. King 2024
+% M. Altthaler 2024; V. King 2025
 
 arguments
     data        
 end
+
+logC = 0; %default is to not use commentC
+commentC = ""; %default is to not use commentC
 
 %select data via UI
 [filePath, fileName, fileExt] = selectData();
@@ -30,19 +33,21 @@ end
 switch fileExt
     case '.Z_flat'
         %load matrix topo
-        disp("<name>.Z_flat files are not supported yet. Work in progress! No data was loaded");
-        commentC = "<name>.Z_flat files are not supported yet. Work in progress! No data was loaded";
+        topo = load_topo_Matrix(filePath, fullFileName);
+        data.(fieldName) = topo;
     case '.I(V)_flat'
         %load matrix grid
-        disp("<name>.I(V)_flat files are not supported yet. Work in progress! No data was loaded");
-        commentC = "<name>.I(V)_flat files are not supported yet. Work in progress! No data was loaded";
+        [grid, grid_topo, commentC] = load_grid_Matrix(filePath, fullFileName);
+        data.(fieldName) = grid;
+        data.(strcat(fieldName,'_topo')) = grid_topo;
+        logC = 1;
     case '.3ds'
         %load 3ds file -> Nanonis grid
-        [grid, commentC] = load_grid_Nanonis(filePath,fullFileName);
+        grid = load_grid_Nanonis(filePath,fullFileName);
         data.(fieldName) = grid;
     case '.sxm'
-        %load smx file -> Nanonis topo
-        [topo, commentC] = load_topo_Nanonis(filePath, fullFileName);
+        %load sxm file -> Nanonis topo
+        topo = load_topo_Nanonis(filePath, fullFileName);
         data.(fieldName)= topo;
     case '.dat'
         %load dat file -> Nanonis point spectrum
