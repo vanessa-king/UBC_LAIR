@@ -72,8 +72,8 @@
     % R-LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
     % LI01B Load-Initialize-01-B; Initialize log file, UI select path and name
     % LD01A Load-Data-01-A; Load data (grid, topo, ...) via UI file selection
-    % R-LG01A Load-Grid-01-A; load grid 
-    % R-LG01B Load-Grid-01-B; load grid and topo from Nanonis
+    % LG01A Load-Grid-01-A; load grid 
+    % LG01B Load-Grid-01-B; load grid and topo from Nanonis
     % LS02A Load-Spectra-01-A; load grid and topo from Nanonis
     % SW01A Save-Workspace-01A; Save the current workspace
     % LW01A Load-Workspace-01A; Loads a saved workspace from a .mat file
@@ -132,14 +132,28 @@ data = {};
 % data.<name>.z     --> topo (z) data from a .sxm file
 
 
-[data, commentA, commentB, commentC, logC] = loadData(data);
+[data, commentA, commentB, commentC] = loadData(data);
 
 %log use of block, and the specific data and field name assigned
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LD01A", commentA, 0);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentB, 0);
-if logC ==1
-    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentC, 0);
-end
+%LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentC, 0);
+
+%% LG01A Load-Grid-01-A; load grid 
+% This section of code loads the files called above (grid_number and img_number)
+
+avg_forward_and_backward = false;
+[grid,LOGcomment] = gridLoadDataUpward(folder,stamp_project,img_number,grid_number,avg_forward_and_backward); % Taking data Upward
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01A", LOGcomment ,0);
+
+%% LG01B Load-Grid-01-B; load grid and topo from Nanonis
+%Edited by Vanessa summer 2023
+% This section of code loads the files called above if they are Nanonis,
+
+topoDirection='forward';
+avg_forward_and_backward = true;
+[grid,LOGcomment] = pythonDataToGrid(folder, stamp_project, grid_number, img_number, topoDirection);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01B", LOGcomment ,0);
 
 %% LS02A Load-Spectra-01-A; load grid and topo from Nanonis
 %Edited by Dong Nov 2023
