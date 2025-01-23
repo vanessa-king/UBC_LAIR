@@ -169,12 +169,14 @@ data = {};
 % data.<name>.z     --> topo (z) data from a .sxm file
 
 
-[data, commentA, commentB, commentC] = loadData(data);
+[data, commentA, commentB, commentC, logC] = loadData(data);
 
 %log use of block, and the specific data and field name assigned
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LD01A", commentA, 0);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentB, 0);
-%LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentC, 0);
+if logC ==1
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentC, 0);
+end
 
 %% LG01A Load-Grid-01-A; load grid 
 % This section of code loads the files called above (grid_number and img_number)
