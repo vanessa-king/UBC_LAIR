@@ -7,11 +7,11 @@
 % 1. Block Identifier Format
 %    Each block must have a unique 5-character identifier of the form: ABXXZ
 %       - A:   Category of the block:
-%              L = Loading (e.g., reading/importing data)
-%              P = Processing (e.g., data transformation, filtering)
-%              V = Visualizing (e.g., plotting/generating figures)
-%              S = Selecting (e.g making a mask or a vail)
-%              S = Saving (e.g., saving workspace)
+%              L = Loading (e.g. reading/importing data)
+%              P = Processing (e.g. data transformation, filtering)
+%              V = Visualizing (e.g. plotting/generating figures)
+%              S = Selecting (e.g. making a mask or a veil)
+%              S = Saving (e.g. saving workspace)
 %       - B:   Subcategory of the block, based on the task being performed:
 %              Examples (based on block list as of Oct 2024): 
 %               A = Averaging
@@ -46,7 +46,7 @@
 %    first call logs the block identifier (ABXXZ). Subsequent logs use the symbol "  ^  ".
 
 % 4. Saving Figures or Data
-%    If a block generates output (e.g., figures), use uniqueNamePrompt() to assign a default name.
+%    If a block generates output (e.g. figures), use uniqueNamePrompt() to assign a default name.
 %       - This function allows the user to change the default name.
 %       - If a file of the same name already exists, a 3-digit running number is appended.
 %    
@@ -69,16 +69,13 @@
 % tracking of each block’s function calls, parameters, and saved outputs.
 %% Block List
 %Loading
-    % LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
     % LI01B Load-Initialize-01-B; Initialize log file, UI select path and name
     % LD01A Load-Data-01-A; Load data (grid, topo, ...) via UI file selection
-    % LG01A Load-Grid-01-A; load grid 
-    % LG01B Load-Grid-01-B; load grid and topo from Nanonis
     % LS02A Load-Spectra-01-A; load grid and topo from Nanonis
     % SW01A Save-Workspace-01A; Save the current workspace
     % LW01A Load-Workspace-01A; Loads a saved workspace from a .mat file
 %Selecting
-    % SM01A Select-Mask-directional-01-A; select a directional mask(with/without binning)
+    % SM01A Select-Mask-directional-01-A; select a directional mask (with/without binning)
 %Processing    
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
     % PA02A Processing-Averaging-Mask-02-A; average I-V or dI/dV according to a mask
@@ -92,44 +89,10 @@
     % VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
     % VS03A Visualize-Spectrum-03-A; circular masking
     % VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
-
-
-%% LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
-%   Edited by Markus, August 2023
-
-% This section of code specifies the data paths, and files to be  
-% analyzed. The log file is initialized based on the given values. 
-
-% Potentially to be merged with (2) if grid load upwards is updated
-% accordingly, to use uigetfile/uigetdir intrinsically. 
-
-% use the pathApp (to be found on the LAIR Git) to add directories of your 
-% data and scripts to the MATLAB path. 
-
-% load all necessary script directories
-folder = uigetdir();
-
-% stamp_project is the filename leader and takes the form 'yyyymmdd-XXXXXX_CaPt--STM_Spectroscopy--';
-stamp_project = '20210308-124244_CaPt--STM_Spectroscopy--'; 
-
-% set the grid I(V) file number
-grid_number = '108_1';
-
-% set the z-file (aka topo) image number
-img_number = '54_1'; 
-
-% set the dat file (aka spec) number
-spec_number = '100'; 
-
-%set LOGfolder and LOGfile 
-%*must not be changed during an iteration of data processing!
-%*can be set automatically, e.g. when choosing
-%only one topo file with uigetfile it automatically appends '_LOGfile' to the
-%fiel name given.
-LOGpath = folder;
-LOGfile = strcat(stamp_project,"_grdNr_",grid_number,"_imgNr_",img_number,"_PpS_");
-LOGcomment = "Initializing log file";
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01A", LOGcomment, 1);
+%Retired
+    % R-LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
+    % R-LG01A Load-Grid-01-A; load grid 
+    % R-LG01B Load-Grid-01-B; load grid and topo from Nanonis
 
 %% LI01B Load-Initialize-01-B; Initialize log file, UI select path and name
 %   Edited by M. Altthaler, April 2024
@@ -137,8 +100,8 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LI01A", LOGcomment, 1);
 % This section of code specifies the <paths> and <name> of the LOG file. 
 % Subsequently the <path>\<name>_LOGfile.txt is initialized with this information. 
  
-%select LOGpath and LOGfile
-%choose to run the function with argument 0 or 1!
+% select LOGpath and LOGfile
+% choose to run the function with argument 0 or 1!
 % 0: UI to choose <paths> and an input prompt for the log file <name>
 % 1: UI to select a file, the file <name> and <paths> set the log file 
 % Note: _LOGfile.txt will be appended to the chosen name!
@@ -171,42 +134,26 @@ data = {};
 
 [data, commentA, commentB, commentC, logC] = loadData(data);
 
-%log use of block, and the specific data and field name assigned
+% log use of block, and the specific data and field name assigned
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LD01A", commentA, 0);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentB, 0);
 if logC ==1
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentC, 0);
 end
 
-%% LG01A Load-Grid-01-A; load grid 
-% This section of code loads the files called above (grid_number and img_number)
-
-avg_forward_and_backward = false;
-[grid,LOGcomment] = gridLoadDataUpward(folder,stamp_project,img_number,grid_number,avg_forward_and_backward); % Taking data Upward
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01A", LOGcomment ,0);
-
-%% LG01B Load-Grid-01-B; load grid and topo from Nanonis
-%Edited by Vanessa summer 2023
-% This section of code loads the files called above if they are Nanonis,
-
-topoDirection='forward';
-avg_forward_and_backward = true;
-[grid,LOGcomment] = pythonDataToGrid(folder, stamp_project, grid_number, img_number, topoDirection);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LG01B", LOGcomment ,0);
-
 %% LS02A Load-Spectra-01-A; load grid and topo from Nanonis
-%Edited by Dong Nov 2023
+% Edited by Dong Nov 2023
 % This section of code loads the spectra.
 
 [header, data, channels, LOGcomment] = specLoad(folder,stamp_project,spec_number);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LS02A", LOGcomment ,0);
 
 %% SW01A Save-Workspace-01A; Save the current workspace
-%Edited: M. Altthaler July,2024;
-%This block saves the current work space (all assigend variable) to a file 
-%and saves a copy of the LOGfile with it. 
-%By default these are saved in the LOGpath and the name is set to the 
-%LOGfile name with the date (format: '_DD-MMM-YYY_hh-mm-ss') appended. 
+% Edited: M. Altthaler July,2024;
+% This block saves the current work space (all assigned variables) to a file 
+% and saves a copy of the LOGfile with it. 
+% By default these are saved in the LOGpath and the name is set to the 
+% LOGfile name with the date (format: '_DD-MMM-YYY_hh-mm-ss') appended. 
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -231,14 +178,14 @@ saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, fileName);
 
 clear targetFolder fileName
 %% LW01A Load-Workspace-01A; Loads a saved workspace from a .mat file 
-%Edited: M. Altthaler July,2024;
-%This block loads a work space (all assigend variable) from a 
+% Edited: M. Altthaler July,2024;
+% This block loads a work space (all assigned variables) from a 
 % <dir>/<fileName>.mat file. The corresponding copy of the original LOGfile 
 % <dir>/<fileName>_LOGfile.txt (automatically created when saving a 
 % workspace with block SW01A) is required in the same folder to load a 
 % workspace! 
 % If a workspace is 'imported' from another device and the original LOGpath
-% directory does not exist, the user is aked to reassign it via GUI. 
+% directory does not exist, the user is asked to reassign it via GUI. 
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 cont = input("Loading a workspace clears your current workspace! Do you want to continue? Y/N [Y]:","s");
@@ -450,7 +397,7 @@ variableIn1 = 'I_smoothed'; % Specify the variable to be processed, e.g. I, I_Fo
                             % This is a 3d array form (x, y, V).
 variableIn2 = 'V';          % Specify the variable to be processed, e.g. V or Z.
                             % This is a 1d array form (V, 1).
-C = 3E-10;                  % This is a neumetic value to deal with the diverging value at V=0 while normalizing.
+C = 3E-10;                  % This is a pneumetic value to deal with the diverging value at V=0 while normalizing.
 savefigpath = '';           % This is to define the folder where the created figure to be saved. If you choose '' then 
                             % it will pop up a window for a user to select the folder to save the figure. Or you can
                             % just directly put a path here: e.g. savefigpat = LOGpath. This must be string.
@@ -562,8 +509,8 @@ clearvars n plot
 clearvars plotname
 
 %% PT01A Processing-Threshold-01-A; Gets threshold from the height distribution of topo;
-%Edited by Rysa Greenwood Nov 2023, Rysa July 2024
-% This section of code makes a mask based on user defined z threshold
+% Edited by Rysa Greenwood Nov 2023, Rysa July 2024
+% This block makes a mask based on user defined z threshold
 
 %presets:
 dataset = 'topo'; %specify the dataset to be used
@@ -600,7 +547,7 @@ clear plot_name
 % This section of code generates a 2D image of data using the specified layout format.
 % The layout can be 'gridsliceImage' or 'topoImage'. The image will be saved to a specified folder.
 
-%Dong Chen 2024/??; M. Altthaler 2024/12
+%Dong Chen 2024; M. Altthaler 2024/12
 
 % Presets:
 LayoutCase = 'topoImage';   % specify the layout format: 'gridsliceImage' or 'topoImage'
@@ -640,7 +587,6 @@ clearvars LayoutCase dataset variableIn savefigpath plot_name
 % Edited by Jisun Kim Oct 2023, again in Feb 2024, Dong Chen June 2024, Jisun Kim July and Dec 2024
 % This section of code plots average I versus V or average dI/dV versus V.
 % You have an option to plot forward I (or dIdV) and backward I (or dIdV) separately but together in one plot.
-% NOTE: IF I DON'T RUN PD01A or PD01B, THIS SECTION DOESN'T RECOGNIZE V_reduced or dIdV
 
 % Presets
 % Define dataset and input/output variables here
@@ -743,7 +689,7 @@ variableIn2 = 'V_reduced';  % this is neccesary when varialbleIn1 is a 3D data.
 imageV = 0.15;                % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
                             % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
 
-variableOut1 = 'circular_mask';              % return the function of excuation
+variableOut1 = 'circular_mask';              % return the function of execution
 variableOut2 = 'num_in_mask';
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -797,7 +743,7 @@ variableIn2 = 'V_reduced';  % this is neccesary when varialbleIn1 is a 3D data.
                             % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
 imageV = 0.15;                % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
                             % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
-variableOut1 = 'rectangular_mask';              % return the function of excuation
+variableOut1 = 'rectangular_mask';              % return the function of execution
 variableOut2 = 'Num_in_mask';
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -852,7 +798,7 @@ variableIn1 = 'dIdV';         %specify the variable data(x,y,V) a V slice is tak
 variableIn2 = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
 
 
-% variableOut1 = 'Biases';              % return the function of excuation
+% variableOut1 = 'Biases';              % return the function of execution
 
 % Ask the user to enter the bias of interest
 bias_of_interest = [-2,0.5,1.5];       %specify the bias voltage (or list of voltages) to select slice, within the range of `variableIn2`
@@ -874,7 +820,7 @@ plot_name = uniqueNamePrompt(defaultname, "",targetFolder);
 % excute the function
 [plot_names,~,LOGcomment] = gridPlotSlices(data.(dataset).(variableIn1),  data.(dataset).(variableIn2), bias_of_interest, plot_name);
 
-% log the function of excuation 
+% log the function of execution 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 for plt = 1:length(plot_names)

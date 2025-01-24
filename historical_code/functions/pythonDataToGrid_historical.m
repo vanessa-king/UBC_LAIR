@@ -12,7 +12,7 @@
 %        'forward' or 'backward'
 % Output:grid = 1x1 structure containing x,y,I,V,x_img,y_img,z_img
 
-function [grid, comment] = pythonDataToGrid(folder, stamp_project, grid_number, img_number, topoDirection)
+function [grid, comment] = pythonDataToGrid_historical(folder, stamp_project, grid_number, img_number, topoDirection)
 
 arguments
     folder          {mustBeText}
