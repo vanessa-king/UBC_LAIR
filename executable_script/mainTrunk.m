@@ -75,6 +75,9 @@
     % SW01A Save-Workspace-01A; Save the current workspace
     % LW01A Load-Workspace-01A; Loads a saved workspace from a .mat file
 %Selecting
+    % SL01A Selecting-Logic-01-A; logic AND for two masks
+    % SL02A Selecting-Logic-02-A; logic OR for two masks
+    % SI01A Selecting-Invert-01-A; invert mask (or veil)
     % SM01A Select-Mask-directional-01-A; select a directional mask (with/without binning)
 %Processing    
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
@@ -261,6 +264,78 @@ else  % n, N, and all other inputs
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LW01A", LOGcomment, 0);
 end
 clear cont tempFile filePath fileName ext fullFileName savedLOGfileName restoredLOG
+
+%% SL01A Selecting-Logic-01-A; logic AND for two masks
+% Edited by M. Altthaler 01/2025
+
+% This block applies AND logic to two masks of equal size and returns 
+% the result as a mask. (AND-mask is true where both masks are true) 
+
+%presets:
+dataset = 'grid';           % specify the dataset to be used: e.g. grid
+variableIn1 = 'maskA';      % specify the 1st mask 
+variableIn2 = 'maskB';      % specify the 2nd mask
+variableOut = 'ANDmask';    % specify the name of the returned mask
+
+%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%LOG data in/out:
+LOGcomment = sprintf("DataIn: data.%s.%s, data.%s.%s; dataOut: data.%s.%s", dataset, variableIn1, dataset, variableIn2, dataset, variableOut);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SL01A", LOGcomment, 0);
+
+%function execution 
+[data.(dataset).(variableOut), LOGcomment] = logicANDmask(data.(dataset).(variableIn1),data.(dataset).(variableIn2));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+% Clear preset variables
+clearvars dataset variableIn1 variableIn2 variableOut
+
+%% SL02A Selecting-Logic-02-A; logic OR for two masks
+% Edited by M. Altthaler 01/2025
+
+% This block applies OR logic to two masks of equal size and returns 
+% the result as a mask. (OR-mask is true where at leat one of the masks is true) 
+
+%presets:
+dataset = 'grid';           % specify the dataset to be used: e.g. grid
+variableIn1 = 'maskA';      % specify the 1st mask 
+variableIn2 = 'maskB';      % specify the 2nd mask
+variableOut = 'ORmask';    % specify the name of the returned mask
+
+%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%LOG data in/out:
+LOGcomment = sprintf("DataIn: data.%s.%s, data.%s.%s; dataOut: data.%s.%s", dataset, variableIn1, dataset, variableIn2, dataset, variableOut);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SL02A", LOGcomment, 0);
+
+%function execution 
+[data.(dataset).(variableOut), LOGcomment] = logicORmask(data.(dataset).(variableIn1),data.(dataset).(variableIn2));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+% Clear preset variables
+clearvars dataset variableIn1 variableIn2 variableOut
+
+%% SI01A Selecting-Invert-01-A; invert mask (or veil) 
+% Edited by M. Altthaler 01/2025
+
+% This block inverts a mask (or veil), i.e. 0->1, 1->0 (0.9->0.1, 0.8->0.2, ...)
+% Normalizes the mask (or veil) to [0, 1].
+% Note: works like 'mask = ~mask' with logging for logical masks. 
+
+%presets:
+dataset = 'grid';               % specify the dataset to be used: e.g. grid
+variableIn1 = 'maskA';           % specify the mask 
+variableOut = 'invertedMask';   % specify the name of the returned mask
+
+%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%LOG data in/out:
+LOGcomment = sprintf("DataIn: data.%s.%s dataOut: data.%s.%s", dataset, variableIn1, dataset, variableOut);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SI01A", LOGcomment, 0);
+
+%function execution 
+[data.(dataset).(variableOut), LOGcomment] = invertMask(data.(dataset).(variableIn1));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+% Clear preset variables
+clearvars dataset variableIn1 variableOut
 
 %% SM01A Selecting-Mask-directional-01-A; creates directional masks for data analysis
 % Edited by Dong Chen in Dec 2024

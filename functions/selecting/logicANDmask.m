@@ -15,7 +15,7 @@ comment = "logicANDmask(maskA,maskB)";
 
 if ismatrix(maskA) && ismatrix(maskB) && size(maskA,1) == size(maskB,1) && size(maskA,2) == size(maskB,2)
     mask = logical(maskA).*logical(maskB);
-    mask = logical(mask); %convert to logical datatype
+    mask = logical(mask); %convert to logical datatype 
 end
 
 end
