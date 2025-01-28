@@ -11,7 +11,7 @@ arguments
     maskB   {mustBeNumericOrLogical,mustBeNonnegative}
 end
 
-comment = "logicANDmask(maskA,maskB)";
+comment = "logicORmask(maskA,maskB)";
 
 if ismatrix(maskA) && ismatrix(maskB) && size(maskA,1) == size(maskB,1) && size(maskA,2) == size(maskB,2)
     mask = logical(maskA+maskB); %all non zero elements are converted to 1's 
