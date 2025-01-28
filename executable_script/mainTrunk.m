@@ -428,8 +428,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA02A", LOGcomment, 0);
 
 % Main code execution section
 
-% This makes the averaged "I versus V" plot
-%[~, data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment]= avgXYmask(data.(dataset).(variableIn1), data.(dataset).(variableIn2));
+% Function call
 if isempty(variableIn2)
     [~, data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = avgXYmask(data.(dataset).(variableIn1), variableIn2);
 
