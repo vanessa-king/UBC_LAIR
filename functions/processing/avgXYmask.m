@@ -17,11 +17,12 @@ function [data_masked, avg_out, STD_out, comment] = avgXYmask(data, mask, return
 %   STD_out         standard veviation corresponding to avg_out
 %   comment         for logging the function call
 
-%   Nov. 2023 - Markus Altthaler, June 2024 - M. Altthaler;  edited M. Altthaler 2024/12
+%   Nov. 2023 - Markus Altthaler, June 2024 - M. Altthaler;  edited M.
+%   Altthaler 2024/12; Rysa Jan 2025
 
 arguments
     data
-    mask            = ones(size(data, [1,2]))
+    mask            
     returnNaNbool   = 0
 end
 
