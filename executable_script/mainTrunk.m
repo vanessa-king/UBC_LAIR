@@ -411,23 +411,33 @@ clearvars dataset variableIn variableOut span
 % Presets
 % Define dataset and input/output variables here
 dataset = 'grid';               % specify the dataset to be used: e.g., grid
-variableIn1 = 'I_smoothed';     % the variable that you want to average. e.g. I_forward, I_backward
+variableIn1 = 'dIdV';     % the variable that you want to average. e.g. I_forward, I_backward
                                 % If you want to average dIdV, you need to run PD01A or PD01B first. 
                                 % Also you can input dIdV_forward or dIdV_backward to get average 
                                 % of foward or backward only average dIdV.
-variableOut1 = 'avg_IV';        % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
+variableIn2 = '';  %Mask to apply to data. If none variableIn2 = '';
+variableOut1 = 'avg_dIdV';        % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
                                 % or avg_dIdV_fwd or avg_dIdV_bwd
 
+variableOut2 = 'dIdV_STD';      %standard deviation
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Log input and output variables
-LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s; DataOut: variableOut1 = %s", ...
-    dataset, variableIn1, variableOut1);
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s; DataOut: variableOut1 = %s, variableOut2 = %s", ...
+    dataset, variableIn1, variableIn2, variableOut1, variableOut2);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA02A", LOGcomment, 0);
 
 % Main code execution section
 
-% This makes the averaged "I versus V" plot
-[~, data.(dataset).(variableOut1), ~, LOGcomment] = avgXYmask(data.(dataset).(variableIn1));
+% Function call
+if isempty(variableIn2)
+    [~, data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = avgXYmask(data.(dataset).(variableIn1), variableIn2);
+
+
+else
+    [~, data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment]...
+        = avgXYmask(data.(dataset).(variableIn1), data.(dataset).(variableIn2));
+
+end
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % Clear preset variables
@@ -761,7 +771,7 @@ radius = 3;                 % radius R: the size of the circular mask
 %optional variable inputs
 variableIn2 = 'V_reduced';  % this is neccesary when varialbleIn1 is a 3D data.
                             % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
-imageV = 0.15;                % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
+imageV = -0.85;                % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
                             % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
 
 variableOut1 = 'circular_mask';              % return the function of execution
