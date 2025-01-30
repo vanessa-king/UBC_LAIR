@@ -22,7 +22,7 @@ function [data_masked, avg_out, STD_out, comment] = avgXYmask(data, mask, return
 
 arguments
     data
-    mask            
+    mask            = ones(size(data, [1,2]))
     returnNaNbool   = 0
 end
 
