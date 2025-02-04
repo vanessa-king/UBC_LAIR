@@ -801,7 +801,7 @@ saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
 % clear excess variables
 clearvars dataset variableIn1 variableIn2
 clearvars bias_of_interest targetFolder plot_name defaultname
-%% VT02A Visualize Topograph(2D-Image); 2D Image Plotting
+%% VT02A Visualize-Topo-02-A; 2D Image Plotting (topography or grid slice)
 % Edited by Dong Chen Sep 2024.
 % This section of code generates a 2D image of data using the specified layout format.
 % The layout can be 'gridsliceImage' or 'topoImage'. The image will be saved to a specified folder.
