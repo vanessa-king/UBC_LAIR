@@ -714,17 +714,26 @@ clearvars dataset variableIn1 variableIn2 variableIn3 savefigpath plot_name_1 pl
 %% VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
 % Edited by: James Day January 2025, M. Altthaler June 2024, Vanessa October 2023
 % This section of the code opens a GUI that allows you to click
-% point(s) on a grid and plot the spectra
+% point(s) on a grid and plot the spectra.
 %
-% NOTE: plots dIdV(V) curves. But requires matching V (V_redeuced) as voltage axis input.
+% NOTE: Plots dIdV(V) curves. Requires matching V (V_reduced) as voltage axis input.
 
 % Presets:
-dataset = 'grid';                % specify the dataset to be used: e.g., grid
-variableIn1 = 'dIdV';            % specify the variable data(x, y, V) a V slice is taken from: e.g., didv
-variableIn2 = 'V_reduced';       % specify the variable to be processed as the V axis: e.g., V_reduced
-imageV = 0.25;                    % specify the voltage of the dI/dV slice to be displayed
-offset = 0;                      % vertical offset for each point spectrum
-n = 3;                           % number of points to be selected for the plot (can exit early by pressing Enter)
+dataset = 'grid';                % Specify the dataset to be used: e.g., grid
+variableIn1 = 'dIdV';            % Specify the variable data(x, y, V) a V slice is taken from: e.g., didv
+variableIn2 = 'V_reduced';       % Specify the variable to be processed as the V axis: e.g., V_reduced
+imageV = 0.4;                   % Specify the voltage of the dI/dV slice to be displayed
+offset = 0;                      % Vertical offset for each point spectrum
+n = 4;                           % Number of points to be selected for the plot (ignored if pointsList is provided)
+pointsList = [];                 % Set to [] for interactive clicking, or define a matrix for predefined points.
+
+% Define a pointsList (optional):
+% If you want to supply a list of points rather than clicking on the grid, uncomment the following lines and define your points:
+% pointsList = [
+%    13, 41;  % First point
+%    25, 25;  % Second point
+%    75, 36;   % Third point
+% ];
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % LOG data in/out:
@@ -733,25 +742,32 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS02A", LOGcomment, 0);
 
 % Execute the `clickForSpectrum` function
 try
-    LOGcomment = clickForSpectrum(data.(dataset).(variableIn1), data.(dataset).(variableIn2), imageV, offset, n);
+    % Check if pointsList is empty or predefined
+    if isempty(pointsList)
+        % Interactive clicking (default behavior)
+        LOGcomment = clickForSpectrum(data.(dataset).(variableIn1), data.(dataset).(variableIn2), imageV, offset, n);
+    else
+        % Use predefined pointsList
+        LOGcomment = clickForSpectrum(data.(dataset).(variableIn1), data.(dataset).(variableIn2), imageV, offset, size(pointsList, 1), pointsList);
+    end
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
-    
+
     % Ask for the plot name and the folder to save it in
     targetFolder = uigetdir([], 'Choose folder to save the figure to:');
     plot_name = uniqueNamePrompt("clickedSpectrum", "", targetFolder);
-    
+
     % LOG saved figure name and dir
     LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_name);
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
-    
+
     % Save the created figure here
     savefig(strcat(LOGpath, "/", plot_name, ".fig"));
-    
+
     % Create a copy of the log corresponding to the saved figure
     saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
 
     % Clear variables to avoid conflicts
-    clearvars dataset variableIn1 variableIn2 imageV n offset targetFolder plot_name
+    clearvars dataset variableIn1 variableIn2 imageV n offset pointsList targetFolder plot_name
 catch ME
     % Handle unexpected errors gracefully
     disp("An error occurred during point selection or spectrum plotting:");
