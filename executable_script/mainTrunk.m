@@ -78,7 +78,9 @@
     % SL01A Selecting-Logic-01-A; logic AND for two masks
     % SL02A Selecting-Logic-02-A; logic OR for two masks
     % SI01A Selecting-Invert-01-A; invert mask (or veil)
-    % SM01A Select-Mask-directional-01-A; select a directional mask (with/without binning)
+    % SM01A Selecting-Mask-01-A; select a directional mask (with/without binning)
+    % SM02A Selecting-Mask-02-A; circular masking
+    % SM03A Selecting-Mask-03-A; rectangular masking
 %Processing    
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
     % PA02A Processing-Averaging-Mask-02-A; average I-V or dI/dV according to a mask
@@ -88,14 +90,19 @@
     % PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
     % PT01A Processing-Threshold-01-A; Gets threshold from the height distribution of topo;
 %Visualizing
+    % VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias
+    % VT02A Visualize-Topo-02-A; 2D Image Plotting (topography or grid slice)
     % VS01A Visualize-Spectrum-01-A; plot average I-V or dI/dV
     % VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
-    % VS03A Visualize-Spectrum-03-A; circular masking
-    % VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias and saves it
+    % VS04A Visualize-Spectra-04-A: Unified Plotting of I/V and dI/dV Profiles
+    % VG01A Visualize-Grid-01-A: gridslice viewer for all grids (including the non-square one)
 %Retired
     % R-LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
     % R-LG01A Load-Grid-01-A; load grid 
     % R-LG01B Load-Grid-01-B; load grid and topo from Nanonis
+    % R-PT02A Processing-Transforming-01-A: Transforms Flat-Style Matrix Data to Nanonis Array-Style
+    % R-VS03A Visualize-Spectrum-03-A; circular masking;
+    % R-VS03B Visualize-Spectrum-03-B; rectangular masking;
 
 %% LI01B Load-Initialize-01-B; Initialize log file, UI select path and name
 %   Edited by M. Altthaler, April 2024
@@ -337,7 +344,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 % Clear preset variables
 clearvars dataset variableIn1 variableOut
 
-%% SM01A Selecting-Mask-directional-01-A; creates directional masks for data analysis
+%% SM01A Selecting-Mask-01-A; creates directional masks for data analysis
 % Edited by Dong Chen in Dec 2024
 %
 % This section creates masks along a user-defined direction with specified width
@@ -382,6 +389,116 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % Clean up variables
 clearvars dataset variableIn variableOut connected startPoint endPoint bin_size bin_sep inputData slice_idx 
+%% SM02A Selecting-Mask-02-A; circular masking
+
+% Edited by Jiabin May 2024; Jisun Oct 2023, again in Feb 2024, again in Dec 2024.
+% This section of code creates a circular mask of radius R around a clicked point. 
+% It then plots the average dI/dV on that point. The user may toggle R and energy slice.
+
+%presets:
+dataset ='grid';            % specify the dataset to be used: e.g. grid
+variableIn1 = 'dIdV';       % specify the data (2D or 3D) to use to create the mask
+radius = 3;                 % radius R: the size of the circular mask
+%optional variable inputs
+variableIn2 = 'V_reduced';  % this is neccesary when varialbleIn1 is a 3D data.
+                            % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
+imageV = -0.85;                % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
+                            % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
+
+variableOut1 = 'circular_mask';              % return the function of execution
+variableOut2 = 'num_in_mask';
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% LOG data in/out
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; radius = %s; variableIn2 = %s; imageV = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1, num2str(radius), variableIn2, num2str(imageV), variableOut1, variableOut2);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM02A", LOGcomment ,0);
+
+if isempty(variableIn2) || isempty(imageV)
+    % excute the function
+    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPoint(data.(dataset).(variableIn1), radius);
+
+else
+    % excute the function
+    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPoint(data.(dataset).(variableIn1), radius, data.(dataset).(variableIn2), imageV);
+
+end
+
+% log the function of excuation 
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
+% Ask for dir of saving `figure` and the name 
+targetFolder = uigetdir([],'Choose folder to save the figure to:');
+plot_name = uniqueNamePrompt("circular mask","",targetFolder);
+
+% LOG dir/plotname.fig
+LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_name);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+    
+% save the figures
+savefig(strcat(targetFolder,"/",plot_name,".fig"));
+
+% function: SaveUsedBlocks
+saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, strcat(plot_name));
+
+% clear excess variables
+clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2
+clearvars imageV radius targetFolder plot_name
+
+%% SM03A Selecting-Mask-03-A; rectangular masking
+% Edited by Jisun Dec 2024
+% This section of code creates a rectangular mask. The user clicks two points that define 
+% a single rectangle (presumably, opposite corners). 
+% It then plots the average dI/dV of the selected area.
+
+%presets:
+dataset ='grid';              %specify the dataset to be used: e.g. grid
+variableIn1 = 'dIdV';         % specify the data (2D or 3D) to use to create the mask
+%optional variable inputs
+variableIn2 = 'V_reduced';  % this is neccesary when varialbleIn1 is a 3D data.
+                            % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
+imageV = 0.15;                % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
+                            % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
+variableOut1 = 'rectangular_mask';              % return the function of execution
+variableOut2 = 'Num_in_mask';
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% LOG data in/out
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1, variableIn2, num2str(imageV), variableOut1, variableOut2);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM03A", LOGcomment ,0);
+
+if isempty(variableIn2) || isempty(imageV)
+    % excute the function
+    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskRectangle(data.(dataset).(variableIn1));
+
+else
+    % excute the function
+    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskRectangle(data.(dataset).(variableIn1), data.(dataset).(variableIn2), imageV);
+
+end
+
+% log the function of excuation 
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
+% Ask for dir of saving `figure` and the name 
+targetFolder = uigetdir([],'Choose folder to save the figure to:');
+plot_name = uniqueNamePrompt("rectangular mask","",targetFolder);
+
+% LOG dir/plotname.fig
+LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_name);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+    
+% save the figures
+savefig(strcat(targetFolder,"/",plot_name,".fig"));
+
+% function: SaveUsedBlocks
+saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, strcat(plot_name));
+
+% clear excess variables
+clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2
+clearvars imageV targetFolder plot_name
+
 %% PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
 %Edited by M. Altthaler April 2024; James October 2023; Jisun October 2023
 
@@ -627,7 +744,64 @@ clearvars dataset variableIn variableOut
 clearvars n plot
 clear plot_name
 
-%% VT02A Visualize Topograph(2D-Image); 2D Image Plotting;
+%% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias 
+
+% Edited by James October 2023, Jiabin July 2024, Rysa Sept 2024
+% This section visualizes a slice of dI/dV data at a user-defined bias. 
+% Features:
+% 1. Prompt the user for the bias of interest.
+% 2. Generate and save the slice plot with appropriate naming.
+% 3. Log actions using provided log blocks.
+
+
+%presets:
+dataset ='grid';              %specify the dataset to be used: e.g. grid
+variableIn1 = 'dIdV';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+variableIn2 = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
+
+
+% variableOut1 = 'Biases';              % return the function of execution
+
+% Ask the user to enter the bias of interest
+bias_of_interest = [-2,0.5,1.5];       %specify the bias voltage (or list of voltages) to select slice, within the range of `variableIn2`
+
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% LOG data in/out
+
+LOGcomment = sprintf ("dataset = %s; variableIn1 = %s; variableIn2 = %s; bias_of_interest = %s", dataset, variableIn1, variableIn2, bias_of_interest);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT01A", LOGcomment ,0);
+
+
+% Ask for dir of saving `figure` and the name 
+targetFolder = uigetdir([],'Choose folder to save the figure to:');
+defaultname = sprintf("bias_slice");
+plot_name = uniqueNamePrompt(defaultname, "",targetFolder);
+
+% excute the function
+[plot_names,~,LOGcomment] = gridPlotSlices(data.(dataset).(variableIn1),  data.(dataset).(variableIn2), bias_of_interest, plot_name);
+
+% log the function of execution 
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
+for plt = 1:length(plot_names)
+    % LOG dir/plotname.fig
+    LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_names{plt});
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
+    % save the figures
+    savefig(strcat(targetFolder,"/",plot_names{plt},".fig"));
+
+end
+
+% function: SaveUsedBlocks
+saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
+
+% clear excess variables
+clearvars dataset variableIn1 variableIn2
+clearvars bias_of_interest targetFolder plot_name defaultname
+%% VT02A Visualize Topograph(2D-Image); 2D Image Plotting
 % Edited by Dong Chen Sep 2024.
 % This section of code generates a 2D image of data using the specified layout format.
 % The layout can be 'gridsliceImage' or 'topoImage'. The image will be saved to a specified folder.
@@ -774,203 +948,7 @@ catch ME
     disp(ME.message);
     disp("Plots will not be saved.");
 end
-%% VS03A Visualize-Spectrum-03-A; circular masking;
 
-% Edited by Jiabin May 2024; Jisun Oct 2023, again in Feb 2024, again in Dec 2024.
-% This section of code creates a circular mask of radius R around a clicked point. 
-% It then plots the average dI/dV on that point. The user may toggle R and energy slice.
-
-%presets:
-dataset ='grid';            % specify the dataset to be used: e.g. grid
-variableIn1 = 'dIdV';       % specify the data (2D or 3D) to use to create the mask
-radius = 3;                 % radius R: the size of the circular mask
-%optional variable inputs
-variableIn2 = 'V_reduced';  % this is neccesary when varialbleIn1 is a 3D data.
-                            % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
-imageV = -0.85;                % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
-                            % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
-
-variableOut1 = 'circular_mask';              % return the function of execution
-variableOut2 = 'num_in_mask';
-
-%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% LOG data in/out
-LOGcomment = sprintf("dataset = %s; variableIn1 = %s; radius = %s; variableIn2 = %s; imageV = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1, num2str(radius), variableIn2, num2str(imageV), variableOut1, variableOut2);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03A", LOGcomment ,0);
-
-if isempty(variableIn2) || isempty(imageV)
-    % excute the function
-    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPoint(data.(dataset).(variableIn1), radius);
-
-else
-    % excute the function
-    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPoint(data.(dataset).(variableIn1), radius, data.(dataset).(variableIn2), imageV);
-
-end
-
-% log the function of excuation 
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-% Ask for dir of saving `figure` and the name 
-targetFolder = uigetdir([],'Choose folder to save the figure to:');
-plot_name = uniqueNamePrompt("circular mask","",targetFolder);
-
-% LOG dir/plotname.fig
-LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_name);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-    
-% save the figures
-savefig(strcat(targetFolder,"/",plot_name,".fig"));
-
-% function: SaveUsedBlocks
-saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, strcat(plot_name));
-
-% clear excess variables
-clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2
-clearvars imageV radius targetFolder plot_name
-
-%% VS03B Visualize-Spectrum-03-B; rectangular masking;
-% Edited by Jisun Dec 2024
-% This section of code creates a rectangular mask. The user clicks two points that define 
-% a single rectangle (presumably, opposite corners). 
-% It then plots the average dI/dV of the selected area.
-
-%presets:
-dataset ='grid';              %specify the dataset to be used: e.g. grid
-variableIn1 = 'dIdV';         % specify the data (2D or 3D) to use to create the mask
-%optional variable inputs
-variableIn2 = 'V_reduced';  % this is neccesary when varialbleIn1 is a 3D data.
-                            % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
-imageV = 0.15;                % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
-                            % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
-variableOut1 = 'rectangular_mask';              % return the function of execution
-variableOut2 = 'Num_in_mask';
-
-%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% LOG data in/out
-LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1, variableIn2, num2str(imageV), variableOut1, variableOut2);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS03B", LOGcomment ,0);
-
-if isempty(variableIn2) || isempty(imageV)
-    % excute the function
-    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskRectangle(data.(dataset).(variableIn1));
-
-else
-    % excute the function
-    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskRectangle(data.(dataset).(variableIn1), data.(dataset).(variableIn2), imageV);
-
-end
-
-% log the function of excuation 
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-% Ask for dir of saving `figure` and the name 
-targetFolder = uigetdir([],'Choose folder to save the figure to:');
-plot_name = uniqueNamePrompt("rectangular mask","",targetFolder);
-
-% LOG dir/plotname.fig
-LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_name);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-    
-% save the figures
-savefig(strcat(targetFolder,"/",plot_name,".fig"));
-
-% function: SaveUsedBlocks
-saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, strcat(plot_name));
-
-% clear excess variables
-clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2
-clearvars imageV targetFolder plot_name
-%% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias 
-
-% Edited by James October 2023, Jiabin July 2024, Rysa Sept 2024
-% This section visualizes a slice of dI/dV data at a user-defined bias. 
-% Features:
-% 1. Prompt the user for the bias of interest.
-% 2. Generate and save the slice plot with appropriate naming.
-% 3. Log actions using provided log blocks.
-
-
-%presets:
-dataset ='grid';              %specify the dataset to be used: e.g. grid
-variableIn1 = 'dIdV';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
-variableIn2 = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
-
-
-% variableOut1 = 'Biases';              % return the function of execution
-
-% Ask the user to enter the bias of interest
-bias_of_interest = [-2,0.5,1.5];       %specify the bias voltage (or list of voltages) to select slice, within the range of `variableIn2`
-
-
-%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% LOG data in/out
-
-LOGcomment = sprintf ("dataset = %s; variableIn1 = %s; variableIn2 = %s; bias_of_interest = %s", dataset, variableIn1, variableIn2, bias_of_interest);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT01A", LOGcomment ,0);
-
-
-% Ask for dir of saving `figure` and the name 
-targetFolder = uigetdir([],'Choose folder to save the figure to:');
-defaultname = sprintf("bias_slice");
-plot_name = uniqueNamePrompt(defaultname, "",targetFolder);
-
-% excute the function
-[plot_names,~,LOGcomment] = gridPlotSlices(data.(dataset).(variableIn1),  data.(dataset).(variableIn2), bias_of_interest, plot_name);
-
-% log the function of execution 
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-for plt = 1:length(plot_names)
-    % LOG dir/plotname.fig
-    LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_names{plt});
-    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-    % save the figures
-    savefig(strcat(targetFolder,"/",plot_names{plt},".fig"));
-
-end
-
-% function: SaveUsedBlocks
-saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
-
-% clear excess variables
-clearvars dataset variableIn1 variableIn2
-clearvars bias_of_interest targetFolder plot_name defaultname
-%% PT02A Processing-Transforming-01-A: Transforms Flat-Style Matrix Data to Nanonis Array-Style
-% This script converts Matrix-style data, typically used in generic processing, to
-% the array-style format used by Nanonis systems, facilitating compatibility and further analysis.
-%
-% Edited by James December 2023; James May 2024
-
-% This section of code transforms the grid and dI/dV data, from Matrix format to Nanonis-style arrays.
-
-% Presets:
-dataset = 'grid';   % specify the dataset to be used; e.g, grid
-variableIn = 'didv';  % specify the variable to be processed; e.g., didv
-variableOut1 = 'IV_NanonisStyle'; % specify the variable to return the data to; e.g., Nanonis-style IV array
-variableOut2 = 'dIdV_NanonisStyle'; % specify the variable to return the data to; e.g., Nanonis-style dIdV array
-variableOut3 = 'avg_IV_NanonisStyle'; % specify the variable to return the data to; e.g., Nanonis-style averaged IV array
-variableOut4 = 'avg_dIdV_NanonisStyle'; % specify the variable to return the data to; e.g., Nanonis-style averaged dIdV array
-
-%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% LOG data in/out:
-LOGcomment = sprintf("DataIn: %s.%s; DataOut: %s.%s %s %s %s", dataset, variableIn, dataset, variableOut1, variableOut2, variableOut3, variableOut4);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PT02A", LOGcomment ,0);
-
-% Main code execution section
-% Transform Matrix-style data to Nanonis-style arrays
-[data.(dataset).(variableOut1), data.(dataset).(variableOut2), data.(dataset).(variableOut3), data.(dataset).(variableOut4), LOGcomment] = matrixToNanonis(data.(dataset), data.(dataset).(variableIn));
-
-% LOG data out:
-LOGcomment = strcat("Transform to Nanonis style data");
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
-
-% Clear preset variables
-clearvars dataset variableIn variableOut1 variableOut2 variableOut3 variableOut4;
 
 %% VS04A Visualize-Spectra-04-A: Unified Plotting of I/V and dI/dV Profiles
 % This script visualizes I/V and dI/dV profiles, automatically determining the layout for display.
@@ -1008,7 +986,7 @@ saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(figName));
 
 % Clear preset variables
 clearvars dataset variableIn1 variableIn2 variableIn3 figName step_size numx numy;
-%% VG01A gridslice viewer for all grids (including the non-square one)
+%% VG01A Visualize-Grid-01-A: gridslice viewer for all grids (including the non-square one)
 % Edited by Jiabin Nov 2024.
 % This section processes 3D dIdV data into image slices and visualizes the stack.
 
