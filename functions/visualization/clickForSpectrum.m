@@ -1,6 +1,6 @@
 function [comment] = clickForSpectrum(didv, V_reduced, imageV, offset, n, pointsList)
 % CLICKFORSPECTRUM Select points and plot spectra
-%Creates a GUI window where you can select a point(s), then it plots the spectra from that point(s). 
+% Creates a GUI window where you can select a point(s), then it plots the spectra from that point(s). 
 %   Plots a 2D slice of the didv data at the closest value of V_reduced to 
 %   the set value imageV. From this figure up to n points can be selected 
 %   by clicking on the 2D image. For the selected points the spectra didv(V) 
@@ -8,22 +8,14 @@ function [comment] = clickForSpectrum(didv, V_reduced, imageV, offset, n, points
 %
 % Edited: James Day Jan 2025; M. Altthaler 05/2024; Vanessa 2023
 %
-%   OPT TBD:    make function accept a list of point coordinates to be
-%               plotted. This feature is untested! (05/2024)
-%
 % Arguments:
-%   didv, V_reduced, imageV, offset, n, pointsList as before
+%   didv, V_reduced, imageV, offset, n, pointsList
 %
 % This function plots a 2D slice of the dI/dV data (didv) at a specified 
 % bias voltage (imageV). The user can select up to n points on this 2D 
 % slice, and for each selected point, the corresponding dI/dV spectrum is 
 % plotted. The function returns a log comment string containing the 
 % coordinates of the selected points.
-%
-% No code modifications have been made, only additional comments have been added.
-% The original commenting style and content are preserved as much as possible.
-% Additional comments are provided below in a similar style to clarify the 
-% functionality and flow of the code.
 %
 % Note: 
 % - The argument 'pointsList' can be used to provide predetermined points 
@@ -38,7 +30,7 @@ arguments
     V_reduced   {mustBeVector}           % Vector of reduced bias voltages
     imageV      {mustBeNumeric}          % Chosen bias voltage for slice display
     offset      {mustBeNumeric} = 0      % Vertical offset between spectra
-    n           {mustBePositive, mustBeInteger} = 2  % Number of points to select
+    n           {mustBePositive, mustBeInteger} = 2  % Number of points to select 
     pointsList  {mustBeNumeric} = []     % Optional predefined list of points (x,y)
 end
 
@@ -47,7 +39,7 @@ comment = sprintf("DataIn: dataset = grid, variableIn1 = dIdV, variableIn2 = V_r
 
 % Determine which slice of didv to plot by finding the closest voltage to imageV
 [~, imN] = min(abs(V_reduced - imageV)); 
-fig_plot = didv(:, :, imN);  % Extract the 2D slice at the chosen voltage
+fig_plot = didv(:, :, imN)';  % Extract and transpose the 2D slice at the chosen voltage
 
 % Create a new figure to display the 2D slice as an image
 fig_name = ['dI/dV slice at ', num2str(imageV), ' V'];
