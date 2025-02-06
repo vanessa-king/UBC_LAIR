@@ -51,8 +51,8 @@ switch fileExt
         data.(fieldName)= topo;
     case '.dat'
         %load dat file -> Nanonis point spectrum
-        disp("<name>.dat files are not supported yet. Work in progress! No data was loaded");
-        commentC = "<name>.dat files are not supported yet. Work in progress! No data was loaded";
+        spectrum = load_spectrum_Nanonis(filePath, fullFileName);
+        data.(fieldName)= spectrum;
     otherwise
         disp("No file of appropriate data type selected");
         commentC = "No file of appropriate data type selected";

@@ -1,4 +1,4 @@
-function [spectrum,comment] = load_spectrum_Nanonis(folder,spectrumFileName)
+function spectrum = load_spectrum_Nanonis(folder, spectrumFileName)
 %Wrapper load function for point spectrum '.dat' files
 %   Uses specLoad.m function, processes the data into a structure 
 % Input: 
@@ -6,19 +6,11 @@ function [spectrum,comment] = load_spectrum_Nanonis(folder,spectrumFileName)
 %   spectrumFileName: the filename, including the extension
 % Output: 
 %   spectrum: structure containing all the point spectrum associated data
-%   comment: string containing log comment
 
 arguments
     folder              {mustBeText}
     spectrumFileName    {mustBeText}
 end
-
-%output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
-%Never plot data (e.g. the whole gird) in the comment, only plot the values
-%('=<VARn_value>') of variables that decide/affect how the function
-%processes data (e.g. order of fit, ...) 
-%Note convert all <VARn_value> to strings; 
-comment = sprintf("load_spectrum_Nanonis(folder=%s, spectrumFileName=%s)|", folder, spectrumFileName);
 
 %regular function processing:
 
