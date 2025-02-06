@@ -40,7 +40,7 @@ comment = sprintf("gridPlotSlices(bias=%.5f)|", Biases);
         %creat a new plot name for each figure
         plot_names{k} = [plotname{1}, 'Biases', num2str(Biases(k))];
         clims = [0, 3E-11];   
-        imagesc(squeeze(I(:, :, temp_ind)), clims);
+        imagesc(squeeze(permute(I(:, :, temp_ind),[2, 1, 3])), clims); %permute to xyV  for plotting
         colorbar;
         colormap(cm_magma);
         axis image;
