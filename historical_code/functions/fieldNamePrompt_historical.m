@@ -1,4 +1,4 @@
-function [fieldName] = fieldNamePrompt(fieldNameIn)
+function [fieldName] = fieldNamePrompt_historical(fieldNameIn)
 %Prompts user to give a field name:
 %   Asks for user input to set the field name. The input can either be a
 %   prest name or a free input. Free inputs may only contain up to 64

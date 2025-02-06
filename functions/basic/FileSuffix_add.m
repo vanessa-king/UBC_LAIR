@@ -1,4 +1,4 @@
-function addSuffixToFiles(directory, suffix, includeSubfolders)
+function FileSuffix_add(directory, suffix, includeSubfolders)
 %addSuffixToFiles Adds a suffix to the names of files in a directory
 %   This function renames all files in the specified directory by adding a
 %   given suffix to their names while preserving their original extensions.

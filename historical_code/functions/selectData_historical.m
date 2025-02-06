@@ -1,4 +1,4 @@
-function [filePath,fileName,ext] = selectData()
+function [filePath,fileName,ext] = selectData_historical()
 %UI based selection of data file
 %   UI prompt to select data. The filePath, fileName, and it's extension 
 %   are returend. 

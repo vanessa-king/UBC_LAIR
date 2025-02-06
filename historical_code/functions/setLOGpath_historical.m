@@ -1,4 +1,4 @@
-function [LOGpath] = setLOGpath(inputPath, alterBool)
+function [LOGpath] = setLOGpath_historical(inputPath, alterBool)
 %Set LOGpath for logUsedBlocks() function
 %   sets the parsed inputPath as LOGpath unless an alternative path is
 %   desired by the user and set via the UI. The user prompt is surpressed 

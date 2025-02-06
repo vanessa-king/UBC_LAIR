@@ -1,4 +1,4 @@
-function removeSuffixFromFiles(directory, suffix, includeSubfolders)
+function FileSuffix_remove(directory, suffix, includeSubfolders)
 %removeSuffixFromFiles Removes a specified suffix from the names of files
 %   This function renames all files in the specified directory by removing
 %   a given suffix from their names while preserving their original extensions.

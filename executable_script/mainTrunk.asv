@@ -115,9 +115,6 @@
 % select LOGpath and LOGfile
 % UI to choose <paths> and an input prompt for the log file <name>
 % Note: _LOGfile.txt will be appended to the chosen name!
-
-%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 [LOGpath,LOGfile] = setLogFile();
 
 % Initialize LogFile 
@@ -129,6 +126,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % initialize empty data struct 
 data = {};
+
 
 %% LD01A Load-Data-01-A; Load data (grid, topo, ...) via UI file selection
 % Edited by M. Altthaler, April 2024
@@ -143,7 +141,6 @@ data = {};
 % data.<name>.I     --> I(V) data from a .3ds file 
 % data.<name>.z     --> topo (z) data from a .sxm file
 
-%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 [data, commentA, commentB, commentC, logC] = loadData(data);
 
