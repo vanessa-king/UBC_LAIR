@@ -9,7 +9,7 @@
     % topo: Outputs a single z matrix with the plane subtracted.
 
 
-    function [topo,comment] = topoPlaneSub(image,n,plot)
+    function [topo,comment] = topoPlaneSub_historical(image,n,plot)
 
 arguments 
 image

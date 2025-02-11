@@ -1,4 +1,4 @@
-function [mask, num_in_mask, comment] = gridMaskRectangle(data, cornerPoints)
+function [mask, num_in_mask, comment] = gridMaskRectangle_historical(data, cornerPoints)
 % This function create a rectangular mask 
 % Given 2 points, this function creates a rectangular mask in the area defined by the 2 points.   
 
