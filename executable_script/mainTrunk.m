@@ -81,6 +81,8 @@
     % SM01A Selecting-Mask-01-A; select a directional mask (with/without binning)
     % SM02A Selecting-Mask-02-A; circular masking
     % SM03A Selecting-Mask-03-A; rectangular masking
+    % place holder for threshold SM04A
+    % SM05A Selecting-Mask-03-A; polygon mask
 %Processing    
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
     % PA02A Processing-Averaging-Mask-02-A; average I-V or dI/dV according to a mask
@@ -111,11 +113,12 @@
 % Subsequently the <path>\<name>_LOGfile.txt is initialized with this information. 
  
 % select LOGpath and LOGfile
-% choose to run the function with argument 0 or 1!
-% 0: UI to choose <paths> and an input prompt for the log file <name>
-% 1: UI to select a file, the file <name> and <paths> set the log file 
+% UI to choose <paths> and an input prompt for the log file <name>
 % Note: _LOGfile.txt will be appended to the chosen name!
-[LOGpath,LOGfile] = setLogFile(0);
+
+%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+[LOGpath,LOGfile] = setLogFile();
 
 % Initialize LogFile 
 %initialize LOG file & log name and directory
@@ -126,7 +129,6 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % initialize empty data struct 
 data = {};
-
 
 %% LD01A Load-Data-01-A; Load data (grid, topo, ...) via UI file selection
 % Edited by M. Altthaler, April 2024
@@ -141,6 +143,7 @@ data = {};
 % data.<name>.I     --> I(V) data from a .3ds file 
 % data.<name>.z     --> topo (z) data from a .sxm file
 
+%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 [data, commentA, commentB, commentC, logC] = loadData(data);
 
@@ -499,6 +502,50 @@ saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, strcat(plot_name));
 clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2
 clearvars imageV targetFolder plot_name
 
+
+%% SM05A Selecting-Mask-03-A; polygon mask
+% Edited by M. Altthaler 2025/02
+% This section of code creates a polygon mask. The user defines a polygon 
+% by clicking to select an areas for the mask. 
+% It then plots the average dI/dV of the selected area.
+
+%presets:
+dataset ='topo';                %specify the dataset to be used: e.g. grid
+variableIn1 = 'z';           % specify the data (2D or 3D) to use to create the mask
+%optional variable inputs
+variableIn2 = 'V_reduced';      % this is neccesary when varialbleIn1 is a 3D data.
+                                % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
+imageV = [];                    % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
+                                % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
+positionsIn = [];               % list of points for the polygon in the format: [x1 y1; x2 y2; ...; xn yn]; 
+                                % Note: you can assign positionsIn = data.(dataset).polygonPoints; but you cannot assing 'polygonPoints' 
+
+% return variables: 
+variableOut1 = 'polygon_mask';  % polygon mask as defined by user / positionsIn  
+variableOut2 = 'polygonPoints'; % point list of (x,y)-coordinates definign the polygon  
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% LOG data in/out
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableOut1 = %s; variableOut2 = %s; imageV = %s; positionsIn = %s; ", dataset, variableIn1, variableIn2, variableOut1, variableOut2, num2str(imageV), mat2str(positionsIn));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM05A", LOGcomment ,0);
+
+if isempty(variableIn2) || isempty(imageV)
+    % excute the function
+    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPolygon(data.(dataset).(variableIn1),[],[],positionsIn);
+
+else
+    % excute the function
+    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskRectangle(data.(dataset).(variableIn1), data.(dataset).(variableIn2), positionsIn);
+
+end
+
+% log the function of excuation 
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
+% clear excess variables
+clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2 imageV positionsIn
+clearvars imageV targetFolder plot_name
 %% PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
 %Edited by M. Altthaler April 2024; James October 2023; Jisun October 2023
 

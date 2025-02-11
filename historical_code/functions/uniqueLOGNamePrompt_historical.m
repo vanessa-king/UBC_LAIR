@@ -1,4 +1,4 @@
-function [nameString] = uniqueLOGNamePrompt(filepath, defaultName)
+function [nameString] = uniqueLOGNamePrompt_historical(filepath, defaultName)
 %User prompt to specify a unique name for the LOG file and check if the file
 %already exists. In that case a running number is appended. 
 %   Returns a string containing a unique <name> for the log file. The <name> 
@@ -23,6 +23,8 @@ function [nameString] = uniqueLOGNamePrompt(filepath, defaultName)
 %                   input is given. If no name is parsed: <name>="Project"
 %
 %   M. Altthaler, April 2024
+
+%%%%%%%%%%%% NOTE: moved into setLogFile! %%%%%%%%%%%%%
 
 
 arguments
