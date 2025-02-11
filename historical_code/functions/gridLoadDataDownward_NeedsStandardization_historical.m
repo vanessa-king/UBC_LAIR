@@ -1,4 +1,4 @@
-function grd = gridLoadData_historical(fld,stamp_project,img_number,grd_number)
+function grd = gridLoadDataDownward_NeedsStandardization_historical(fld,stamp_project,img_number,grd_number)
 
 % file names
 Z_file = [stamp_project img_number '.Z_flat'];

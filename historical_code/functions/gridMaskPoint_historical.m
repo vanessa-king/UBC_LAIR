@@ -1,4 +1,4 @@
-function [mask, Num_in_mask, comment] = gridMaskPoint(didv, V_reduced, imageV, radius)
+function [mask, Num_in_mask, comment] = gridMaskPoint_historical(didv, V_reduced, imageV, radius)
 %Description: gridMaskPoint create a mask of radius R around the clicked point.
 % Note: this function logs the click position (x, y) corretly and the corresponding circular mask is created 
 % at the proper location. However, when you open the output "mask", it looks like the mask position
