@@ -517,7 +517,7 @@ plot_histograms = true; % true if you would like to see the intermediate histogr
 % log input variable
 %add log
 LOGcomment = sprintf("DataIn: dataset = %s, variableIn = %s; dataOut: variableOut = %s",dataset ,variableIn, variableOut);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PT01A", LOGcomment ,0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM04A", LOGcomment ,0);
 
 %function execution
 [data.(dataset).(variableOut), LOGcomment] = topoGetThreshold(data.(dataset).(variableIn), plot_histograms);
