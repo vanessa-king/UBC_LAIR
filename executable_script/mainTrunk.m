@@ -400,11 +400,11 @@ clearvars dataset variableIn variableOut connected startPoint endPoint bin_size 
 % It then plots the average dI/dV on that point. The user may toggle R and energy slice.
 
 %presets:
-dataset ='grid';            % specify the dataset to be used: e.g. grid
-variableIn1 = 'dIdV';       % specify the data (2D or 3D) to use to create the mask
-radius = 3;                 % radius R: the size of the circular mask
+dataset ='topo';            % specify the dataset to be used: e.g. grid
+variableIn1 = 'z';       % specify the data (2D or 3D) to use to create the mask
+radius = 100;                 % radius R: the size of the circular mask
 %optional variable inputs
-variableIn2 = 'V_reduced';  % this is neccesary when varialbleIn1 is a 3D data.
+variableIn2 = '';  % this is neccesary when varialbleIn1 is a 3D data.
                             % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
 imageV = -0.85;                % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
                             % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
@@ -456,10 +456,10 @@ clearvars imageV radius targetFolder plot_name
 % It then plots the average dI/dV of the selected area.
 
 %presets:
-dataset ='grid';              %specify the dataset to be used: e.g. grid
-variableIn1 = 'dIdV';         % specify the data (2D or 3D) to use to create the mask
+dataset ='topo';              %specify the dataset to be used: e.g. grid
+variableIn1 = 'z';         % specify the data (2D or 3D) to use to create the mask
 %optional variable inputs
-variableIn2 = 'V_reduced';  % this is neccesary when varialbleIn1 is a 3D data.
+variableIn2 = '';  % this is neccesary when varialbleIn1 is a 3D data.
                             % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
 imageV = 0.15;                % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
                             % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
@@ -762,16 +762,22 @@ dataset = 'topo'; %specify the dataset to be used
 variableIn1= 'x'; % (array) x axis
 variableIn2 = 'y'; % (array) y axis
 variableIn3 = 'z'; % (array) data
+variableIn4 = 'circular_mask'; % optional mask to fit plane to. If no mask desired then variableIn4=''
 n = 100; %integer: number of points to sample. Default 200
 plot = 1; %boolean: chose to plot the process or not (0: no plot, 1: plot)
 variableOut = 'z_flat'; % (array) flattened z data
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %log input variables
-LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s,  variableIn2 = %s; dataOut: variableOut = %s",dataset ,variableIn1 , variableIn2, variableIn3, variableOut);
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s,  variableIn3 = %s,  variableIn4 = %s; dataOut: variableOut = %s",dataset ,variableIn1 , variableIn2, variableIn3, variableIn4, variableOut);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PF01A", LOGcomment ,0);
+
 %function execution
-[data.(dataset).(variableOut), LOGcomment] = topoPlaneSub(data.(dataset).(variableIn1), data.(dataset).(variableIn2), data.(dataset).(variableIn3), n, plot); %need to fix function
+if isempty(variableIn4)
+    [data.(dataset).(variableOut), LOGcomment] = topoPlaneSub(data.(dataset).(variableIn1), data.(dataset).(variableIn2), data.(dataset).(variableIn3), '', n, plot);
+else
+    [data.(dataset).(variableOut), LOGcomment] = topoPlaneSub(data.(dataset).(variableIn1), data.(dataset).(variableIn2), data.(dataset).(variableIn3), data.(dataset).(variableIn4), n, plot);
+end
 %plot if desired and LOG data in/out:
 if plot
     %ask for plotname:
