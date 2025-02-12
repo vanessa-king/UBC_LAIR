@@ -82,7 +82,7 @@
     % SM02A Selecting-Mask-02-A; circular masking
     % SM03A Selecting-Mask-03-A; rectangular masking
     % SM04A Selecting-Mask-04-A; Masks using some height threshold of topo
-    % SM05A Selecting-Mask-03-A; polygon mask
+    % SM05A Selecting-Mask-05-A; polygon mask
 %Processing    
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
     % PA02A Processing-Averaging-Mask-02-A; average I-V or dI/dV according to a mask
@@ -503,7 +503,7 @@ saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, strcat(plot_name));
 clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2
 clearvars imageV targetFolder plot_name
 
-%% SM04A Processing-Threshold-01-A; Gets threshold from the height distribution of topo;
+%% SM04A Selecting-Mask-04-A; Masks using some height threshold of topo
 % Edited by Rysa Greenwood Nov 2023, Rysa July 2024
 % This block makes a mask based on user defined z threshold
 
