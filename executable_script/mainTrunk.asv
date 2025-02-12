@@ -81,7 +81,7 @@
     % SM01A Selecting-Mask-01-A; select a directional mask (with/without binning)
     % SM02A Selecting-Mask-02-A; circular masking
     % SM03A Selecting-Mask-03-A; rectangular masking
-    % SM04A Selecting-Mask-04-A; Masks using some height threshold of topo
+    % SM04A Selecting-Mask-04-A; Masks using some heig
     % SM05A Selecting-Mask-03-A; polygon mask
 %Processing    
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
@@ -503,39 +503,6 @@ saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, strcat(plot_name));
 clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2
 clearvars imageV targetFolder plot_name
 
-%% SM04A Processing-Threshold-01-A; Gets threshold from the height distribution of topo;
-% Edited by Rysa Greenwood Nov 2023, Rysa July 2024
-% This block makes a mask based on user defined z threshold
-
-%presets:
-dataset = 'topo'; %specify the dataset to be used
-variableIn = 'z_flat'; % (array) z data (z_flat if flattened data desired)
-variableOut = 'z_Threshold'; % (array)
-plot_histograms = true; % true if you would like to see the intermediate histogram of z to help choose your desired threshold value; false if not
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% log input variable
-%add log
-LOGcomment = sprintf("DataIn: dataset = %s, variableIn = %s; dataOut: variableOut = %s",dataset ,variableIn, variableOut);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PT01A", LOGcomment ,0);
-
-%function execution
-[data.(dataset).(variableOut), LOGcomment] = topoGetThreshold(data.(dataset).(variableIn), plot_histograms);
-
-%ask for plotname:
-plot_name = uniqueNamePrompt("TopoThresh","",LOGpath);
-LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-%save the created figures here:
-savefig(strcat(LOGpath,"/",plot_name,".fig"))
-%create copy of the log corresponding to the saved figures
-saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
-
-%clear variables
-clearvars dataset variableIn variableOut
-clearvars n plot
-clear plot_name
 
 %% SM05A Selecting-Mask-03-A; polygon mask
 % Edited by M. Altthaler 2025/02
@@ -791,6 +758,39 @@ clearvars dataset variableIn1 variableIn2 variableIn3 variableOut
 clearvars n plot
 clearvars plotname
 
+%% PT01A Processing-Threshold-01-A; Gets threshold from the height distribution of topo;
+% Edited by Rysa Greenwood Nov 2023, Rysa July 2024
+% This block makes a mask based on user defined z threshold
+
+%presets:
+dataset = 'topo'; %specify the dataset to be used
+variableIn = 'z_flat'; % (array) z data (z_flat if flattened data desired)
+variableOut = 'z_Threshold'; % (array)
+plot_histograms = true; % true if you would like to see the intermediate histogram of z to help choose your desired threshold value; false if not
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% log input variable
+%add log
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn = %s; dataOut: variableOut = %s",dataset ,variableIn, variableOut);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PT01A", LOGcomment ,0);
+
+%function execution
+[data.(dataset).(variableOut), LOGcomment] = topoGetThreshold(data.(dataset).(variableIn), plot_histograms);
+
+%ask for plotname:
+plot_name = uniqueNamePrompt("TopoThresh","",LOGpath);
+LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
+%save the created figures here:
+savefig(strcat(LOGpath,"/",plot_name,".fig"))
+%create copy of the log corresponding to the saved figures
+saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+
+%clear variables
+clearvars dataset variableIn variableOut
+clearvars n plot
+clear plot_name
 
 %% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias 
 
