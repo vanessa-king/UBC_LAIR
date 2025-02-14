@@ -1,4 +1,4 @@
-function [gridCorrected,comment] = gridDriftCorrection(grid, before, after, theta)
+function [gridCorrected,comment] = gridDriftCorr_historical(grid, before, after, theta)
 %   Correct for drift over time in a grid map.
 %   Calculates the drift from before and after topography images and skews
 %   the iv grid to compensate. You can rotate by angle theta (deg) if you
