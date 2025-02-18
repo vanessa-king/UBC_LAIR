@@ -1,4 +1,4 @@
-%% Test script for data processing with logging
+%% Script for data processing with logging
 
 %% Block logging
 
