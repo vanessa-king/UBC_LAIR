@@ -17,7 +17,7 @@
 
 % To be edited: make before and after topo images, instead of grid
 % structures 
-function [gridCorrected,comment] = gridDriftCorrection(grid, before, after, theta)
+function [gridCorrected,comment] =driftCorrection(grid, before, after, theta)
 
 arguments
     grid          
@@ -31,7 +31,7 @@ end
 %('=<VARn_value>') of variables that decide/affect how the function
 %processes data (e.g. order of fit, ...) 
 %Note convert all <VARn_value> to strings; 
-formatSpec = "gridDriftCorrection(grid: %s, before: %s, after: %s, theta=%.3g degrees)|";
+formatSpec = "driftCorrection(grid: %s, before: %s, after: %s, theta=%.3g degrees)|";
 comment = sprintf(formatSpec,mat2str(size(grid)), mat2str(size(before)), mat2str(size(after)), theta);
 
 %regular function processing:

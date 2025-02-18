@@ -731,7 +731,7 @@ LOGcomment = sprintf("Grid in: %s.%s; topo before: %s.%s; topo after: %s.%s; dat
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02A", LOGcomment ,0);
 
 %execute function
-[data.(datasetOut).(variableOut),LOGcomment] = gridDriftCorrection(data.(datasetGrid).(variableGrid), data.(datasetTopoBefore).(variableTopoBefore), data.(datasetTopoAfter).(variableTopoAfter), theta);
+[data.(datasetOut).(variableOut),LOGcomment] = driftCorrection(data.(datasetGrid).(variableGrid), data.(datasetTopoBefore).(variableTopoBefore), data.(datasetTopoAfter).(variableTopoAfter), theta);
 %LOG function call
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 %ask for plotname and the folder it should be saved in:
