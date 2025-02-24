@@ -1,63 +1,74 @@
 # UBC_LAIR
 
-Collection of data reading and data analysis codes from all UBC LAIR STMs
-~~~~~~~~~~~Environment checklist~~~~~~~~~~~~~
+README: maintrunk.m
+~~~~~~~~~~Overview~~~~~~~~~~
 
-% MATLAB 2023 or newer 
-% Python 3.8-3.9
-% Python package needed: nanonispy, numpy 
-% Python path in MATLAB, can check it by calling "pyenv" in MATLAB command window, more help on this: https://www.mathworks.com/help/matlab/matlab_external/install-supported-python-implementation.html
-% downgrade numpy 1.26 to numpy 1.20 with command pip install numpy ==1.20, otherwise error might pop when loading nanonis style of grid data 
+You will need MATLAB R2024a to run this script.
 
+The maintrunk.m script is the central workflow for processing, analyzing, and visualizing STM data. It is structured into modular blocks, each responsible for a specific task such as loading data, processing, selecting regions, or generating plots. These blocks are logged automatically to ensure reproducibility.
 
-~~~~~~~~~~~~Parameter pool and directory~~~~~~~~~~
+This script is designed to work with STM topographic and spectroscopy data, handling tasks like:
+Loading topographic and spectral data
+Processing I-V and dI/dV curves
+Selecting specific regions using masks
+Visualizing and exporting results
 
-x_num(size)/y_num(size): number of the x/y dimension size.
-average_forward_and_backward : True/False whether to average the forward and backward scan [gridLoadDataUpward.m]
-avg_I : mean of I data [gridAvg.m]
-bias : voltage bias slice to threshold [gridGetIVThreshold.m]
-Biases : specific bias values to plot [gridPlotSlices.m]
-boundary_x : x values output from pixelatedContour [pixelatedContour.m, gridGetIVThreshold.m]
-boundary_y : y values output from pixelatedContour [pixelatedContour.m, gridGetIVThreshold.m]
-bright_indices : indices of I(V) values above I_threshold [gridGetIVThreshold.m]
-C : normalization parameter [gridCorrectionNorm.m] [matrixToNanonis.m]
-clims : data value limits to be shown as a colour in a heat map. [gridMaskPoint.m, gridMovie.m, gridPlotSlices.m]
-color_scale_resolution : number of evenly spaced colour points [gridMaskPoint.m, gridMovie.m, gridPlotSlices.m]
-contour : boolean matrix corresponding to bright_indices and dark_indices [gridGetIVThreshold.m, pixelatedContour.m]
-dark_indices : indices of I(V) values below or equal to I_threshold [gridGetIVThreshold.m]
-didv : 3D matrix with calculated dI/dV data [gridAvgMask.m, gridClickForSpectrum.m, gridCorrec tionNorm.m, gridMaskPoint.m, gridMovie.m]
-didv_avg : mean of didv data [gridAvgMask.m]
-didv_masked : masked version of didv [gridAvgMask.m]
-fileName : stringo of full path and file name, including extension. [pythonDataToGrid.m]
-folder : folder name [gridLoadDataUpward.m]
-full_3ds : everything within a 3ds file, as read by the nanonispy library [read_grid_data.py]
-grid : grid map (structure) containing x_img, y_img, z_img, x, y, V, and I data [gridLoadDataUpward.m, gridClickForSpectrum.m, gridCorrectionNorm.m, pythonDataToGrid.m][matrixToNanonis.m]
-grid_number : number in name of grid [gridLoadDataUpward.m]
-gridArrays : 4D array containing the x, y, V, I data of a grid [read_grid_data.py]
-I : measured current as a function of voltage (3D array) [gridAvg.m, gridGetIVThreshold.m, gridPlotSlices.m]
-I_correction : current as a function of voltage corrected to 0 V. [gridCorrectionNorm.m]
-I_threshold : median I(V) value of slice [gridGetIVThreshold.m]
-image : structure, contains topo data. [topoLoadData.m, topoPlaneSub.m]
-imageV : voltage at which to display image [gridClickForSpectrum.m, gridMaskPoint.m]
-img_number : number in name of image [gridLoadDataUpward.m]
-mask : boolean matrix of a selected area [gridMaskPoint.m, gridAvgMask.m, gridMaskPoint.m]
-n : number of point spectra to plot [gridClickForSpectrum.m]
-OR
-n : number of points to sample [topoPlaneSub.m]
-nbins : number of bins [gridGetIVThreshold.m]
-norm_didv : 3D matrix with normalized dI/dV data [gridCorrectionNorm.m]
-normalize : True/False for whether to normalize or not [gridCorrectionNorm.m] [matrixToNanonis.m]
-Num_in_mask : number of points you want to average over in the mask [gridMaskPoint.m]
-number_bias_layer : number of bias layers in a grid [gridAvg.m]
-offset : vertical offset for each point spectra [gridClickForSpectrum.m]
-plot : True/False for whether to plot or not [topoPlaneSub.m]
-plotname : the plot names of the output plots for each value in Biases [gridPlotSlices.m]
-radius : radius of mask in pixels [gridMaskPoint.m]
-smooth : True/False for whether to smooth or not [gridCorrectionNorm.m][matrixToNanonis.m]
-stamp_project : project number [gridLoadDataUpward.m]
-topo : topography 3D matrix [topoPlaneSub.m]
-v : a VideoWriter object to write a new motion JPEG AVI file [gridMovie.m]
-V : bias voltages [gridAvg.m, gridGetIVThreshold.m, gridPlotSlices.m]
-V_reduced : reduced bias voltage [gridClickForSpectrum.m, gridCorrectionNorm.m, gridMaskPoint.m, gridMovie.m]
-vsmooth : the standard deviation of a Gaussian for smoothing the voltage sweep points (0 is no smoothing) [gridClickForSpectrum.m]
-xysmooth : the standard deviation of a Gaussian for smoothing xy points (0 is no smoothing) [gridClickForSpectrum.m]
+~~~~~~~~~~How It Works~~~~~~~~~~
+The script follows a block-based structure, where each block is identified by a unique 5-character identifier (ABXXZ):
+
+A = Category (L = Load, P = Process, V = Visualize, S = Select, etc.)
+B = Subcategory (D = Data, F = Flatten, M = Mask, etc.)
+XX = Running number (01, 02, ...)
+Z = Variation letter (A, B, C...)
+Example Block Identifier: VS02A
+V → Visualization
+S → Spectrum
+02 → Second version
+A → First variant
+Each block logs its execution, including function calls, parameters, and saved outputs.
+
+~~~~~~~~~~Getting Started~~~~~~~~~~
+
+1. Set Up the Log File
+When you run maintrunk.m, the first step initializes a log file where all executed blocks are recorded. You will be prompted to select a folder and name the log file.
+
+2. Load Data
+Use the Load-Data-01-A (LD01A) block to select and load datasets. Supported formats include grid (.3ds), topography (.sxm), and workspace files (.mat).
+
+3. Process Data
+Various Processing (P) blocks handle data transformations:
+PD01A → Computes dI/dV
+PD01B → Computes normalized dI/dV (dI/dV / I)
+PA01A → Smooths I-V curves
+PC02A → Corrects drift in grids
+
+4. Select Regions (Optional)
+Selection blocks (SMxxA, SLxxA) let you apply masks:
+SM01A → Create directional masks
+SM02A → Apply circular masks
+SM03A → Define rectangular masks
+SM05A → Create polygonal masks
+
+5.Visualize and Save Figures
+Use Visualization (V) blocks to generate plots:
+VS01A → Plot average I-V / dI/dV
+VS02A → Click on a grid to extract spectra
+VT01A → Display a dI/dV slice at a given voltage
+VG01A → Visualize an entire dI/dV grid stack
+Each visualization block allows users to interactively select regions or define pre-selected coordinates.
+
+6. Save the Workspace (Optional)
+Before closing MATLAB, save your workspace using SW01A to store all loaded data and logs.
+
+~~~~~~~~~~Miscellanea~~~~~~~~~~
+
+Adjusting Parameters
+Each block contains preset parameters that users can modify, including but not limited to: imageV (voltage to display); n (number of points to select); and offset (for shifting spectra).
+
+Logging and Debugging
+Every block logs its execution in the specified log file.
+If an error occurs, check the log file for details.
+
+Notes
+If you experience missing lines in the MATLAB editor, try disabling code folding or copying the script into a plain text editor to confirm all lines are present or selecting all, deleting all, and re-pasting all..
+Ensure that dependencies (logUsedBlocks, uniqueNamePrompt, etc.) are available in your MATLAB path.
