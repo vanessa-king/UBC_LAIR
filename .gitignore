@@ -3,3 +3,7 @@
 20210308-124244_CaPt--STM_Spectroscopy--_grdNr_108_1_imgNr_54_1_PpS_500_Traster_0.01133_LOGfile.txt
 functions/.DS_Store
 .DS_Store
+executable_script/testing/NewProject_001_LOGfile.txt
+*.txt
+*.fig
+functions/selecting/GetThreshold

@@ -508,22 +508,32 @@ clearvars imageV targetFolder plot_name
 % This block makes a mask based on user defined z threshold
 
 %presets:
-dataset = 'topo'; %specify the dataset to be used
-variableIn = 'z_flat'; % (array) z data (z_flat if flattened data desired)
+dataset = 'grid'; %specify the dataset to be used
+variableIn1 = 'dIdV'; % (array) z data (z_flat if flattened data desired)
+%optional variable inputs
+variableIn2 = 'V_reduced';           % this is neccesary when varialbleIn1 is a 3D data.
+                            % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
+imageV = -0.85;             % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
+                            % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
+
 variableOut = 'z_Threshold'; % (array)
 plot_histograms = true; % true if you would like to see the intermediate histogram of z to help choose your desired threshold value; false if not
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % log input variable
 %add log
-LOGcomment = sprintf("DataIn: dataset = %s, variableIn = %s; dataOut: variableOut = %s",dataset ,variableIn, variableOut);
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s, imageV = %s; dataOut: variableOut = %s",dataset ,variableIn1, variableIn2, imageV, variableOut);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM04A", LOGcomment ,0);
 
 %function execution
-[data.(dataset).(variableOut), LOGcomment] = topoGetThreshold(data.(dataset).(variableIn), plot_histograms);
+if isempty(variableIn2) || isempty(imageV)
+    [data.(dataset).(variableOut), LOGcomment] = GetThreshold(data.(dataset).(variableIn1), plot_histograms);
+else
+    [data.(dataset).(variableOut), LOGcomment] = GetThreshold(data.(dataset).(variableIn1), plot_histograms, data.(dataset).(variableIn2), imageV);
+end
 
 %ask for plotname:
-plot_name = uniqueNamePrompt("TopoThresh","",LOGpath);
+plot_name = uniqueNamePrompt("Thresh","",LOGpath);
 LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
@@ -533,7 +543,7 @@ savefig(strcat(LOGpath,"/",plot_name,".fig"))
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
 
 %clear variables
-clearvars dataset variableIn variableOut
+clearvars dataset variableIn1 variableIn2 ImageV variableOut
 clearvars n plot
 clear plot_name
 
@@ -762,7 +772,7 @@ dataset = 'topo'; %specify the dataset to be used
 variableIn1= 'x'; % (array) x axis
 variableIn2 = 'y'; % (array) y axis
 variableIn3 = 'z'; % (array) data
-variableIn4 = 'circular_mask'; % optional mask to fit plane to. If no mask desired then variableIn4=''
+variableIn4 = ''; % optional mask to fit plane to. If no mask desired then variableIn4=''
 n = 100; %integer: number of points to sample. Default 200
 plot = 1; %boolean: chose to plot the process or not (0: no plot, 1: plot)
 variableOut = 'z_flat'; % (array) flattened z data
