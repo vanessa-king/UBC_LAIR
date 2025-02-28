@@ -1,4 +1,4 @@
-function [mask,posOut, comment] = maskPolygon(data, V_reduced, imageV, positionsIn)
+function [mask,posOut, comment] = maskPolygon(data, n, V_reduced, imageV, positionsIn)
 %Draw a n-point polygon mask on a 2D image or grid slice. 
 %   The function dispalys a 2D image: topography or grid slice (the latter
 %   requires V_reduced and imageV as inputs). The polygon shaped mask is 
@@ -17,28 +17,14 @@ function [mask,posOut, comment] = maskPolygon(data, V_reduced, imageV, positions
 
 arguments
     data        {mustBeNumeric}         % 2D/3D data, topo img or dIdV
+    n           {mustBePositive} = []   % optional, only for 3D data
     V_reduced   {mustBeNumeric} = []    % optional, only for 3D data
     imageV      {mustBeNumeric} = []    % optional, only for 3D data
     positionsIn {mustBePositive} = []   % optional, to reproduce mask
 end
 
 % Check if data is 2D or 3D
-dimData = ndims(data);
-if dimData == 3
-    % Ensure V_reduced and imageV are provided for 3D data
-    if isempty(V_reduced) || isempty(imageV)
-        error('For 3D data, both V_reduced and imageV are required inputs.');
-    end
-    
-    % Select the energy slice for processing
-    [~,imN] = min(abs(V_reduced-imageV));
-    data_slice = data(:,:,imN); % Extract the closest slice
-else
-    if dimData ~= 2
-        error('Data must be either 2D or 3D.');
-    end
-    data_slice = data;  % Use data directly for 2D case
-end
+[data_slice, imN, V_actual] = dataSlice2D(data,n,V_reduced,imageV);
 
 % plot image of data slice
 img = figure('Name', 'Select Mask Location by drawing a ploygon:');
@@ -59,6 +45,6 @@ imagesc(permute(mask, [2 1]));
 setGraphLayout("topoImage");
 img.Name = "Selected Mask";
 % log comment of function call & picked positions
-comment = sprintf("maskPolygon(data, V_reduced, imageV = %s, positions = %s); maskPolygon_roi.Position = %s", mat2str(imageV), mat2str(positionsIn),mat2str(posOut));
+comment = sprintf("maskPolygon(data(:,:,imN = %s | V_actual = %s), V_reduced, imageV = %s, positions = %s); maskPolygon_roi.Position = %s", num2str(imN), num2str(V_actual), mat2str(imageV), mat2str(positionsIn),mat2str(posOut));
 
 end

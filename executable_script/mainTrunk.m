@@ -543,14 +543,16 @@ clear plot_name
 % by clicking to select an areas for the mask. 
 % It then plots the average dI/dV of the selected area.
 
-%presets:
-dataset ='topo';                %specify the dataset to be used: e.g. grid
-variableIn1 = 'z';           % specify the data (2D or 3D) to use to create the mask
-%optional variable inputs
-variableIn2 = 'V_reduced';      % this is neccesary when varialbleIn1 is a 3D data.
-                                % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
-imageV = [];                    % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
-                                % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
+% presets:
+dataset ='grid';                %specify the dataset to be used: e.g. grid
+variableIn1 = 'I';              % specify the data (2D or 3D) to use to create the mask
+% optional variable inputs
+% set values to [] if not used
+                                % Relevant inputs for slicing 3D -> 2D data:
+n = [];                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
+variableIn2 = 'V';              % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+imageV = -0.3;                  % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
+                                
 positionsIn = [];               % list of points for the polygon in the format: [x1 y1; x2 y2; ...; xn yn]; 
                                 % Note: you can assign positionsIn = data.(dataset).polygonPoints; but you cannot assing 'polygonPoints' 
 
@@ -561,24 +563,17 @@ variableOut2 = 'polygonPoints'; % point list of (x,y)-coordinates definign the p
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % LOG data in/out
-LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableOut1 = %s; variableOut2 = %s; imageV = %s; positionsIn = %s; ", dataset, variableIn1, variableIn2, variableOut1, variableOut2, num2str(imageV), mat2str(positionsIn));
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableOut1 = %s; variableOut2 = %s; n = %s; imageV = %s; positionsIn = %s; ", dataset, variableIn1, variableIn2, variableOut1, variableOut2, num2str(n), num2str(imageV), mat2str(positionsIn));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM05A", LOGcomment ,0);
 
-if isempty(variableIn2) || isempty(imageV)
-    % excute the function
-    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPolygon(data.(dataset).(variableIn1),[],[],positionsIn);
-
-else
-    % excute the function
-    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskRectangle(data.(dataset).(variableIn1), data.(dataset).(variableIn2), positionsIn);
-
-end
+%execute function
+[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPolygon(data.(dataset).(variableIn1),n,data.(dataset).(variableIn2),imageV,positionsIn);
 
 % log the function of excuation 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 % clear excess variables
-clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2 imageV positionsIn
+clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2 n imageV positionsIn
 clearvars imageV targetFolder plot_name
 %% PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
 %Edited by M. Altthaler April 2024; James October 2023; Jisun October 2023
