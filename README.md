@@ -23,9 +23,20 @@ Z = Variation letter (A, B, C...)
 Example Block Identifier: VS02A
 V → Visualization
 S → Spectrum
-02 → Second version
+02 → Next related block
 A → First variant
 Each block logs its execution, including function calls, parameters, and saved outputs.
+
+~~~~~~~~~~Required MATLAB Toolboxes~~~~~~~~~~
+
+To run mainTrunk.m and its associated functions, the following MATLAB toolboxes are required:
+
+- Signal Processing Toolbox (for filtering, smoothing, and derivative calculations)
+- Image Processing Toolbox (for masks, visualizations, and topography analysis)
+- Curve Fitting Toolbox (for data smoothing and normalization)
+- Optimization Toolbox (for drift correction and plane subtraction)
+
+Note: The script may work without some toolboxes, but certain features (e.g., smoothing or masking) will be limited.
 
 ~~~~~~~~~~Getting Started~~~~~~~~~~
 
