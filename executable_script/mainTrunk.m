@@ -102,10 +102,12 @@
     % R-LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
     % R-LG01A Load-Grid-01-A; load grid 
     % R-LG01B Load-Grid-01-B; load grid and topo from Nanonis
+    % R-LS02A Load-Spectra-01-A; load spectra from Nanonis
     % R-PT01A Processing-Threshold-01-A; Gets threshold from the height distribution of topo;
     % R-PT02A Processing-Transforming-01-A: Transforms Flat-Style Matrix Data to Nanonis Array-Style
     % R-VS03A Visualize-Spectrum-03-A; circular masking;
     % R-VS03B Visualize-Spectrum-03-B; rectangular masking;
+
 
 %% LI01B Load-Initialize-01-B; Initialize log file, UI select path and name
 %   Edited by M. Altthaler, April 2024
@@ -154,13 +156,6 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentB, 0);
 if logC ==1
     LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", commentC, 0);
 end
-
-%% LS02A Load-Spectra-01-A; load grid and topo from Nanonis
-% Edited by Dong Nov 2023
-% This section of code loads the spectra.
-
-[header, data, channels, LOGcomment] = specLoad(folder,stamp_project,spec_number);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "LS02A", LOGcomment ,0);
 
 %% SW01A Save-Workspace-01A; Save the current workspace
 % Edited: M. Altthaler July,2024;
