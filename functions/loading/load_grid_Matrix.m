@@ -71,6 +71,7 @@ end
 
 %%% Corresponding Topo
 %select data via UI
+disp("Select the corresponding topo file")
 [filePath, fileName, fileExt] = selectData();
 topoFileName = strcat(fileName, fileExt);
 %output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
