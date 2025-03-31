@@ -175,4 +175,4 @@ function im=mat2im(mat,cmap,limits)
     %Vectorised way of making the image matrix 
     im=reshape(cmap(mat(:),:),[size(mat),3]);
     
-    
+end
