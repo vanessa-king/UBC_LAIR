@@ -79,9 +79,9 @@
     % SL02A Selecting-Logic-02-A; logic OR for two masks
     % SI01A Selecting-Invert-01-A; invert mask (or veil)
     % SM01A Selecting-Mask-01-A; select a directional mask (with/without binning)
-    % SM02A Selecting-Mask-02-A; circular masking
-    % SM03A Selecting-Mask-03-A; rectangular masking
-    % SM04A Selecting-Mask-04-A; Masks using some height threshold of topo
+    % SM02A Selecting-Mask-02-A; circular mask
+    % SM03A Selecting-Mask-03-A; rectangular mask
+    % SM04A Selecting-Mask-04-A; threshold mask
     % SM05A Selecting-Mask-05-A; polygon mask
 %Processing    
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
@@ -388,21 +388,22 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % Clean up variables
 clearvars dataset variableIn variableOut connected startPoint endPoint bin_size bin_sep inputData slice_idx 
-%% SM02A Selecting-Mask-02-A; circular masking
+%% SM02A Selecting-Mask-02-A; circular mask
 
 % Edited by Jiabin May 2024; Jisun Oct 2023, again in Feb 2024, again in Dec 2024.
 % This section of code creates a circular mask of radius R around a clicked point. 
 % It then plots the average dI/dV on that point. The user may toggle R and energy slice.
 
-%presets:
-dataset ='topo';            % specify the dataset to be used: e.g. grid
-variableIn1 = 'z';       % specify the data (2D or 3D) to use to create the mask
-radius = 100;                 % radius R: the size of the circular mask
-%optional variable inputs
-variableIn2 = '';  % this is neccesary when varialbleIn1 is a 3D data.
-                            % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
-imageV = -0.85;                % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
-                            % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
+% presets:
+dataset ='grid';            % specify the dataset to be used: e.g. grid
+variableIn1 = 'dIdV';       % specify the data (2D or 3D) to use to create the mask
+radius = 3;                 % radius R: the size of the circular mask
+% optional variable inputs
+% set values to [] if not used
+                                % Relevant inputs for slicing 3D -> 2D data:
+n = 113;                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
+variableIn2 = 'V_reduced';      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+imageV = [];                 % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
 
 variableOut1 = 'circular_mask';              % return the function of execution
 variableOut2 = 'num_in_mask';
@@ -413,15 +414,8 @@ variableOut2 = 'num_in_mask';
 LOGcomment = sprintf("dataset = %s; variableIn1 = %s; radius = %s; variableIn2 = %s; imageV = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1, num2str(radius), variableIn2, num2str(imageV), variableOut1, variableOut2);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM02A", LOGcomment ,0);
 
-if isempty(variableIn2) || isempty(imageV)
-    % excute the function
-    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPoint(data.(dataset).(variableIn1), radius);
-
-else
-    % excute the function
-    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPoint(data.(dataset).(variableIn1), radius, data.(dataset).(variableIn2), imageV);
-
-end
+% excute the function
+[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPoint(data.(dataset).(variableIn1), radius, n, ifIsEmptyField(data, dataset,variableIn2), imageV);
 
 % log the function of excuation 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
@@ -444,20 +438,22 @@ saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, strcat(plot_name));
 clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2
 clearvars imageV radius targetFolder plot_name
 
-%% SM03A Selecting-Mask-03-A; rectangular masking
+%% SM03A Selecting-Mask-03-A; rectangular mask
 % Edited by Jisun Dec 2024
 % This section of code creates a rectangular mask. The user clicks two points that define 
 % a single rectangle (presumably, opposite corners). 
 % It then plots the average dI/dV of the selected area.
 
-%presets:
-dataset ='topo';              %specify the dataset to be used: e.g. grid
-variableIn1 = 'z';         % specify the data (2D or 3D) to use to create the mask
-%optional variable inputs
-variableIn2 = '';  % this is neccesary when varialbleIn1 is a 3D data.
-                            % specify the axis where you choose a value to reduce the dimension from 3D to 2D: e.g. V_reduced
-imageV = 0.15;                % this is neccesary when varialbleIn1 is a 3D data. when you input 2D data, set this to ''
-                            % specify the value in the variableIn2 axis: e.g. a specific voltage of the grid, imageV
+% presets:
+dataset ='grid';              %specify the dataset to be used: e.g. grid
+variableIn1 = 'dIdV';         % specify the data (2D or 3D) to use to create the mask
+% optional variable inputs
+% set values to [] if not used
+                                % Relevant inputs for slicing 3D -> 2D data:
+n = 113;                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
+variableIn2 = 'V_reduced';      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+imageV = [];                 % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
+
 variableOut1 = 'rectangular_mask';              % return the function of execution
 variableOut2 = 'Num_in_mask';
 
@@ -467,15 +463,8 @@ variableOut2 = 'Num_in_mask';
 LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1, variableIn2, num2str(imageV), variableOut1, variableOut2);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM03A", LOGcomment ,0);
 
-if isempty(variableIn2) || isempty(imageV)
-    % excute the function
-    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskRectangle(data.(dataset).(variableIn1));
-
-else
-    % excute the function
-    [data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskRectangle(data.(dataset).(variableIn1), data.(dataset).(variableIn2), imageV);
-
-end
+% excute the function
+[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskRectangle(data.(dataset).(variableIn1), n, ifIsEmptyField(data, dataset,variableIn2), imageV);
 
 % log the function of excuation 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
@@ -498,27 +487,35 @@ saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, strcat(plot_name));
 clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2
 clearvars imageV targetFolder plot_name
 
-%% SM04A Selecting-Mask-04-A; Masks using some height threshold of topo
-% Edited by Rysa Greenwood Nov 2023, Rysa July 2024
-% This block makes a mask based on user defined z threshold
+%% SM04A Selecting-Mask-04-A; threshold mask
+% Edited by Rysa Greenwood Nov 2023, Rysa July 2024, Jisun March 2025
+% This block makes a mask based on user defined z or dI/dV threshold
 
-%presets:
-dataset = 'topo'; %specify the dataset to be used
-variableIn = 'z_flat'; % (array) z data (z_flat if flattened data desired)
-variableOut = 'z_Threshold'; % (array)
-plot_histograms = true; % true if you would like to see the intermediate histogram of z to help choose your desired threshold value; false if not
+% presets:
+dataset ='grid';                %specify the dataset to be used: e.g. grid or topo
+variableIn1 = 'dIdV';           % specify the data (2D or 3D) to use to create the mask
+plot_histograms = true;         % true if you would like to see the intermediate histogram to help choose your desired threshold value; false if not
+% optional variable inputs
+% set values to [] if not used
+                                % Relevant inputs for slicing 3D -> 2D data:
+n = 111;                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
+variableIn2 = 'V_reduced';      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+imageV = [];                  % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
+                                
+% return variables: 
+variableOut = 'threshold_mask';  % mask based on the threshold value   
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % log input variable
 %add log
-LOGcomment = sprintf("DataIn: dataset = %s, variableIn = %s; dataOut: variableOut = %s",dataset ,variableIn, variableOut);
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s, n = %s; imageV = %s; dataOut: variableOut = %s",dataset ,variableIn1, variableIn2, num2str(n), imageV, variableOut);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM04A", LOGcomment ,0);
 
 %function execution
-[data.(dataset).(variableOut), LOGcomment] = topoGetThreshold(data.(dataset).(variableIn), plot_histograms);
+[data.(dataset).(variableOut), LOGcomment] = getThreshold(data.(dataset).(variableIn1), plot_histograms, n, ifIsEmptyField(data, dataset,variableIn2), imageV);
 
 %ask for plotname:
-plot_name = uniqueNamePrompt("TopoThresh","",LOGpath);
+plot_name = uniqueNamePrompt("Threshold","",LOGpath);
 LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
@@ -528,25 +525,23 @@ savefig(strcat(LOGpath,"/",plot_name,".fig"))
 saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
 
 %clear variables
-clearvars dataset variableIn variableOut
-clearvars n plot
+clearvars dataset variableIn1 variableIn2 variableOut n imageV
 clear plot_name
 
 %% SM05A Selecting-Mask-03-A; polygon mask
 % Edited by M. Altthaler 2025/02
 % This section of code creates a polygon mask. The user defines a polygon 
 % by clicking to select an areas for the mask. 
-% It then plots the average dI/dV of the selected area.
 
 % presets:
 dataset ='grid';                %specify the dataset to be used: e.g. grid
-variableIn1 = 'I';              % specify the data (2D or 3D) to use to create the mask
+variableIn1 = 'dIdV';              % specify the data (2D or 3D) to use to create the mask
 % optional variable inputs
 % set values to [] if not used
                                 % Relevant inputs for slicing 3D -> 2D data:
-n = [];                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
-variableIn2 = 'V';              % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
-imageV = -0.3;                  % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
+n = 111;                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
+variableIn2 = 'V_reduced';              % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+imageV = [];                  % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
                                 
 positionsIn = [];               % list of points for the polygon in the format: [x1 y1; x2 y2; ...; xn yn]; 
                                 % Note: you can assign positionsIn = data.(dataset).polygonPoints; but you cannot assing 'polygonPoints' 
@@ -562,7 +557,7 @@ LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variable
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM05A", LOGcomment ,0);
 
 %execute function
-[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPolygon(data.(dataset).(variableIn1),n,data.(dataset).(variableIn2),imageV,positionsIn);
+[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPolygon(data.(dataset).(variableIn1),n,ifIsEmptyField(data, dataset,variableIn2),imageV,positionsIn);
 
 % log the function of excuation 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);

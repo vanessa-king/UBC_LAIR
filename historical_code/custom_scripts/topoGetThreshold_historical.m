@@ -1,4 +1,4 @@
-function [topoThresh, comment] = topoGetThreshold(topo, plot_histograms)
+function [topoThresh, comment] = topoGetThreshold_historical(topo, plot_histograms)
 %% Description:
 % topoGetThreshold gets the threshold from the height distribution of the topo
 % suggest running topoPlaneSub first

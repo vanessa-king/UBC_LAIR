@@ -29,7 +29,7 @@ end
 % plot image of data slice
 img = figure('Name', 'Select Mask Location by drawing a ploygon:');
 imagesc(data_slice');
-setGraphLayout("topoImage");
+setGraphLayout("2D_Image");
 % get ROI via polygon
 if isempty(positionsIn) 
     roi = drawpolygon(gca,"FaceAlpha",0.15);
@@ -42,7 +42,7 @@ posOut = roi.Position;
 mask = poly2mask(roi.Position(:,1),roi.Position(:,2),size(data_slice,2),size(data_slice,1))';
 %plot mask over the image
 imagesc(permute(mask, [2 1]));
-setGraphLayout("topoImage");
+setGraphLayout("2D_Image");
 img.Name = "Selected Mask";
 % log comment of function call & picked positions
 comment = sprintf("maskPolygon(data(:,:,imN = %s | V_actual = %s), V_reduced, imageV = %s, positions = %s); maskPolygon_roi.Position = %s", num2str(imN), num2str(V_actual), mat2str(imageV), mat2str(positionsIn),mat2str(posOut));
