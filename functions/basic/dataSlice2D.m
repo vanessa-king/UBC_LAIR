@@ -13,6 +13,8 @@ function [data_slice, imN, V_actual] = dataSlice2D(data,n,V_in,imageV)
 %   imN         index of the selected slice 
 %   V_actual    actual voltage of the selected slice (*opt*) 
 
+% created by: M. Altthaler, 2025-03
+
 arguments
     data        {mustBeNumeric}
     n           {mustBePositive} =[]     %slice number 

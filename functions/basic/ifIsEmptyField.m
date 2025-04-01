@@ -2,6 +2,8 @@ function [dataCalled] = ifIsEmptyField(data,dataset,varNameIn)
 %checks if a field exists and returns [] for empty fields
 %   Helper function for maintrunk to allow varNameIn = [] calls for data.(<dataset>).(<varNamein>) 
 
+% created by: M. Altthaler, 2025-03
+
 arguments
     data
     dataset     {mustBeText}
