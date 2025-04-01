@@ -1,4 +1,4 @@
-function [mask, num_in_mask, comment] = maskRectangle(data, V_reduced, imageV)
+function [mask, num_in_mask, comment] = maskRectangle(data, n, V_reduced, imageV)
 %Description: maskRectangle creates a rectangular mask by either manual input of corner points or by clicking the coner points. 
 
 % Parameters
@@ -10,6 +10,7 @@ function [mask, num_in_mask, comment] = maskRectangle(data, V_reduced, imageV)
 
 arguments
     data        
+    n           {mustBePositive} = []   % optional, only for 3D data
     V_reduced   = []                    % optional, only for 3D data
     imageV      = []                    % optional, only for 3D data
 end
@@ -20,22 +21,7 @@ cm_magma = magma(color_scale_resolution);
 
 
 % Check if data is 2D or 3D
-dimData = ndims(data);
-if dimData == 3
-    % Ensure V_reduced and imageV are provided for 3D data
-    if isempty(V_reduced) || isempty(imageV)
-        error('For 3D data, both V_reduced and imageV are required inputs.');
-    end
-    
-    % Select the energy slice for processing
-    [~,imN] = min(abs(V_reduced-imageV));
-    data_slice = data(:,:,imN); % Extract the closest slice
-else
-    if dimData ~= 2
-        error('Data must be either 2D or 3D.');
-    end
-    data_slice = data;  % Use data directly for 2D case
-end
+[data_slice, imN, V_actual] = dataSlice2D(data,n,V_reduced,imageV);
 
 % Display data and get point for mask center
 img = figure('Name', 'Select Mask Location');
@@ -71,12 +57,20 @@ if choice == 1
 elseif choice == 2
     % User clicks to select two corner points
     disp('Click two points on the plot to define the rectangle corners.');
-    points = round(ginputAllPlatform(2)); % Select two points
-    x1 = points(1, 1);
-    y1 = points(1, 2);
-    x2 = points(2, 1);
-    y2 = points(2, 2);
-     % Check if clicked points are within data bounds
+    
+    % First click
+    point1 = round(ginputAllPlatform(1)); % Get first point
+    x1 = point1(1);
+    y1 = point1(2);
+    plot(x1, y1, 'b.', 'MarkerSize', 15); % Plot first dot immediately
+    
+    % Second click
+    point2 = round(ginputAllPlatform(1)); % Get second point
+    x2 = point2(1);
+    y2 = point2(2);
+    plot(x2, y2, 'b.', 'MarkerSize', 15); % Plot second dot immediately
+    
+    % Check if clicked points are within data bounds
     if x1 < 1 || x2 < 1 || y1 < 1 || y2 < 1 || x1 > size(data_slice, 1) || x2 > size(data_slice, 1) || y1 > size(data_slice, 2) || y2 > size(data_slice, 2)
         error('Selected points must be within the dimensions of the data.');
     end
@@ -104,12 +98,6 @@ num_in_mask = nnz(mask);
 hold off;
 
 % Include details in the comment output 
-if dimData == 3
-    comment = sprintf("maskRectangle(data:%s, x1=%d, y1=%d, x2=%d, y2=%d, V_reduced:%s, imageV=%s)", ...
-                      mat2str(size(data)), x1, y1, x2, y2, ...
-                      mat2str(size(V_reduced)), num2str(imageV));
-else
-    comment = sprintf("maskRectangle(data:%s, x1=%d, y1=%d, x2=%d, y2=%d)", ...
-                      mat2str(size(data)), x1, y1, x2, y2);
-end
+comment = sprintf("maskRectangle(data(:,:,imN = %s | V_actual = %s), x1=%d, y1=%d, x2=%d, y2=%d)", ...
+                      num2str(imN), num2str(V_actual), x1, y1, x2, y2);
 end

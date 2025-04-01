@@ -61,6 +61,13 @@ switch LayoutCase
         ax.YLabel.String = 'y';
         axis image
         axis xy;
-
+    case "2D_Image"
+        ax.FontSize = 12;
+        ax.Title.String = '2D Image';
+        ax.XLabel.String = 'x';
+        ax.YLabel.String = 'y';
+        colormap('gray')
+        axis image
+        axis xy;
 
 end

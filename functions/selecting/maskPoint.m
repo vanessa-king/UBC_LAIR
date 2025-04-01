@@ -1,4 +1,4 @@
-function [mask, num_in_mask, comment] = maskPoint(data, radius, V_reduced, imageV)
+function [mask, num_in_mask, comment] = maskPoint(data, radius, n, V_reduced, imageV)
 %Description: maskPoint creates a circular mask of a specified radius around the clicked point.
 
 % Parameters
@@ -12,6 +12,7 @@ function [mask, num_in_mask, comment] = maskPoint(data, radius, V_reduced, image
 arguments
     data        
     radius      {mustBeNumeric,mustBePositive}
+    n           {mustBePositive} = []   % optional, only for 3D data
     V_reduced   = []                    % optional, only for 3D data
     imageV      = []                    % optional, only for 3D data
 end
@@ -22,22 +23,7 @@ cm_magma = magma(color_scale_resolution);
 
 
 % Check if data is 2D or 3D
-dimData = ndims(data);
-if dimData == 3
-    % Ensure V_reduced and imageV are provided for 3D data
-    if isempty(V_reduced) || isempty(imageV)
-        error('For 3D data, both V_reduced and imageV are required inputs.');
-    end
-    
-    % Select the energy slice for processing
-    [~,imN] = min(abs(V_reduced-imageV));
-    data_slice = data(:,:,imN); % Extract the closest slice
-else
-    if dimData ~= 2
-        error('Data must be either 2D or 3D.');
-    end
-    data_slice = data;  % Use data directly for 2D case
-end
+[data_slice, imN, V_actual] = dataSlice2D(data,n,V_reduced,imageV);
 
 % Display data and get point for mask center
 img = figure('Name', 'Select Mask Location');
@@ -61,6 +47,9 @@ if choice == 1
 elseif choice == 2
     % User clicks to select the center
     pos = round(ginputAllPlatform(1)); % Click to select center point
+    
+    % Mark the selected point immediately
+    plot(pos(1), pos(2), 'b.', 'MarkerSize', 15);
 else
     error('Invalid choice. Please enter 1 or 2.');
 end
@@ -93,12 +82,6 @@ num_in_mask = nnz(mask);
 hold off;
 
 % Include details in the comment output 
-if dimData == 3
-    comment = sprintf("maskPoint(data:%s, radius=%s, x=%s, y=%s, V_reduced:%s, imageV=%s)", ...
-                      mat2str(size(data)), num2str(radius), num2str(pos(1)), num2str(pos(2)), ...
-                      mat2str(size(V_reduced)), num2str(imageV));
-else
-    comment = sprintf("maskPoint(data:%s, radius=%s, x=%s, y=%s)", ...
-                      mat2str(size(data)), num2str(radius), num2str(pos(1)), num2str(pos(2)));
-end
+comment = sprintf("maskPoint(data(:,:,imN = %s | V_actual = %s), radius=%s, x=%s, y=%s)", ...
+                      num2str(imN), num2str(V_actual), num2str(radius), num2str(pos(1)), num2str(pos(2)));
 end
