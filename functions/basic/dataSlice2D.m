@@ -13,6 +13,8 @@ function [data_slice, imN, V_actual] = dataSlice2D(data,n,V_in,imageV)
 %   imN         index of the selected slice 
 %   V_actual    actual voltage of the selected slice (*opt*) 
 
+% created by: M. Altthaler, 2025-03
+
 arguments
     data        {mustBeNumeric}
     n           {mustBePositive} =[]     %slice number 
@@ -29,7 +31,7 @@ if ~isempty(V_in) && length(V_in) ~= size(data,3)
     % V_in must match 3rd dim of data
     error('V_in does not match the dimensions of the 3D data.');
 end
-if ~isempty(imageV) && (imageV < min(V_in) || imageV > max(V_in))
+if ~isempty(imageV) & (imageV < min(V_in) || imageV > max(V_in))
     %imageV out of bounds
     error('imageV exceeds the limits of V_in.');
 end

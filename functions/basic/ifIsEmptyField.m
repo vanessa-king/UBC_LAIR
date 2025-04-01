@@ -2,6 +2,8 @@ function [dataCalled] = ifIsEmptyField(data,dataset,varNameIn)
 %checks if a field exists and returns [] for empty fields
 %   Helper function for maintrunk to allow varNameIn = [] calls for data.(<dataset>).(<varNamein>) 
 
+% created by: M. Altthaler, 2025-03
+
 arguments
     data
     dataset     {mustBeText}
@@ -9,9 +11,16 @@ arguments
 end
 
 if isempty(varNameIn)
+    %parse [] to output
     dataCalled = [];
-elseif isfield(data.(dataset),(varNameIn))   
-    dataCalled = data.(dataset).(varNameIn);
+elseif isfield(data,dataset)
+    %check for dataset
+    if isfield(data.(dataset),(varNameIn))  
+        %check for specific variable
+        dataCalled = data.(dataset).(varNameIn);
+    else 
+        error("data.%s.%s does not exist!", dataset, mat2str(varNameIn));
+    end
 else
-    error("data.%s.%s does not exist!", dataset, mat2str(varNameIn));
+    error("data.%s does not exist!", dataset);
 end
