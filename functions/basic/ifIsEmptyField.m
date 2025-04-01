@@ -9,9 +9,16 @@ arguments
 end
 
 if isempty(varNameIn)
+    %parse [] to output
     dataCalled = [];
-elseif isfield(data.(dataset),(varNameIn))   
-    dataCalled = data.(dataset).(varNameIn);
+elseif isfield(data,dataset)
+    %check for dataset
+    if isfield(data.(dataset),(varNameIn))  
+        %check for specific variable
+        dataCalled = data.(dataset).(varNameIn);
+    else 
+        error("data.%s.%s does not exist!", dataset, mat2str(varNameIn));
+    end
 else
-    error("data.%s.%s does not exist!", dataset, mat2str(varNameIn));
+    error("data.%s does not exist!", dataset);
 end

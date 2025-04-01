@@ -29,7 +29,7 @@ if ~isempty(V_in) && length(V_in) ~= size(data,3)
     % V_in must match 3rd dim of data
     error('V_in does not match the dimensions of the 3D data.');
 end
-if ~isempty(imageV) && (imageV < min(V_in) || imageV > max(V_in))
+if ~isempty(imageV) & (imageV < min(V_in) || imageV > max(V_in))
     %imageV out of bounds
     error('imageV exceeds the limits of V_in.');
 end
