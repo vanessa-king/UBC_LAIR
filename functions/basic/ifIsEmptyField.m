@@ -14,5 +14,5 @@ if isempty(varNameIn)
     %parse [] to output
     dataOut = [];
 else
-    dataOut = nestedStructCall(data,dataset,varInString);
+    dataOut = nestedStructCall(data,dataset,varNameIn);
 end
