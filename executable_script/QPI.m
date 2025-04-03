@@ -74,12 +74,12 @@
 
 % presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
-variableIn = 'dIdV';       % specify the input variable (dIdV or LockindIdV)   
-variableOut = 'QPI';       % specify the variable name to store the QPI data
+variableIn = 'lock_in';       % specify the input variable (dIdV or LockindIdV)   
+variableOut = 'QPI_lockin';       % specify the variable name to store the QPI data
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % LOG data in/out:
-LOGcomment = sprintf("DataIn: %s.%s; dataOut: %s.%s", ...
+LOGcomment = sprintf("Create QPI data from DataIn: %s.%s; and get dataOut: %s.%s", ...
     dataset, variableIn, dataset, variableOut);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "QC01A", LOGcomment, 0);
 
@@ -88,7 +88,6 @@ inputData = data.(dataset).(variableIn);
 
 % Calculate QPI
 [data.(dataset).(variableOut), LOGcomment] = qpiCalculate(inputData);
-
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % Clean up variables
