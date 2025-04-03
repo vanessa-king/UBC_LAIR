@@ -17,7 +17,7 @@
 
 % 2. Block Header Format
 %    Each block starts with a block header in this format:
-%       %% ABXXZ Axxx-Bxxx-XX-Z; <short description of the block’s function>
+%       %% ABXXZ Axxx-Bxxx-XX-Z; <short description of the blocks function>
 %       - Axxx: Spelled-out form of the main category (e.g., V -> Visualizing)
 %       - Bxxx: Spelled-out form of the subcategory (e.g., S -> Spectrum)
 %       - XX:   Running number
@@ -57,10 +57,40 @@
 % This log file and block naming system ensures reproducibility and proper %% Block List
 
 %% Block List
+% QC01A QPI-Compute-01-A; Compute QPI from dIdV/Lockin dIdV data
 
-%QPI
-    % QC01A QPI-Compute-01-A; Compute QPI from dIdV data 
-    
-%% QC01A QPI-Compute-01-A; Compute QPI from dIdV data 
 
-% block that computes data.<dataset.>.dIdV -> data.<dataset.>.QPI 
+%% QC01A QPI-Compute-01-A; Compute QPI from dIdV/Lockin dIdV data
+% Edited by Dong Chen in Apr 2025
+%
+% This section computes the Quasiparticle Interference (QPI) patterns by 
+% performing Fourier transforms on dI/dV or Lockin dI/dV data.
+%
+% The QPI calculation:
+% - Removes mean value to eliminate zero frequency spike
+% - Performs 2D FFT on each energy slice
+% - Centers zero frequency using fftshift
+% - Takes absolute value for intensity mapping
+
+% presets:
+dataset = 'grid';           % specify the dataset to be used: e.g. grid
+variableIn = 'dIdV';       % specify the input variable (dIdV or LockindIdV)   
+variableOut = 'QPI';       % specify the variable name to store the QPI data
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LOG data in/out:
+LOGcomment = sprintf("DataIn: %s.%s; dataOut: %s.%s", ...
+    dataset, variableIn, dataset, variableOut);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "QC01A", LOGcomment, 0);
+
+% Get input data
+inputData = data.(dataset).(variableIn);
+
+% Calculate QPI
+[data.(dataset).(variableOut), LOGcomment] = qpiCalculate(inputData);
+
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+% Clean up variables
+clearvars dataset variableIn variableOut inputData
+
