@@ -1,4 +1,4 @@
-function [dataOut] = ifIsEmptyField(data,dataset,varNameIn)
+function [dataOut] = optionalStructCall(data,dataset,varNameIn)
 %checks if a field exists and returns [] for empty fields
 %   Helper function for maintrunk to allow varNameIn = [] calls for data.(<dataset>).(<varNamein>) 
 
@@ -14,5 +14,5 @@ if isempty(varNameIn)
     %parse [] to output
     dataOut = [];
 else
-    dataOut = nestedStructCall(data,dataset,varNameIn);
+    dataOut = requiredStructCall(data,dataset,varNameIn);
 end
