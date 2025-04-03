@@ -396,13 +396,13 @@ clearvars dataset variableIn variableOut connected startPoint endPoint bin_size 
 
 % presets:
 dataset ='grid';            % specify the dataset to be used: e.g. grid
-variableIn1 = 'dIdV';       % specify the data (2D or 3D) to use to create the mask
+variableIn1 = 'I';       % specify the data (2D or 3D) to use to create the mask
 radius = 3;                 % radius R: the size of the circular mask
 % optional variable inputs
 % set values to [] if not used
                                 % Relevant inputs for slicing 3D -> 2D data:
 n = 113;                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
-variableIn2 = 'V_reduced';      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+variableIn2 = 'V';      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
 imageV = [];                 % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
 
 variableOut1 = 'circular_mask';              % return the function of execution
@@ -415,7 +415,7 @@ LOGcomment = sprintf("dataset = %s; variableIn1 = %s; radius = %s; variableIn2 =
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM02A", LOGcomment ,0);
 
 % excute the function
-[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPoint(data.(dataset).(variableIn1), radius, n, ifIsEmptyField(data, dataset,variableIn2), imageV);
+[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPoint(data.(dataset).(variableIn1), radius, n, optionalStructCall(data, dataset,variableIn2), imageV);
 
 % log the function of excuation 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
@@ -446,12 +446,12 @@ clearvars imageV radius targetFolder plot_name
 
 % presets:
 dataset ='grid';              %specify the dataset to be used: e.g. grid
-variableIn1 = 'dIdV';         % specify the data (2D or 3D) to use to create the mask
+variableIn1 = 'I';         % specify the data (2D or 3D) to use to create the mask
 % optional variable inputs
 % set values to [] if not used
                                 % Relevant inputs for slicing 3D -> 2D data:
 n = 113;                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
-variableIn2 = 'V_reduced';      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+variableIn2 = 'V';      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
 imageV = [];                 % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
 
 variableOut1 = 'rectangular_mask';              % return the function of execution
@@ -464,7 +464,7 @@ LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variable
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM03A", LOGcomment ,0);
 
 % excute the function
-[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskRectangle(data.(dataset).(variableIn1), n, ifIsEmptyField(data, dataset,variableIn2), imageV);
+[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskRectangle(data.(dataset).(variableIn1), n, optionalStructCall(data, dataset,variableIn2), imageV);
 
 % log the function of excuation 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
@@ -493,13 +493,13 @@ clearvars imageV targetFolder plot_name
 
 % presets:
 dataset ='grid';                %specify the dataset to be used: e.g. grid or topo
-variableIn1 = 'dIdV';           % specify the data (2D or 3D) to use to create the mask
+variableIn1 = 'I';           % specify the data (2D or 3D) to use to create the mask
 plot_histograms = true;         % true if you would like to see the intermediate histogram to help choose your desired threshold value; false if not
 % optional variable inputs
 % set values to [] if not used
                                 % Relevant inputs for slicing 3D -> 2D data:
 n = 111;                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
-variableIn2 = 'V_reduced';      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+variableIn2 = 'V';      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
 imageV = [];                  % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
                                 
 % return variables: 
@@ -512,7 +512,7 @@ LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s, 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM04A", LOGcomment ,0);
 
 %function execution
-[data.(dataset).(variableOut), LOGcomment] = getThreshold(data.(dataset).(variableIn1), plot_histograms, n, ifIsEmptyField(data, dataset,variableIn2), imageV);
+[data.(dataset).(variableOut), LOGcomment] = getThreshold(data.(dataset).(variableIn1), plot_histograms, n, optionalStructCall(data, dataset,variableIn2), imageV);
 
 %ask for plotname:
 plot_name = uniqueNamePrompt("Threshold","",LOGpath);
@@ -535,12 +535,12 @@ clear plot_name
 
 % presets:
 dataset ='grid';                %specify the dataset to be used: e.g. grid
-variableIn1 = 'dIdV';              % specify the data (2D or 3D) to use to create the mask
+variableIn1 = 'I';              % specify the data (2D or 3D) to use to create the mask
 % optional variable inputs
 % set values to [] if not used
                                 % Relevant inputs for slicing 3D -> 2D data:
 n = 111;                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
-variableIn2 = 'V_reduced';              % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+variableIn2 = 'V';              % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
 imageV = [];                  % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
                                 
 positionsIn = [];               % list of points for the polygon in the format: [x1 y1; x2 y2; ...; xn yn]; 
@@ -557,7 +557,7 @@ LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variable
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM05A", LOGcomment ,0);
 
 %execute function
-[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPolygon(data.(dataset).(variableIn1),n,ifIsEmptyField(data, dataset,variableIn2),imageV,positionsIn);
+[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = maskPolygon(data.(dataset).(variableIn1),n,optionalStructCall(data, dataset,variableIn2),imageV,positionsIn);
 
 % log the function of excuation 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
@@ -594,11 +594,11 @@ clearvars dataset variableIn variableOut span
 % Presets
 % Define dataset and input/output variables here
 dataset = 'grid';               % specify the dataset to be used: e.g., grid
-variableIn1 = 'dIdV';     % the variable that you want to average. e.g. I_forward, I_backward
+variableIn1 = 'I';     % the variable that you want to average. e.g. I_forward, I_backward
                                 % If you want to average dIdV, you need to run PD01A or PD01B first. 
                                 % Also you can input dIdV_forward or dIdV_backward to get average 
                                 % of foward or backward only average dIdV.
-variableIn2 = '';  %Mask to apply to data. If none variableIn2 = '';
+variableIn2 = 'polygon_mask';  %Mask to apply to data. If none variableIn2 = '';
 variableOut1 = 'avg_dIdV';        % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
                                 % or avg_dIdV_fwd or avg_dIdV_bwd
 
@@ -612,15 +612,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA02A", LOGcomment, 0);
 % Main code execution section
 
 % Function call
-if isempty(variableIn2)
-    [~, data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = avgXYmask(data.(dataset).(variableIn1), variableIn2);
-
-
-else
-    [~, data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment]...
-        = avgXYmask(data.(dataset).(variableIn1), data.(dataset).(variableIn2));
-
-end
+[~, data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = avgXYmask(requiredStructCall(data,dataset,variableIn1), optionalStructCall(data,dataset,variableIn2));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % Clear preset variables

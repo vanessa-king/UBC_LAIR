@@ -1,4 +1,4 @@
-function [dataOut] = nestedStructCall(data,dataset,varInString)
+function [dataOut] = requiredStructCall(data,dataset,varInString)
 %allows to pass <AAA>.<BBB> as varInString to access nested struct variables like data.<dataset>.<AAA>.<BBB>
 %   varInString can be nested multiple times with '.' as the seperator. 
 %   E.g. "AAA.BBB.CCC.DDD" yields dataOut = data.dataset.AAA.BBB.CCC.DDD

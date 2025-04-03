@@ -43,7 +43,7 @@ data_masked = data.*mask;
 %averaging & standard deviation; dimensions: 1x1xn -> nx1
 avg_out = mean(data_masked,[1,2],"omitnan");
 avg_out = squeeze(avg_out);
-STD_out = std(data_masked,1,[1,2],"omitnan"); %note TBD is w=0 or w=1 is the right way to do it (see documentation for details)
+STD_out = std(data_masked,0,[1,2],"omitnan"); 
 STD_out = squeeze(STD_out);
 
 if returnNaNbool == 0 
