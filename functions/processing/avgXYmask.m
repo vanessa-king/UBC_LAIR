@@ -35,6 +35,7 @@ end
 comment = sprintf("avgMaskFast(didv:%s x %s x %s, mask:%s x %s, returnNaNbool: %s)|", mat2str(size(data,1)), mat2str(size(data,2)), mat2str(size(data,3)), mat2str(size(mask, 1)), mat2str(size(mask, 2)), num2str(returnNaNbool));
 
 %mask: 0 -> NaN
+mask = double(mask);
 mask(mask==0) = NaN;
 
 %applying mask to data (triv. extendsion in 3rd dim applies) 
