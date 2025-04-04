@@ -881,9 +881,9 @@ clearvars LayoutCase dataset variableIn savefigpath plot_name
 % Presets
 % Define dataset and input/output variables here
 dataset = 'grid';           % specify which dataset to be used: e.g., grid
-variableIn1 = 'V_reduced';  % specify the first input variable, x axis. To plot dIdV, this should be V_reduced
+variableIn1 = 'V';  % specify the first input variable, x axis. To plot dIdV, this should be V_reduced
 variableIn2 = 'avg_dIdV';   % specify the second input variable, y axis. e.g. avg_IV or avg_dIdV. Match it to what you process in PA02A, PD01A or PD01B.
-variableIn3 = 'avg_dIdV_bwd';    % If you don't want a two plot graph (e.g. foward and backward) you must set this as an emptry string, i.e. variableIn3 = ''    
+variableIn3 = '';    % If you don't want a two plot graph (e.g. foward and backward) you must set this as an emptry string, i.e. variableIn3 = ''    
                             % If you want to plot forward and backward separtely but together in one plot, varialbeIn2 and variableIn3 
                             % should be specified accordingly. e.g. variableIn2 = avg_IV, variableIn3 = avg_IV_bwd; variableIn2 = avg_dIdV, variableIn3 = avg_dIdV_bwd.                          
 savefigpath = '';       % This is to define the folder where the created figure to be saved. If you choose '' then 
