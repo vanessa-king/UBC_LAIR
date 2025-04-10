@@ -89,7 +89,8 @@
     % PD01A Processing-Derivative-01-A; create a regular dIdV for I-V
     % PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V)
     % PC02A Processing-Correcting-02-A; correct the grid for drift 
-    % PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
+    % PF01A Processing-Flatten-01-A; Subtracts the plane in topography images
+    % PI03A Processing-Image-01-A; apply function to two images (add, subtract, ...)
     
 %Visualizing
     % VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias
@@ -730,7 +731,7 @@ clearvars plot_name targetFolder theta
 
 
 
-%% PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
+%% PF01A Processing-Flatten-01-A; Subtracts the plane in topography images
 %Edited by Rysa Greenwood Nov 2023, Rysa May 2024
 % This section of code subtracts a plane to 'flatten' the image
 
@@ -774,7 +775,59 @@ clearvars dataset variableIn1 variableIn2 variableIn3 variableOut
 clearvars n plot
 clearvars plotname
 
+%% PI03A Processing-Image-01-A; apply function to two images (add, subtract, ...)
+% Edited by M. Altthaler 2025/04
+% This section of code applies a function (add, subtract, multiply, divide) 
+% to two images. Masks can be applied to each image. 
 
+% presets:
+dataset1 ='topo1';      %specify the 1st dataset to be used: e.g. topo
+variableIn1 = 'z';      %specify the variable in the 1st dataset: e.g. z 
+
+dataset2 ='topo2';      %specify the 2nd dataset to be used: e.g. topo
+variableIn2 = 'z';      %specify the variable in the 2nd dataset: e.g. z
+
+type = 'subtract';           %specify function to be applied: e.g. 'add' 
+
+
+% optional variable inputs: [] when unused
+% masks
+variableIn3 = [];       %specify the mask for the 1st image 
+variableIn4 = [];       %specify the mask for the 2nd image
+
+% 3D->2D conversion (only required for grid->energy slice conversion)
+%1st image:                               
+n1 = [];               % slice number (n-th index of 3rd dim of data) [variableIn5 optional]
+variableIn5 = [];      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+V_target_1 = [];       % target voltage -> closest value in variableIn2 is chosen [requires variableIn5]
+
+%2nd image:                               
+n2 = [];               % slice number (n-th index of 3rd dim of data) [variableIn6 optional]
+variableIn6 = [];      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+V_target_2 = [];       % target voltage -> closest value in variableIn2 is chosen [requires variableIn6]
+     
+
+% return variables: 
+variableOut1 = 'combinedImage';     % name of output varibale    
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% LOG data in/out
+LOGcomment = sprintf("dataset1 = %s; variableIn1 = %s; dataset2 = %s; variableIn2 = %s; type = %s; variableOut1 = %s;", dataset1, variableIn1, dataset2, variableIn2, type, variableOut1);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PI01A", LOGcomment ,0);
+LOGcomment = sprintf("variableIn3 = %s; variableIn4 = %s; n1=%s; variableIn5 = %s; V_target_1=%s, n2=%s; variableIn6 = %s; V_target_2=%s;", variableIn3, variableIn4, mat2str(n1), variableIn5, mat2str(V_target_1), mat2str(n2), variableIn6, mat2str(V_target_2));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
+%execute function
+[data.(dataset1).(variableOut1), LOGcomment] = twoImagesApplyFunction(requiredStructCall(data,dataset1,variableIn1),requiredStructCall(data,dataset2,variableIn2),type,optionalStructCall(data, dataset1,variableIn3),optionalStructCall(data, dataset2,variableIn4),n1,optionalStructCall(data, dataset1,variableIn5),V_target_1,n2,optionalStructCall(data, dataset2,variableIn6),V_target_2);
+data.(dataset2).(variableOut1)=data.(dataset1).(variableOut1); %save image in both datasets
+
+% log the function of excuation 
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
+% clear excess variables
+clearvars dataset1 dataset2 variableIn1 variableIn2 variableIn3 variableIn4 variableIn5 variableIn6 variableOut1 
+clearvars type n1 n2 V_target_1 V_target_2
 %% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias 
 
 % Edited by James October 2023, Jiabin July 2024, Rysa Sept 2024
