@@ -797,14 +797,14 @@ variableIn4 = [];       %specify the mask for the 2nd image
 
 % 3D->2D conversion (only required for grid->energy slice conversion)
 %1st image:                               
-n1 = [];               % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
+n1 = [];               % slice number (n-th index of 3rd dim of data) [variableIn5 optional]
 variableIn5 = [];      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
-V_target_1 = [];       % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
+V_target_1 = [];       % target voltage -> closest value in variableIn2 is chosen [requires variableIn5]
 
-%1st image:                               
-n2 = [];               % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
+%2nd image:                               
+n2 = [];               % slice number (n-th index of 3rd dim of data) [variableIn6 optional]
 variableIn6 = [];      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
-V_target_2 = [];       % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
+V_target_2 = [];       % target voltage -> closest value in variableIn2 is chosen [requires variableIn6]
      
 
 % return variables: 
