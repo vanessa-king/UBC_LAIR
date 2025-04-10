@@ -89,7 +89,8 @@
     % PD01A Processing-Derivative-01-A; create a regular dIdV for I-V
     % PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V)
     % PC02A Processing-Correcting-02-A; correct the grid for drift 
-    % PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
+    % PF01A Processing-Flatten-01-A; Subtracts the plane in topography images
+    % PI03A Processing-Image-01-A; apply function to two images (add, subtract, ...)
     
 %Visualizing
     % VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias
@@ -730,7 +731,7 @@ clearvars plot_name targetFolder theta
 
 
 
-%% PF01A Processing-Flatten-01-A; Subtracts the plane in topography images;
+%% PF01A Processing-Flatten-01-A; Subtracts the plane in topography images
 %Edited by Rysa Greenwood Nov 2023, Rysa May 2024
 % This section of code subtracts a plane to 'flatten' the image
 
@@ -774,7 +775,7 @@ clearvars dataset variableIn1 variableIn2 variableIn3 variableOut
 clearvars n plot
 clearvars plotname
 
-%% PA03A Processing-Image-01-A; apply function to two images (add, subtract, ...)
+%% PI03A Processing-Image-01-A; apply function to two images (add, subtract, ...)
 % Edited by M. Altthaler 2025/04
 % This section of code applies a function (add, subtract, multiply, divide) 
 % to two images. Masks can be applied to each image. 
@@ -786,10 +787,10 @@ variableIn1 = 'z';      %specify the variable in the 1st dataset: e.g. z
 dataset2 ='topo2';      %specify the 2nd dataset to be used: e.g. topo
 variableIn2 = 'z';      %specify the variable in the 2nd dataset: e.g. z
 
-type = 'divide';           %specify function to be applied: e.g. 'add' 
+type = 'subtract';           %specify function to be applied: e.g. 'add' 
 
 
-% optional variable inputs:
+% optional variable inputs: [] when unused
 % masks
 variableIn3 = [];       %specify the mask for the 1st image 
 variableIn4 = [];       %specify the mask for the 2nd image
@@ -813,7 +814,7 @@ variableOut1 = 'combinedImage';     % name of output varibale
 
 % LOG data in/out
 LOGcomment = sprintf("dataset1 = %s; variableIn1 = %s; dataset2 = %s; variableIn2 = %s; type = %s; variableOut1 = %s;", dataset1, variableIn1, dataset2, variableIn2, type, variableOut1);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM05A", LOGcomment ,0);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PI01A", LOGcomment ,0);
 LOGcomment = sprintf("variableIn3 = %s; variableIn4 = %s; n1=%s; variableIn5 = %s; V_target_1=%s, n2=%s; variableIn6 = %s; V_target_2=%s;", variableIn3, variableIn4, mat2str(n1), variableIn5, mat2str(V_target_1), mat2str(n2), variableIn6, mat2str(V_target_2));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
