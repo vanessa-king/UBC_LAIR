@@ -58,7 +58,18 @@
 
 %% Block List
 % QC01A QPI-Compute-01-A; Compute QPI from dIdV/Lockin dIdV data
-
+% Pre-QPI grid processing 
+% ; DriftCorr(wishlist) & Crop grid  
+% ; Streaks Remove 
+% ; Defect Masking 
+% QPI Processing
+% ; Bragg Align
+% ; Data Symmetrize
+% ; 3D Slice - energy or spatial
+% QPI Visualization 
+% ; Grid/QPI Viewer/Printout(default False)
+% ; 3D cut 
+% Theory Slice
 
 %% QC01A QPI-Compute-01-A; Compute QPI from dIdV/Lockin dIdV data
 % Edited by Dong Chen in Apr 2025
@@ -93,3 +104,10 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 % Clean up variables
 clearvars dataset variableIn variableOut inputData
 
+%% Simple Crop data
+target_data=QPI;
+target_slice=56;
+mask= gridMaskRectangle(target_data(:,:,target_slice));
+% make mask 3d
+mask= mask*ones(size(target_data));
+cropped_data= gridCropmask(target_data, mask);
