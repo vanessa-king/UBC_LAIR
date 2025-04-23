@@ -1,4 +1,4 @@
-function [Biases,comment] = spectrum_on_topo(spectra, z_img, x_position_img, y_position_img)
+function [Biases,comment] = spectrum_on_topo_historical(spectra, z_img, x_position_img, y_position_img)
 % spectra_on_topo plot the spectra and labels where the spectra is relative to the topograph. 
 %   spectra = name of the spectra 
 %   z_img = the topographic image. 
