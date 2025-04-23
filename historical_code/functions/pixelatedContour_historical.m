@@ -1,4 +1,4 @@
-function [x, y] = pixelatedContour(sg, opt)
+function [x, y] = pixelatedContour_historical(sg, opt)
 %pixelatedContour Pixelated contour computation.
 %   pixelatedContour(SG) computes the pixelated contours of connected 
 %   components in the indexed image SG. The indexed image, SG, is an m-by-n

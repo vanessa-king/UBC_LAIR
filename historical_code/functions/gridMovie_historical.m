@@ -10,7 +10,7 @@
 % v: a VideoWriter object to write a new Motion JPEG AVI file (defined just before calling this function). This is purely optional: if you give this (third) argument, v will result in saving the video; if you do not give this (third) argument, the movie is made but not saved.
 %
 
-function gridMovie(didv, V_reduced, v)
+function gridMovie_historical(didv, V_reduced, v)
 
 if nargin > 2, open(v), end
 

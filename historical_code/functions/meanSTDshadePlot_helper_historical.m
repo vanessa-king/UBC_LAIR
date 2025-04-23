@@ -1,4 +1,4 @@
-function [f,comment] = meanSTDshadePlot_helper(meanData, STDdata, xAxis, preexFig, LayoutCase,STD_transp,STD_lwidth,mean_lwidth,STD_pcolorb,mean_pcolorb)
+function [f,comment] = meanSTDshadePlot_helper_historical(meanData, STDdata, xAxis, preexFig, LayoutCase,STD_transp,STD_lwidth,mean_lwidth,STD_pcolorb,mean_pcolorb)
 %UNTITLED7 Summary of this function goes here
 %   Detailed explanation goes here
 

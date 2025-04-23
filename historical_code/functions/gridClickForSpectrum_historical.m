@@ -1,4 +1,4 @@
-function [comment] = gridClickForSpectrum(didv, V_reduced, imageV, offset, n, pointsList)
+function [comment] = gridClickForSpectrum_historical(didv, V_reduced, imageV, offset, n, pointsList)
 %creates a GUI window where you can select a point(s), then it plots the spectra from that point(s). 
 %   Plots a 2D slice of the didv data at the closest value of V_reduced to 
 %   the set value imageV. From this figure up to n points can be selected 
