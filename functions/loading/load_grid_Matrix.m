@@ -53,11 +53,20 @@ if find(abs(diff(sign(diff(Vraw)))))
     %forward and backward bias scans were done
     NV = length(Vraw)/2; 
     grid.V = Vraw(1:NV);
-    grid.I_all = I_dbl(1:NV,:,:);
-    grid.I_backward_all = flip(I_dbl(NV+1:2*NV,:,:),1);
+    I_all = I_dbl(1:NV,:,:);
+    %permute the matrix from [V, x, y] -> [x, y, V]
+    grid.I_all = permute(I_all, [2, 3, 1]); 
+
+    I_backward_all = flip(I_dbl(NV+1:2*NV,:,:),1);
+    %permute the matrix from [V, x, y] -> [x, y, V]
+    grid.I_backward_all = permute(I_backward_all, [2, 3, 1]);
+
+
 else %only forward was done
     grid.V = Vraw;
-    grid.I_all = I_dbl;
+    I_all = I_dbl;
+    %permute the matrix from [V, x, y] -> [x, y, V]
+    grid.I_all = permute(I_all, [2, 3, 1]); 
 end
 
 % This section is to remove NaN values from a partial grid. 
