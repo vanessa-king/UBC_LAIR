@@ -93,13 +93,14 @@
     % PI03A Processing-Image-01-A; apply function to two images (add, subtract, ...)
     
 %Visualizing
-    % VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias
-    % VT02A Visualize-Topo-02-A; 2D Image Plotting (topography or grid slice)
-    % VS01A Visualize-Spectrum-01-A; plot average I-V or dI/dV
+    % VT03A Visualize-Topo-03-A;  2D Image Plotting (topography or grid slice)
+    % VS01A Visualize-Spectrum-01-A; plot average I-V or average dI/dV
     % VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
     % VS04A Visualize-Spectra-04-A: Unified Plotting of I/V and dI/dV Profiles
     % VG01A Visualize-Grid-01-A: gridslice viewer for all grids (including the non-square one)
 %Retired
+    % R-VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias
+    % R-VT02A Visualize-Topo-02-A; 2D Image Plotting (topography)
     % R-LI01A Load-Initialize-01-A; Initializing the log file and choosing the data
     % R-LG01A Load-Grid-01-A; load grid 
     % R-LG01B Load-Grid-01-B; load grid and topo from Nanonis
@@ -361,7 +362,7 @@ variableIn = 'I';          % specify the variable to be processed
 variableOut = 'directional_masks';     % specify the variable name to store the masks
 connected = false;         % flag for side connectivity in mask generation
 
-% Optional parameters (comment out if not needed):
+% Optional parameters:
 startPoint = [];           % [x,y] coordinates of start point, empty for interactive
 endPoint = [];            % [x,y] coordinates of end point, empty for interactive
 bin_size = 2;             % number of masks to combine in each bin
@@ -399,20 +400,22 @@ clearvars dataset variableIn variableOut connected startPoint endPoint bin_size 
 dataset ='grid';            % specify the dataset to be used: e.g. grid
 variableIn1 = 'I';       % specify the data (2D or 3D) to use to create the mask
 radius = 3;                 % radius R: the size of the circular mask
+
 % optional variable inputs
 % set values to [] if not used
-                                % Relevant inputs for slicing 3D -> 2D data:
+% Relevant inputs for slicing 3D -> 2D data:
 n = 113;                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
-variableIn2 = 'V';      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+variableIn2 = 'V';      % Voltage axis for the 3D data set: e.g. 'V_reduced' for dIdV or 'V' for I(V)
 imageV = [];                 % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
 
+% return variables:
 variableOut1 = 'circular_mask';              % return the function of execution
 variableOut2 = 'num_in_mask';
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % LOG data in/out
-LOGcomment = sprintf("dataset = %s; variableIn1 = %s; radius = %s; variableIn2 = %s; imageV = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1, num2str(radius), variableIn2, num2str(imageV), variableOut1, variableOut2);
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; radius = %s; n = %s; variableIn2 = %s; imageV = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1, num2str(radius), num2str(n), variableIn2, num2str(imageV), variableOut1, variableOut2);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM02A", LOGcomment ,0);
 
 % excute the function
@@ -448,20 +451,22 @@ clearvars imageV radius targetFolder plot_name
 % presets:
 dataset ='grid';              %specify the dataset to be used: e.g. grid
 variableIn1 = 'I';         % specify the data (2D or 3D) to use to create the mask
+
 % optional variable inputs
 % set values to [] if not used
-                                % Relevant inputs for slicing 3D -> 2D data:
+% Relevant inputs for slicing 3D -> 2D data:
 n = 113;                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
-variableIn2 = 'V';      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+variableIn2 = 'V';      % Voltage axis for the 3D data set: e.g. 'V_reduced' for dIdV or 'V' for I(V)
 imageV = [];                 % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
 
+% return variables:
 variableOut1 = 'rectangular_mask';              % return the function of execution
 variableOut2 = 'Num_in_mask';
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % LOG data in/out
-LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1, variableIn2, num2str(imageV), variableOut1, variableOut2);
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; n =%s; variableIn2 = %s; imageV = %s; variableOut1 = %s; variableOut2 = %s; ", dataset, variableIn1, num2str(n), variableIn2, num2str(imageV), variableOut1, variableOut2);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM03A", LOGcomment ,0);
 
 % excute the function
@@ -496,11 +501,12 @@ clearvars imageV targetFolder plot_name
 dataset ='grid';                %specify the dataset to be used: e.g. grid or topo
 variableIn1 = 'I';           % specify the data (2D or 3D) to use to create the mask
 plot_histograms = true;         % true if you would like to see the intermediate histogram to help choose your desired threshold value; false if not
+
 % optional variable inputs
 % set values to [] if not used
-                                % Relevant inputs for slicing 3D -> 2D data:
+% Relevant inputs for slicing 3D -> 2D data:
 n = 111;                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
-variableIn2 = 'V';      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+variableIn2 = 'V';      % Voltage axis for the 3D data set: e.g. 'V_reduced' for dIdV or 'V' for I(V)
 imageV = [];                  % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
                                 
 % return variables: 
@@ -537,11 +543,12 @@ clear plot_name
 % presets:
 dataset ='grid';                %specify the dataset to be used: e.g. grid
 variableIn1 = 'I';              % specify the data (2D or 3D) to use to create the mask
+
 % optional variable inputs
 % set values to [] if not used
-                                % Relevant inputs for slicing 3D -> 2D data:
+% Relevant inputs for slicing 3D -> 2D data:
 n = 111;                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
-variableIn2 = 'V';              % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+variableIn2 = 'V';              % Voltage axis for the 3D data set: e.g. 'V_reduced' for dIdV or 'V' for I(V)
 imageV = [];                  % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
                                 
 positionsIn = [];               % list of points for the polygon in the format: [x1 y1; x2 y2; ...; xn yn]; 
@@ -574,7 +581,7 @@ clearvars imageV targetFolder plot_name
 %presets:
 dataset = 'grid';   % specify the dataset to be used: e.g. grid
 variableIn = 'I';  % specify the variable to be processed, e.g. I. Note that by default ‘I’ is the forward scan
-variableOut = 'I_smoothed'; % specify the variable to return the data to, e.g. I (overwrite data) or I_smoothed
+variableOut = 'I_smoothed'; % specify the variable to return the data to, e.g. I_smoothed
 span = 3;       %size of the moving window. E.g. 3: for nearest neighbor averaging; 5 for next nearast neighbor averaging.
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -595,14 +602,19 @@ clearvars dataset variableIn variableOut span
 % Presets
 % Define dataset and input/output variables here
 dataset = 'grid';               % specify the dataset to be used: e.g., grid
-variableIn1 = 'I';     % the variable that you want to average. e.g. I_forward, I_backward
+variableIn1 = 'dIdV';     % the variable that you want to average. e.g. I_forward, I_backward
                                 % If you want to average dIdV, you need to run PD01A or PD01B first. 
                                 % Also you can input dIdV_forward or dIdV_backward to get average 
                                 % of foward or backward only average dIdV.
-variableIn2 = 'polygon_mask';  %Mask to apply to data. If none variableIn2 = '';
-variableOut1 = 'avg_dIdV';        % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
-                                % or avg_dIdV_fwd or avg_dIdV_bwd
 
+% optional variable input: set value to [] if not used
+variableIn2 = [];  % If you want to average I-V or dIdV only in the masked area, specify the mask here. 
+                               % You need to run one of Selecting blocks:
+                               % e.g. run SM05A and set the variableIn2 as 'polygon_mask'.
+
+% return variables:
+variableOut1 = 'avg_dIdV';      % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
+                                % or avg_dIdV_fwd or avg_dIdV_bwd
 variableOut2 = 'dIdV_STD';      %standard deviation
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Log input and output variables
@@ -626,7 +638,7 @@ clearvars dataset variableIn1 variableOut1
 
 %presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
-variableIn1 = 'I'; % specify the variable to be processed, e.g. I, or I_backward
+variableIn1 = 'I_smoothed'; % specify the variable to be processed, e.g. I, I_smoothed, or I_backward
                             % this is a 3d array form (x, y, V)
 variableIn2 = 'V';          % specify the variable to be processed, e.g. V or Z
                             % this is a 1d array form (V, 1)
@@ -656,12 +668,14 @@ clearvars variableOut1 variableOut2
 dataset = 'grid';           % Specify the dataset to be used, e.g., grid.
 variableIn1 = 'I_smoothed'; % Specify the variable to be processed, e.g. I, I_Forward, or I_Backward.
                             % This is a 3d array form (x, y, V).
-variableIn2 = 'V';          % Specify the variable to be processed, e.g. V or Z.
+variableIn2 = 'V';          % Specify the variable to be processed, e.g. V.
                             % This is a 1d array form (V, 1).
 C = 3E-10;                  % This is a pneumetic value to deal with the diverging value at V=0 while normalizing.
-savefigpath = '';           % This is to define the folder where the created figure to be saved. If you choose '' then 
-                            % it will pop up a window for a user to select the folder to save the figure. Or you can
-                            % just directly put a path here: e.g. savefigpat = LOGpath. This must be string.
+
+% define the folder where the created figure to be saved
+savefigpath = '';   % If you choose '', it will pop up a window for a user to select the folder to save the figure.
+                    % Or you can just directly put a path here: e.g. savefigpat = LOGpath. This must be string.
+
                             
 variableOut1 = 'norm_dIdV'; % This is a 3d array form (x, y, V-1).                            
 variableOut2 = 'V_reduced'; % This is a 1d array form (V-1, 1).                            
@@ -727,9 +741,6 @@ saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
 %clear excess variables that may create issues in other blocks
 clearvars datasetGrid variableGrid datasetTopoBefore variableTopoBefore datasetTopoAfter variableTopoAfter datasetOut variableOut
 clearvars plot_name targetFolder theta
-
-
-
 
 %% PF01A Processing-Flatten-01-A; Subtracts the plane in topography images
 %Edited by Rysa Greenwood Nov 2023, Rysa May 2024
@@ -885,29 +896,36 @@ saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
 % clear excess variables
 clearvars dataset variableIn1 variableIn2
 clearvars bias_of_interest targetFolder plot_name defaultname
-%% VT02A Visualize-Topo-02-A; 2D Image Plotting (topography or grid slice)
-% Edited by Dong Chen Sep 2024.
+%% VT03A Visualize-Topo-01-A; 2D Image Plotting (topography or grid slice)
 % This section of code generates a 2D image of data using the specified layout format.
 % The layout can be 'gridsliceImage' or 'topoImage'. The image will be saved to a specified folder.
 
-%Dong Chen 2024; M. Altthaler 2024/12
+%Dong Chen 2024; M. Altthaler 2024/12; Jisun 2025/4
 
 % Presets:
-LayoutCase = 'topoImage';   % specify the layout format: 'gridsliceImage' or 'topoImage'
-dataset = 'topo';           % specify the dataset to be used: e.g. grid
-variableIn = 'z';           % specify the variable containing the data to be plotted: e.g. dataVariable
+LayoutCase = 'gridsliceImage';   % specify the layout format: gridsliceImage or topoImage
+dataset = 'grid';           % specify the dataset to be used: e.g. grid, topo
+variableIn1 = 'dIdV';           % specify the variable containing the data to be plotted: e.g. z, dIdV
 
-% Variables for function execution
-savefigpath = "";           % specify a directory to save the figure, or leave blank to select manually
+% optional variable inputs
+% set values to [] if not used
+% Relevant inputs for slicing 3D -> 2D data:
+n = [];                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
+variableIn2 = 'V_reduced';      % Voltage axis for the 3D data set: e.g. 'V_reduced' for dIdV or 'V' for I(V)
+imageV = 0.02;  
+
+% define the folder where the created figure to be saved
+savefigpath = '';   % If you choose '', it will pop up a window for a user to select the folder to save the figure.
+                    % Or you can just directly put a path here: e.g. savefigpat = LOGpath. This must be string.
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % LOG data in/out
-LOGcomment = sprintf("LayoutCase = %s; dataset = %s; variableIn = %s; ", LayoutCase, dataset, variableIn);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT02A", LOGcomment, 0);
+LOGcomment = sprintf("LayoutCase = %s; dataset = %s; variableIn1 = %s; n = %s; variableIn2 = %s; imageV = %s; ", LayoutCase, dataset, variableIn1, num2str(n), variableIn2, num2str(imageV));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT03A", LOGcomment, 0);
 
 % Execute the function
-[data.(dataset).figureHandle, data.(dataset).plotName, data.(dataset).savePath, LOGcomment] = plot2DImage(LayoutCase, data.(dataset).(variableIn), savefigpath);
+[data.(dataset).figureHandle, data.(dataset).plotName, data.(dataset).savePath, LOGcomment] = plot2DImage(LayoutCase, data.(dataset).(variableIn1), savefigpath, n, optionalStructCall(data, dataset,variableIn2), imageV);
 
 % Log the execution of the function
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
@@ -926,23 +944,27 @@ saveUsedBlocksLog(LOGpath, LOGfile, savefigpath, strcat(plot_name));
 % Clear excess variables
 clearvars LayoutCase dataset variableIn savefigpath plot_name
 
-%% VS01A Visualize-Spectrum-01-A; plot I-V or dI/dV
+%% VS01A Visualize-Spectrum-01-A; plot average I-V or average dI/dV
 % Edited by Jisun Kim Oct 2023, again in Feb 2024, Dong Chen June 2024, Jisun Kim July and Dec 2024
 % This section of code plots average I versus V or average dI/dV versus V.
 % You have an option to plot forward I (or dIdV) and backward I (or dIdV) separately but together in one plot.
 
 % Presets
 % Define dataset and input/output variables here
-dataset = 'grid';           % specify which dataset to be used: e.g., grid
-variableIn1 = 'V';  % specify the first input variable, x axis. To plot dIdV, this should be V_reduced
-variableIn2 = 'avg_dIdV';   % specify the second input variable, y axis. e.g. avg_IV or avg_dIdV. Match it to what you process in PA02A, PD01A or PD01B.
-variableIn3 = '';    % If you don't want a two plot graph (e.g. foward and backward) you must set this as an emptry string, i.e. variableIn3 = ''    
-                            % If you want to plot forward and backward separtely but together in one plot, varialbeIn2 and variableIn3 
-                            % should be specified accordingly. e.g. variableIn2 = avg_IV, variableIn3 = avg_IV_bwd; variableIn2 = avg_dIdV, variableIn3 = avg_dIdV_bwd.                          
-savefigpath = '';       % This is to define the folder where the created figure to be saved. If you choose '' then 
-                        % it will pop up a window for a user to select the folder to save the figure. Or you can
-                        % just directly put a path here: e.g. savefigpat = LOGpath. This must be string.
-LayoutCase = 'dIdV_fwdbwd'; % Both LayoutCase 'IV_fwdbwd' and 'dIdV_fwdbwd' assume that variableIn2 is for fwd and varialbeIn3 for bwd.
+dataset = 'grid';           % specify which dataset to be used: e.g. grid
+variableIn1 = 'V_reduced';  % specify the first input variable, x axis. V for I-V plot and V_reduced for dIdV plot
+variableIn2 = 'avg_dIdV';   % specify the second input variable, y axis: e.g. avg_IV or avg_dIdV. You need to run PA02A first. 
+                          % Match it to what you process in PA02A.
+
+% optional variable input, set value to [] if not used
+variableIn3 = [];    % If you want to plot forward and backward separtely but together in one plot, varialbeIn2 and variableIn3 should be 
+                     % specified accordingly. e.g. variableIn2 = avg_IV, variableIn3 = avg_IV_bwd; variableIn2 = avg_dIdV, variableIn3 = avg_dIdV_bwd.                          
+
+% define the folder where the created figure to be saved
+savefigpath = '';   % If you choose '', it will pop up a window for a user to select the folder to save the figure.
+                    % Or you can just directly put a path here: e.g. savefigpat = LOGpath. This must be string.
+
+LayoutCase = 'dIdV'; % Both LayoutCase 'IV_fwdbwd' and 'dIdV_fwdbwd' assume that variableIn2 is for fwd and varialbeIn3 for bwd.
                             % If you put bwd data as varialbeIn2 and fwd data as variableIn3, the label will be incorrect (reversed). 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Log input and output variables 
