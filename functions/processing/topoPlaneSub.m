@@ -34,18 +34,22 @@ num_valid_points = numel(valid_x);
 if num_valid_points < n
     warning('Not enough valid points in mask; using all available points.');
     n = num_valid_points; % Adjust n if there aren't enough valid points
-    disp(n)
 end
 
-% Randomly sample n points from valid indices
-disp(n)
-rand_idx = randperm(num_valid_points, n);
-xsample = valid_x(rand_idx);
-ysample = valid_y(rand_idx);
-zsample = diag(z(xsample, ysample));
+valid_coords = [valid_x(:), valid_y(:)];
+
+if n>size(valid_coords, 1)
+    warning('Requested more points than available. Using all.')
+    sampledCoords = validCoords;
+else
+    idx = round(linspace(1, size(valid_coords, 1), n)); %take n evenly spaced samples from the list of valid coordinates defined by given mask
+    sampledCoords = valid_coords(idx, :);
+end
+
+zsample = diag(z(sampledCoords(:,1), sampledCoords(:,2)));
 
 % fit
-f = fit([xsample, ysample], zsample, 'poly11'); % do a fit for a plane, poly11 is for 2D 1st order polynomial
+f = fit([sampledCoords(:,1), sampledCoords(:,2)], zsample, 'poly11'); % do a fit for a plane, poly11 is for 2D 1st order polynomial
 [Y,X] = meshgrid(1:numel(y), 1:numel(x));
 plane = f.p00 + f.p10*X + f.p01*Y;
 z_flat = imsubtract(z,plane); % new topography image
