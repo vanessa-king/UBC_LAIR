@@ -362,9 +362,10 @@ variableIn = 'I';          % specify the variable to be processed
 variableOut = 'directional_masks';     % specify the variable name to store the masks
 connected = false;         % flag for side connectivity in mask generation
 
-% Optional parameters:
-startPoint = [];           % [x,y] coordinates of start point, empty for interactive
-endPoint = [];            % [x,y] coordinates of end point, empty for interactive
+% Optional variable inputs
+% set values to [] if not used
+startPoint = [];           % [x,y] coordinates of start point, [] for interactive selection
+endPoint = [];            % [x,y] coordinates of end point, [] for interactive selection
 bin_size = 2;             % number of masks to combine in each bin
 bin_sep = 3;              % separation between consecutive bins
 
