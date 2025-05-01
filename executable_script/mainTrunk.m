@@ -347,6 +347,7 @@ clearvars dataset variableIn1 variableOut
 
 %% SM01A Selecting-Mask-01-A; creates directional masks for data analysis
 % Edited by Dong Chen in Dec 2024
+% Description: 
 % Generates directional masks for analyzing 2D or 3D datasets along a user-defined line,
 % with adjustable perpendicular width selected either interactively or programmatically. 
 % These masks enable directional averaging, orientation-specific analysis, 
@@ -354,6 +355,14 @@ clearvars dataset variableIn1 variableOut
 % multiple masks to be combined into grouped regions using customizable bin size and spacing, 
 % making it suitable for downsampling or analyzing repeated patterns. 
 % If the input is 3D, a specific slice can be selected for mask creation.
+% Example Outputs
+% 1 — data.grid.directional_masks:
+%   A 3D logical array where each slice is a thin rectangular mask perpendicular to the chosen direction, 
+%   covering part of the data. These masks trace along the line and can be used to average or extract data along that direction.
+% 2 — data.grid.directional_masks_combined(if bin_size=2 and bin_sep=3 are given):
+%   A second 3D array where every 3 consecutive masks (with step size 2) are merged into a single mask slice. 
+%   This allows coarse-grained directional analysis, useful for statistics or trend detection.
+% 
 %presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
 variableIn = 'I';          % specify the variable to be processed   
