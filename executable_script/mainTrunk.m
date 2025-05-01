@@ -347,15 +347,13 @@ clearvars dataset variableIn1 variableOut
 
 %% SM01A Selecting-Mask-01-A; creates directional masks for data analysis
 % Edited by Dong Chen in Dec 2024
-%
-% This section creates masks along a user-defined direction with specified width
-% and optionally combines them using binning parameters.
-%
-% The masks can be used for:
-% - Averaging data along specific directions
-% - Analyzing patterns in specific orientations
-% - Creating binned data for statistical analysis
-
+% Generates directional masks for analyzing 2D or 3D datasets along a user-defined line,
+% with adjustable perpendicular width selected either interactively or programmatically. 
+% These masks enable directional averaging, orientation-specific analysis, 
+% and localized statistical measurements. Optional binning functionality allows 
+% multiple masks to be combined into grouped regions using customizable bin size and spacing, 
+% making it suitable for downsampling or analyzing repeated patterns. 
+% If the input is 3D, a specific slice can be selected for mask creation.
 %presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
 variableIn = 'I';          % specify the variable to be processed   
@@ -366,8 +364,8 @@ connected = false;         % flag for side connectivity in mask generation
 % set values to [] if not used
 startPoint = [];           % [x,y] coordinates of start point, [] for interactive selection
 endPoint = [];            % [x,y] coordinates of end point, [] for interactive selection
-bin_size = 2;             % number of masks to combine in each bin
-bin_sep = 3;              % separation between consecutive bins
+bin_size = 2;             % number of masks to combine in each bin, empty: [] or 0
+bin_sep = 3;              % separation between consecutive bins, empty: [] or 0
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %LOG data in/out:
