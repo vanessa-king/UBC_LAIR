@@ -1,3 +1,5 @@
+QPI
+
 %% Script for QPI processing with logging
 
 %% Block logging
@@ -58,6 +60,21 @@
 
 %% Block List
 % QC01A QPI-Compute-01-A; Compute QPI from dIdV/Lockin dIdV data
+% QPI Processing ****(MUST!)****
+% ; Bragg Align(100-109)-> means you can locate this in QPI_mean_historical.m (from line - to line)
+% ; Data Symmetrize(wishlist: symmetry under an operation)(123-135)
+% ; 2D Slice from 3D data - energy or spatial(testScript_volumeSlicedView_historical.m)
+
+% Pre-QPI grid processing (No Need here, go Main_Trunk)
+% ; DriftCorr(wishlist) & Crop grid(32-38)
+% ; Streaks Remove(39-50)
+% ; Defect Masking(51-72)
+% Theory processing 
+% ; Load the Theory calculation(now only support DFT)(393-406)
+% ; JDOS calculation(414-432)
+% QPI Visualization(Maybe Main_Trunk)
+% ; Grid/QPI 3D Viewer/Printout(default False)
+% ; QPI/JDOS/DFT slice 2D Viewer/Printout(default False)
 
 
 %% QC01A QPI-Compute-01-A; Compute QPI from dIdV/Lockin dIdV data
@@ -71,7 +88,7 @@
 % - Performs 2D FFT on each energy slice
 % - Centers zero frequency using fftshift
 % - Takes absolute value for intensity mapping
-
+ 
 % presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
 variableIn = 'lock_in';       % specify the input variable (dIdV or LockindIdV)   
@@ -92,4 +109,6 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % Clean up variables
 clearvars dataset variableIn variableOut inputData
+
+
 

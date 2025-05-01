@@ -349,7 +349,8 @@ clearvars dataset variableIn1 variableOut
 % Edited by Dong Chen in Dec 2024
 %
 % This section creates masks along a user-defined direction with specified width
-% and optionally combines them using binning parameters.
+% and optionally combines them using binning parameters. If bin_size and
+% bin_sep are provided(not empty:either [] or 0), the function also output combined mask. 
 %
 % The masks can be used for:
 % - Averaging data along specific directions
@@ -366,8 +367,8 @@ connected = false;         % flag for side connectivity in mask generation
 % set values to [] if not used
 startPoint = [];           % [x,y] coordinates of start point, [] for interactive selection
 endPoint = [];            % [x,y] coordinates of end point, [] for interactive selection
-bin_size = 2;             % number of masks to combine in each bin
-bin_sep = 3;              % separation between consecutive bins
+bin_size = 2;             % number of masks to combine in each bin, empty: [] or 0
+bin_sep = 3;              % separation between consecutive bins, empty: [] or 0
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %LOG data in/out:
