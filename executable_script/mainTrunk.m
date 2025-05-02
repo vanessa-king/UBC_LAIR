@@ -347,17 +347,29 @@ clearvars dataset variableIn1 variableOut
 
 %% SM01A Selecting-Mask-01-A; creates directional masks for data analysis
 % Edited by Dong Chen in Dec 2024
-% Description: 
+% Description:
 % Generates directional masks for analyzing 2D or 3D datasets along a user-defined line,
-% with adjustable perpendicular width selected either interactively or programmatically. 
-% These masks enable directional averaging, orientation-specific analysis, 
-% and localized statistical measurements. If no bin parameters are given, 
-% it returns an output variable, data.grid.directional_masks, which has 
-% a size of (X,Y,Number_thin_masks). When you specify the optional variables, 
-% bin_size and bin_sep, they act on the 3rd dimension of the output variable, data.grid.directional_masks,
-% such that the i th bin is selected as (:,:,1+(i-1)*bin_sep:1+(i-1)*bin_sep+bin_size). 
-% And it will return an additional output variable, data.grid.directional_masks_combined, 
-% with these selected bins. 
+% with adjustable perpendicular width selected either interactively or programmatically.
+% These masks allow directional averaging, orientation-specific filtering, or local
+% statistical analysis.
+% By default, the function outputs:
+%   data.grid.directional_masks — a 3D array of logical masks with size (X, Y, N),
+%   where N is the number of narrow masks generated perpendicular to the main line.
+% Optional parameters `bin_size` and `bin_sep` allow you to group (or "bin") these
+% N narrow masks along the 3rd dimension into wider, combined masks for coarser analysis:
+%
+%   - bin_size:   The number of adjacent masks to combine into each bin.
+%   - bin_sep:    The number of masks to move forward before starting the next bin.
+%
+% For example, setting bin_size = 2 and bin_sep = 3 results in bins that use every 3rd
+% mask, each bin containing 2 consecutive masks:
+%   Bin 1 → masks(:,:,1:2)
+%   Bin 2 → masks(:,:,4:5)
+%   Bin 3 → masks(:,:,7:8)
+%
+% This creates an additional output:
+%   data.grid.directional_masks_combined — a 3D array with fewer, wider masks.
+% Overlapping bins (bin_sep < bin_size) and gapped bins (bin_sep > bin_size) are allowed.
 
 %presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
