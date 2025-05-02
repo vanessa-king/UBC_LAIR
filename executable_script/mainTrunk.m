@@ -357,7 +357,6 @@ clearvars dataset variableIn1 variableOut
 %   where N is the number of narrow masks generated perpendicular to the main line.
 % Optional parameters `bin_size` and `bin_sep` allow you to group (or "bin") these
 % N narrow masks along the 3rd dimension into wider, combined masks for coarser analysis:
-%
 %   - bin_size:   The number of adjacent masks to combine into each bin.
 %   - bin_sep:    The number of masks to move forward before starting the next bin.
 %
@@ -381,8 +380,8 @@ connected = false;         % flag for side connectivity in mask generation
 % set values to [] if not used
 startPoint = [];           % [x,y] coordinates of start point, [] for interactive selection
 endPoint = [];            % [x,y] coordinates of end point, [] for interactive selection
-bin_size = 2;             % number of masks to combine in each bin, empty: [] or 0
-bin_sep = 3;              % separation between consecutive bins, empty: [] or 0
+bin_size = [];             % number of masks to combine in each bin
+bin_sep = [];              % separation between consecutive bins
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %LOG data in/out:
@@ -855,63 +854,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 % clear excess variables
 clearvars dataset1 dataset2 variableIn1 variableIn2 variableIn3 variableIn4 variableIn5 variableIn6 variableOut1 
 clearvars type n1 n2 V_target_1 V_target_2
-%% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias 
 
-% Edited by James October 2023, Jiabin July 2024, Rysa Sept 2024
-% This section visualizes a slice of dI/dV data at a user-defined bias. 
-% Features:
-% 1. Prompt the user for the bias of interest.
-% 2. Generate and save the slice plot with appropriate naming.
-% 3. Log actions using provided log blocks.
-
-
-%presets:
-dataset ='grid';              %specify the dataset to be used: e.g. grid
-variableIn1 = 'dIdV';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
-variableIn2 = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
-
-
-% variableOut1 = 'Biases';              % return the function of execution
-
-% Ask the user to enter the bias of interest
-bias_of_interest = [-2,0.5,1.5];       %specify the bias voltage (or list of voltages) to select slice, within the range of `variableIn2`
-
-
-%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% LOG data in/out
-
-LOGcomment = sprintf ("dataset = %s; variableIn1 = %s; variableIn2 = %s; bias_of_interest = %s", dataset, variableIn1, variableIn2, bias_of_interest);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VT01A", LOGcomment ,0);
-
-
-% Ask for dir of saving `figure` and the name 
-targetFolder = uigetdir([],'Choose folder to save the figure to:');
-defaultname = sprintf("bias_slice");
-plot_name = uniqueNamePrompt(defaultname, "",targetFolder);
-
-% excute the function
-[plot_names,~,LOGcomment] = gridPlotSlices(data.(dataset).(variableIn1),  data.(dataset).(variableIn2), bias_of_interest, plot_name);
-
-% log the function of execution 
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-for plt = 1:length(plot_names)
-    % LOG dir/plotname.fig
-    LOGcomment = sprintf("Figure saved as (<dir>/<plotname>.fig): %s/%s.fig", targetFolder, plot_names{plt});
-    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
-
-    % save the figures
-    savefig(strcat(targetFolder,"/",plot_names{plt},".fig"));
-
-end
-
-% function: SaveUsedBlocks
-saveUsedBlocksLog(LOGpath, LOGfile, targetFolder, plot_name);
-
-% clear excess variables
-clearvars dataset variableIn1 variableIn2
-clearvars bias_of_interest targetFolder plot_name defaultname
 %% VT03A Visualize-Topo-01-A; 2D Image Plotting (topography or grid slice)
 % This section of code generates a 2D image of data using the specified layout format.
 % The layout can be 'gridsliceImage' or 'topoImage'. The image will be saved to a specified folder.
