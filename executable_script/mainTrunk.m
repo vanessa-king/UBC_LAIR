@@ -347,13 +347,30 @@ clearvars dataset variableIn1 variableOut
 
 %% SM01A Selecting-Mask-01-A; creates directional masks for data analysis
 % Edited by Dong Chen in Dec 2024
+% Description:
 % Generates directional masks for analyzing 2D or 3D datasets along a user-defined line,
-% with adjustable perpendicular width selected either interactively or programmatically. 
-% These masks enable directional averaging, orientation-specific analysis, 
-% and localized statistical measurements. Optional binning functionality allows 
-% multiple masks to be combined into grouped regions using customizable bin size and spacing, 
-% making it suitable for downsampling or analyzing repeated patterns. 
-% If the input is 3D, a specific slice can be selected for mask creation.
+% with adjustable perpendicular width selected either interactively or programmatically.
+% These masks allow directional averaging, orientation-specific filtering, or local
+% statistical analysis.
+% By default, the function outputs:
+%   data.grid.directional_masks — a 3D array of logical masks with size (X, Y, N),
+%   where N is the number of narrow masks generated perpendicular to the main line.
+% Optional parameters `bin_size` and `bin_sep` allow you to group (or "bin") these
+% N narrow masks along the 3rd dimension into wider, combined masks for coarser analysis:
+%
+%   - bin_size:   The number of adjacent masks to combine into each bin.
+%   - bin_sep:    The number of masks to move forward before starting the next bin.
+%
+% For example, setting bin_size = 2 and bin_sep = 3 results in bins that use every 3rd
+% mask, each bin containing 2 consecutive masks:
+%   Bin 1 → masks(:,:,1:2)
+%   Bin 2 → masks(:,:,4:5)
+%   Bin 3 → masks(:,:,7:8)
+%
+% This creates an additional output:
+%   data.grid.directional_masks_combined — a 3D array with fewer, wider masks.
+% Overlapping bins (bin_sep < bin_size) and gapped bins (bin_sep > bin_size) are allowed.
+
 %presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
 variableIn = 'I';          % specify the variable to be processed   
