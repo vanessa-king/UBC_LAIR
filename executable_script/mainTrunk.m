@@ -352,9 +352,12 @@ clearvars dataset variableIn1 variableOut
 % with adjustable perpendicular width selected either interactively or programmatically. 
 % These masks enable directional averaging, orientation-specific analysis, 
 % and localized statistical measurements. If no bin parameters are given, 
-% it output data.grid.directional_masks block B:size(X,Y,N_thin_masks), bin
-% parameters act on the 3rd dimension of B, basically, the i th bin is
-% selected as B(:,:,1+(i-1)*bin_sep:1+(i-1)*bin_sep+bin_size). 
+% it returns an output variable, data.grid.directional_masks, which has 
+% a size of (X,Y,Number_thin_masks). When you specify the optional variables, 
+% bin_size and bin_sep, they act on the 3rd dimension of the output variable, data.grid.directional_masks,
+% such that the i th bin is selected as (:,:,1+(i-1)*bin_sep:1+(i-1)*bin_sep+bin_size). 
+% And it will return an additional output variable, data.grid.directional_masks_combined, 
+% with these selected bins. 
 
 %presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
