@@ -356,16 +356,16 @@ clearvars dataset variableIn1 variableOut
 % - Creating binned data for statistical analysis
 
 %presets:
-dataset = 'grid';           % specify the dataset to be used: e.g. grid
-variableIn = 'I';          % specify the variable to be processed   
-variableOut = 'directional_masks';     % specify the variable name to store the masks
+dataset = 'grid3';           % specify the dataset to be used: e.g. grid
+variableIn = 'dIdV_smoothed';          % specify the variable to be processed   
+variableOut = 'directional_masks5';     % specify the variable name to store the masks
 connected = false;         % flag for side connectivity in mask generation
 
 % Optional parameters (comment out if not needed):
 startPoint = [];           % [x,y] coordinates of start point, empty for interactive
 endPoint = [];            % [x,y] coordinates of end point, empty for interactive
-bin_size = 2;             % number of masks to combine in each bin
-bin_sep = 3;              % separation between consecutive bins
+bin_size = 5;             % number of masks to combine in each bin
+bin_sep = 1;              % separation between consecutive bins
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %LOG data in/out:
@@ -396,17 +396,19 @@ clearvars dataset variableIn variableOut connected startPoint endPoint bin_size 
 % It then plots the average dI/dV on that point. The user may toggle R and energy slice.
 
 % presets:
-dataset ='grid';            % specify the dataset to be used: e.g. grid
-variableIn1 = 'I';       % specify the data (2D or 3D) to use to create the mask
+dataset ='grid6';            % specify the dataset to be used: e.g. grid
+variableIn1 = 'dIdV_smoothed';       % specify the data (2D or 3D) to use to create the mask
 radius = 3;                 % radius R: the size of the circular mask
 % optional variable inputs
 % set values to [] if not used
+
+
                                 % Relevant inputs for slicing 3D -> 2D data:
-n = 113;                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
-variableIn2 = 'V';      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+n = 352;                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
+variableIn2 = 'V_reduced';      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
 imageV = [];                 % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
 
-variableOut1 = 'circular_mask';              % return the function of execution
+variableOut1 = 'CM_bottom1';              % return the function of execution
 variableOut2 = 'num_in_mask';
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -446,16 +448,16 @@ clearvars imageV radius targetFolder plot_name
 % It then plots the average dI/dV of the selected area.
 
 % presets:
-dataset ='grid';              %specify the dataset to be used: e.g. grid
-variableIn1 = 'I';         % specify the data (2D or 3D) to use to create the mask
+dataset ='grid6';              %specify the dataset to be used: e.g. grid
+variableIn1 = 'dIdV_smoothed';         % specify the data (2D or 3D) to use to create the mask
 % optional variable inputs
 % set values to [] if not used
                                 % Relevant inputs for slicing 3D -> 2D data:
-n = 113;                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
-variableIn2 = 'V';      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
+n = 352;                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
+variableIn2 = 'V_reduced';      % Voltage axis for the 3D data set: e.g. V_reduced for dIdV or V for I(V)
 imageV = [];                 % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
 
-variableOut1 = 'rectangular_mask';              % return the function of execution
+variableOut1 = 'rectangular_mask2';              % return the function of execution
 variableOut2 = 'Num_in_mask';
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -572,10 +574,10 @@ clearvars imageV targetFolder plot_name
 % This section of code applies moving-average smoothing to the I-V data of the grid. 
 
 %presets:
-dataset = 'grid';   % specify the dataset to be used: e.g. grid
+dataset = 'grid7';   % specify the dataset to be used: e.g. grid
 variableIn = 'I';  % specify the variable to be processed, e.g. I. Note that by default ‘I’ is the forward scan
 variableOut = 'I_smoothed'; % specify the variable to return the data to, e.g. I (overwrite data) or I_smoothed
-span = 3;       %size of the moving window. E.g. 3: for nearest neighbor averaging; 5 for next nearast neighbor averaging.
+span = 5;       %size of the moving window. E.g. 3: for nearest neighbor averaging; 5 for next nearast neighbor averaging.
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %LOG data in/out:
@@ -594,16 +596,16 @@ clearvars dataset variableIn variableOut span
 
 % Presets
 % Define dataset and input/output variables here
-dataset = 'grid';               % specify the dataset to be used: e.g., grid
-variableIn1 = 'I';     % the variable that you want to average. e.g. I_forward, I_backward
+dataset = 'grid6';               % specify the dataset to be used: e.g., grid
+variableIn1 = 'dIdV_smoothed';     % the variable that you want to average. e.g. I_forward, I_backward
                                 % If you want to average dIdV, you need to run PD01A or PD01B first. 
                                 % Also you can input dIdV_forward or dIdV_backward to get average 
                                 % of foward or backward only average dIdV.
-variableIn2 = 'polygon_mask';  %Mask to apply to data. If none variableIn2 = '';
-variableOut1 = 'avg_dIdV';        % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
+variableIn2 = 'CM_bottom3';  %Mask to apply to data. If none variableIn2 = '';
+variableOut1 = 'bottom3_dIdV';        % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
                                 % or avg_dIdV_fwd or avg_dIdV_bwd
 
-variableOut2 = 'dIdV_STD';      %standard deviation
+variableOut2 = 'bottom3_dIdV_STD';      %standard deviation
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Log input and output variables
 LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s; DataOut: variableOut1 = %s, variableOut2 = %s", ...
@@ -625,12 +627,12 @@ clearvars dataset variableIn1 variableOut1
 % This section of code creates a regular dIdV data from the grid. It will create dIdV for I-V
 
 %presets:
-dataset = 'grid';           % specify the dataset to be used: e.g. grid
-variableIn1 = 'I'; % specify the variable to be processed, e.g. I, or I_backward
+dataset = 'grid7';           % specify the dataset to be used: e.g. grid
+variableIn1 = 'I_smoothed'; % specify the variable to be processed, e.g. I, or I_backward
                             % this is a 3d array form (x, y, V)
 variableIn2 = 'V';          % specify the variable to be processed, e.g. V or Z
                             % this is a 1d array form (V, 1)
-variableOut1 = 'dIdV';      % specify the variable to return the data to
+variableOut1 = 'dIdV_smoothed';      % specify the variable to return the data to
                             % this is a 3d array form (x, y, V-1)
 variableOut2 = 'V_reduced'; % specify the variable to return the data to
                             % this is a 1d array form (V-1, 1)
@@ -839,15 +841,15 @@ clearvars type n1 n2 V_target_1 V_target_2
 
 
 %presets:
-dataset ='grid';              %specify the dataset to be used: e.g. grid
-variableIn1 = 'dIdV';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
+dataset ='grid3';              %specify the dataset to be used: e.g. grid
+variableIn1 = 'directional_masks2_combined';         %specify the variable data(x,y,V) a V slice is taken from: e.g. didv
 variableIn2 = 'V_reduced';    %specify the variable to be processed as the V axis: e.g. V_reduced
 
 
 % variableOut1 = 'Biases';              % return the function of execution
 
 % Ask the user to enter the bias of interest
-bias_of_interest = [-2,0.5,1.5];       %specify the bias voltage (or list of voltages) to select slice, within the range of `variableIn2`
+bias_of_interest = [-2.3, 1.3];       %specify the bias voltage (or list of voltages) to select slice, within the range of `variableIn2`
 
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -933,9 +935,9 @@ clearvars LayoutCase dataset variableIn savefigpath plot_name
 
 % Presets
 % Define dataset and input/output variables here
-dataset = 'grid';           % specify which dataset to be used: e.g., grid
+dataset = 'grid1';           % specify which dataset to be used: e.g., grid
 variableIn1 = 'V';  % specify the first input variable, x axis. To plot dIdV, this should be V_reduced
-variableIn2 = 'avg_dIdV';   % specify the second input variable, y axis. e.g. avg_IV or avg_dIdV. Match it to what you process in PA02A, PD01A or PD01B.
+variableIn2 = 'dIdV';   % specify the second input variable, y axis. e.g. avg_IV or avg_dIdV. Match it to what you process in PA02A, PD01A or PD01B.
 variableIn3 = '';    % If you don't want a two plot graph (e.g. foward and backward) you must set this as an emptry string, i.e. variableIn3 = ''    
                             % If you want to plot forward and backward separtely but together in one plot, varialbeIn2 and variableIn3 
                             % should be specified accordingly. e.g. variableIn2 = avg_IV, variableIn3 = avg_IV_bwd; variableIn2 = avg_dIdV, variableIn3 = avg_dIdV_bwd.                          
@@ -1042,9 +1044,9 @@ end
 % Edited by James March 2024, James July 2024
 
 % Presets:
-dataset = 'grid';   % specify the dataset to be used; e.g, grid
-variableIn1 = 'I_smoothed'; % specify the variable to be processed; e.g., IV or dIdV array
-variableIn2 = 'V'; % specify the variable to be processed; e.g., voltage or reduced voltage array
+dataset = 'grid6';   % specify the dataset to be used; e.g, grid
+variableIn1 = 'dIdV_smoothed'; % specify the variable to be processed; e.g., IV or dIdV array
+variableIn2 = 'V_reduced'; % specify the variable to be processed; e.g., voltage or reduced voltage array
 variableIn3 = 'avg_IV'; % specify the variable to be processed; e.g., averaged IV or dIdV array
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1081,7 +1083,7 @@ clearvars dataset variableIn1 variableIn2 variableIn3 figName step_size numx num
         % using the global minimum and maximum values.
 
 %presets:
-dataset = 'grid'; %specify the dataset to be used
+dataset = 'grid6'; %specify the dataset to be used
 variableIn1 = 'dIdV_smoothed'; %specify the variable data(x,y,V) a V slice is taken from: e.g. dIdV
 variableIn2 = 'points'; %specify the variable to be processed as the number of slice cuts
 variableIn3 = 'invgray'; %specify the colormap to be used
