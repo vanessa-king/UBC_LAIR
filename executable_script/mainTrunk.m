@@ -86,6 +86,7 @@
 %Processing    
     % PA01A Processing-Averaging-01-A; applies moving-average smoothing to I-V
     % PA02A Processing-Averaging-Mask-02-A; average I-V or dI/dV according to a mask
+    % PA02B Processing-Averaging-Mask-02-B; average I-V or dI/dV according to 3D mask
     % PD01A Processing-Derivative-01-A; create a regular dIdV for I-V
     % PD01B Processing-Derivative-01-B; create a nomarlized dIdV (i.e. dIdV/I-V)
     % PC02A Processing-Correcting-02-A; correct the grid for drift 
