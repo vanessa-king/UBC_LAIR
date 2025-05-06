@@ -372,7 +372,7 @@ clearvars dataset variableIn1 variableOut
 
 %presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
-variableIn = 'I';          % specify the variable to be processed   
+variableIn = 'I_smoothed';          % specify the variable to be processed   
 variableOut = 'directional_masks';     % specify the variable name to store the masks
 connected = false;         % flag for side connectivity in mask generation
 
@@ -597,7 +597,7 @@ clearvars imageV targetFolder plot_name
 dataset = 'grid';   % specify the dataset to be used: e.g. grid
 variableIn = 'I';  % specify the variable to be processed, e.g. I. Note that by default ‘I’ is the forward scan
 variableOut = 'I_smoothed'; % specify the variable to return the data to, e.g. I_smoothed
-span = 3;       %size of the moving window. E.g. 3: for nearest neighbor averaging; 5 for next nearast neighbor averaging.
+span = 5;       %size of the moving window. E.g. 3: for nearest neighbor averaging; 5 for next nearast neighbor averaging.
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %LOG data in/out:
@@ -645,6 +645,38 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % Clear preset variables
 clearvars dataset variableIn1 variableOut1
+
+%% PA02B Processing-Averaging-Mask-02-B; average I-V or dI/dV according to 3D mask
+% Edited by Rysa May 2025
+% This section of code averages the I-V data according to a given 3D mask (eg. output from directional mask).
+
+% Presets
+% Define dataset and input/output variables here
+dataset = 'grid';               % specify the dataset to be used: e.g., grid
+variableIn1 = 'dIdV';     % the variable that you want to average. e.g. I_forward, I_backward
+                                % If you want to average dIdV, you need to run PD01A or PD01B first. 
+                                % Also you can input dIdV_forward or dIdV_backward to get average 
+                                % of foward or backward only average dIdV.
+variableIn2 = 'directional_masks';  % 3D Mask (eg. output from directional mask)
+
+% return variables:
+variableOut1 = 'avg_dIdV';      % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
+                                % or avg_dIdV_fwd or avg_dIdV_bwd
+variableOut2 = 'dIdV_STD';      %standard deviation
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Log input and output variables
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s; DataOut: variableOut1 = %s, variableOut2 = %s", ...
+    dataset, variableIn1, variableIn2, variableOut1, variableOut2);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA02B", LOGcomment, 0);
+
+% Main code execution section
+
+% Function call
+[~, data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = avgXYZmask(requiredStructCall(data,dataset,variableIn1), optionalStructCall(data,dataset,variableIn2));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+% Clear preset variables
+clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2
 
 %% PD01A Processing-Derivative-01-A; create a regular dIdV. 
 % Edited by: Jisun November 2023, again in May 2024
