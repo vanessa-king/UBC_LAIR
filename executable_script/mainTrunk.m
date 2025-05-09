@@ -649,7 +649,7 @@ clearvars dataset variableIn1 variableOut1
 
 %% PA02B Processing-Averaging-Mask-02-B; average I-V or dI/dV according to 3D mask
 % Edited by Rysa May 2025
-% This section of code averages the I-V data according to a given 3D mask (eg. output from directional mask).
+% This section of code averages the I-V data according to a given stack of masks (eg. output from directional mask).
 
 % Presets
 % Define dataset and input/output variables here
@@ -658,7 +658,7 @@ variableIn1 = 'dIdV';     % the variable that you want to average. e.g. I_forwar
                                 % If you want to average dIdV, you need to run PD01A or PD01B first. 
                                 % Also you can input dIdV_forward or dIdV_backward to get average 
                                 % of foward or backward only average dIdV.
-variableIn2 = 'directional_masks';  % 3D Mask (eg. output from directional mask)
+variableIn2 = 'directional_masks';  % Stacked Masks (eg. output from directional mask)
 
 % return variables:
 variableOut1 = 'avg_dIdV';      % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
@@ -673,7 +673,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA02B", LOGcomment, 0);
 % Main code execution section
 
 % Function call
-[~, data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = avgXYZmask(requiredStructCall(data,dataset,variableIn1), optionalStructCall(data,dataset,variableIn2));
+[~, data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = avgXYstackedmasks(requiredStructCall(data,dataset,variableIn1), optionalStructCall(data,dataset,variableIn2));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % Clear preset variables
