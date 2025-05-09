@@ -1,0 +1,2 @@
+08-May-2025 17:46:06  PA02B   DataIn: dataset = grid, variableIn1 = dIdV, variableIn2 = directional_masks; DataOut: variableOut1 = avg_dIdV, variableOut2 = dIdV_STD
+08-May-2025 17:46:07    ^     avgMaskFast(didv:44 x 44 x 400, mask:44 x 44 x 16, returnNaNbool: 0)|
