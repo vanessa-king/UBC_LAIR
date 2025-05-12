@@ -372,7 +372,7 @@ clearvars dataset variableIn1 variableOut
 
 %presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
-variableIn = 'I';          % specify the variable to be processed   
+variableIn = 'dIdV';          % specify the variable to be processed   
 variableOut = 'directional_masks';     % specify the variable name to store the masks
 connected = false;         % flag for side connectivity in mask generation
 
@@ -594,10 +594,10 @@ clearvars imageV targetFolder plot_name
 % This section of code applies moving-average smoothing to the I-V data of the grid. 
 
 %presets:
-dataset = 'grid';   % specify the dataset to be used: e.g. grid
+dataset = 'gridO06';   % specify the dataset to be used: e.g. grid
 variableIn = 'I';  % specify the variable to be processed, e.g. I. Note that by default ‘I’ is the forward scan
 variableOut = 'I_smoothed'; % specify the variable to return the data to, e.g. I_smoothed
-span = 3;       %size of the moving window. E.g. 3: for nearest neighbor averaging; 5 for next nearast neighbor averaging.
+span = 2;       %size of the moving window. E.g. 3: for nearest neighbor averaging; 5 for next nearast neighbor averaging.
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %LOG data in/out:
@@ -652,7 +652,7 @@ clearvars dataset variableIn1 variableOut1
 % This section of code creates a regular dIdV data from the grid. It will create dIdV for I-V
 
 %presets:
-dataset = 'grid';           % specify the dataset to be used: e.g. grid
+dataset = 'gridO06';           % specify the dataset to be used: e.g. grid
 variableIn1 = 'I_smoothed'; % specify the variable to be processed, e.g. I, I_smoothed, or I_backward
                             % this is a 3d array form (x, y, V)
 variableIn2 = 'V';          % specify the variable to be processed, e.g. V or Z
@@ -1051,6 +1051,19 @@ saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(figName));
 
 % Clear preset variables
 clearvars dataset variableIn1 variableIn2 variableIn3 figName step_size numx numy;
+
+%% VS05A Visualize-Spectra-05-A: waterfall plot of I-V or dIdV
+
+% Presets:
+dataset = 'IVcurve';       % specify the dataset to be used; e.g, grid
+variableIn1 = 'dIdV';   % specify the variable to be processed; e.g., I, I_smoothed or dIdV 
+variableIn2 = 'V_reduced';      % specify the variable to be processed; e.g., V for I-V and V_reduced for dIdV
+
+% define the folder where the created figure to be saved
+savefigpath = '';   % If you choose '', it will pop up a window for a user to select the folder to save the figure.
+                    % Or you can just directly put a path here: e.g. savefigpat = LOGpath. This must be string.
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %% VG01A Visualize-Grid-01-A: gridslice viewer for all grids (including the non-square one)
 % Edited by Jiabin Nov 2024.
 % This section processes 3D dIdV data into image slices and visualizes the stack.
@@ -1062,8 +1075,8 @@ clearvars dataset variableIn1 variableIn2 variableIn3 figName step_size numx num
         % using the global minimum and maximum values.
 
 %presets:
-dataset = 'grid'; %specify the dataset to be used
-variableIn1 = 'dIdV_smoothed'; %specify the variable data(x,y,V) a V slice is taken from: e.g. dIdV
+dataset = 'gridO06'; %specify the dataset to be used
+variableIn1 = 'dIdV'; %specify the variable data(x,y,V) a V slice is taken from: e.g. dIdV
 variableIn2 = 'points'; %specify the variable to be processed as the number of slice cuts
 variableIn3 = 'invgray'; %specify the colormap to be used
     % Common MATLAB colormaps include:

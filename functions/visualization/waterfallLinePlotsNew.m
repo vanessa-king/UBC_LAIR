@@ -1,33 +1,18 @@
-function [figName, comment] = waterfallLinePlots(folder,data, V, mask, suppressSave, LayoutCase)
+function [figName, comment] = waterfallLinePlotsNew(folder, data, V, suppressSave, LayoutCase)
 %Plot I(V) or dIdV(V) curves as a waterfall plot 
-%   Plots all I(V) or dIdV(V) curves selected by the optional mask versus
-%   the V axis in a waterfall plot. 
+%   Plots all I(V) or dIdV(V) curves taken along a line. 
 
-% M. Altthaler, March 2024
+% M. Altthaler, March 2024, Jisun May, 2025
 
 arguments
-    %data and mask
     folder          {mustBeText}    %folder for data output (figure)
-    data            {mustBeNumeric}  %I(V) or dIdV(V) data(x,y,V) in a 3D cube
+    data            {mustBeNumeric}  %I(V) or dIdV(V) in 2D format
     V               {mustBeNumeric}  %voltage axis V
-    mask            {mustBeNumeric} = ones(size(data,[1,2])) %opt. mask
     suppressSave    {mustBeNumericOrLogical} = 0    %~=0 surpresses saving the plot
     % Define plot aesthetics
     LayoutCase      {mustBeText} = "3D_waterfall_dIdV" %layout case for the plot
 end
 
-%list of all x,y coordinates of 1's in the mask
-if ismatrix(mask)
-    if size(mask) == size(data,[1,2])
-        [x,y] = find(mask);
-    else
-        disp("xy dimensons of the mask do not match the data")
-        return
-    end
-else
-    disp("Transparent plotting requires a 2D mask")
-    return
-end
 %open figure
 f = figure;
 hold on;
