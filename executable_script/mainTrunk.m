@@ -983,6 +983,71 @@ end
   
 % Clear preset variables
 clearvars dataset variableIn1 variableIn2 variableIn3 savefigpath plot_name_1 plot_name_2 LayoutCase;
+%% VS01B Visualize-Spectrum-01-B; plot all dIdV curves with average dIdV
+% This section of code plots all dIdV curves with transparency and their average on top.
+% If a mask is provided, only plots dIdV curves within the masked area and recalculates the average.
+% Edited by M. Altthaler, March 2024, and J. Yu, May 2025.
+
+% Presets
+dataset = 'grid';           % specify which dataset to be used: e.g. grid
+variableIn1 = 'dIdV';       % specify the variable containing the dIdV data
+variableIn2 = 'V_reduced';  % specify the voltage axis for dIdV
+variableIn3 = [];           % optional: specify a mask to limit the plotted dIdV curves(i.e. `polygon_mask` )
+
+% Define the folder where the created figure to be saved
+savefigpath = '';           % If you choose '', it will pop up a window for a user to select the folder to save the figure.
+                            % Or you can just directly put a path here: e.g. savefigpat = LOGpath. This must be string.
+
+% Define plot parameters
+LayoutCase = "transparent_dIdV";  % layout case for the plot
+transp = 0.05;                    % Transparency for individual spectra
+lwidth1 = 1.5;                    % Line width for individual spectra
+lwidth2 = 2.5;                    % Line width for average spectra
+pcolorb_raw = [0, 0, 1];         % Blue color for individual traces
+pcolorb_avg = [0, 0, 0];         % Black color for average data
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Log input and output variables 
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s, variableIn3 = %s",...
+    dataset, variableIn1, variableIn2, variableIn3);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS01B", LOGcomment, 0);
+
+% Create mask based on whether variableIn3 is provided
+if isempty(variableIn3)
+    % If no mask provided, use a mask of ones to include all points
+    mask = ones(size(data.(dataset).(variableIn1), [1,2]));
+else
+    % Use the provided mask
+    mask = data.(dataset).(variableIn3);
+end
+
+[~, avg_dIdV, ~, LOGcomment] = avgXYmask(data.(dataset).(variableIn1), mask);
+
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+
+% Call transparentLinePlot function
+[figName, comment] = transparentLinePlot(savefigpath, ...
+    data.(dataset).(variableIn1), ...
+    data.(dataset).(variableIn2), ...
+    mask, ...
+    avg_dIdV, ...  % Use the appropriate average dIdV (either original or recalculated)
+    0, ... % don't suppress saving
+    LayoutCase, ...
+    transp, ...
+    lwidth1, ...
+    lwidth2, ...
+    pcolorb_raw, ...
+    pcolorb_avg);
+
+% Log the execution of the function
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", comment, 0);
+
+% Create a copy of the log corresponding to the saved figure
+saveUsedBlocksLog(LOGpath, LOGfile, savefigpath, figName);
+
+% Clear preset variables
+clearvars dataset variableIn1 variableIn2 variableIn3 variableIn4 savefigpath figName LayoutCase transp lwidth1 lwidth2 pcolorb_raw pcolorb_avg mask avg_dIdV;
 %% VS02A Visualize-Spectrum-02-A; allows you to click on a grid/topo and plot the spectra
 % Edited by: James Day January 2025, M. Altthaler June 2024, Vanessa October 2023
 % This section of the code opens a GUI that allows you to click
