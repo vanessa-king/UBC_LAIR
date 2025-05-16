@@ -13,7 +13,7 @@ arguments
     folder          {mustBeText}    %folder for data output (figure)
     data            {mustBeNumeric}  %I(V) or dIdV(V) data(x,y,V) in a 3D cube
     V               {mustBeNumeric}  %voltage axis V
-    mask            {mustBeNumeric} = ones(size(data,[1,2])) %opt. mask
+    mask            {mustBeNumericOrLogical} = ones(size(data,[1,2])) %opt. mask
     avgData         {mustBeNumeric} = [] %opt. average to be plotted
     suppressSave    {mustBeNumericOrLogical} = 0    %~=0 surpresses saving the plot
     % Define plot aesthetics
