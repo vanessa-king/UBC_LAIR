@@ -1,138 +1,90 @@
-function  imshow3D( Img, disprange, initS )
+function imshow3D(Img, disprange, voltages, LOGpath, LOGfile)
 %IMSHOW3D displays 3D grayscale or RGB images in a slice by slice fashion
 %with mouse-based slice browsing and window and level adjustment control,
 %and auto slice browsing control.
 %
 % Usage:
-% imshow3D ( Image )
-% imshow3D ( Image , [] )
-% imshow3D ( Image , [LOW HIGH] )
-% imshow3D ( Image , [] , initsn )
-%   
+% imshow3D(Image)
+% imshow3D(Image, [LOW HIGH])
+% imshow3D(Image, [], voltages)
+% imshow3D(Image, [], voltages, LOGpath, LOGfile)
+%
 %    Image:      3D image MxNxKxC (K slices of MxN images) C is either 1
-%                (for grayscale images) or 3 (for RGB images)  
+%                (for grayscale images) or 3 (for RGB images)
 %    [LOW HIGH]: display range that controls the display intensity range of
 %                a grayscale image (default: the broadest available range)
-%    initsn:     The slice number to be displayed initially (default:
-%                mid-slice number) 
+%    voltages:   Voltage vector (column) for slice labels (default: 1:sno)
+%    LOGpath:    Path to log file (for capture logging)
+%    LOGfile:    Log file name (for capture logging)
 %
-% Use the scroll bar or mouse scroll wheel to switch between slices. To
-% adjust window and level values keep the mouse right button pressed, and
-% drag the mouse up and down (for level adjustment) or right and left (for
-% window adjustment). Window and level adjustment control works only for
-% grayscale images.
-% "Play" button displays all the slices as a sequence of frames. The time
-% interval value can also be adjusted (default time interval is 100 ms).
-% 
-% "Auto W/L" button adjust the window and level automatically for grayscale
-% images.
-%
-% While "Fine Tune" checkbox is checked the window/level adjustment gets 16
-% times less sensitive to mouse movement, to make it easier to control
-% display intensity rang.
-%
-% Note: The sensitivity of mouse-based window and level adjustment is set
-% based on the user-defined display intensity range; the wider the range,
-% the more sensitivity to mouse drag.
-% 
-% Note: IMSHOW3DFULL is a newer version of IMSHOW3D (also available on
-% MathWorks) that displays 3D grayscale or RGB images from three
-% perpendicular views (i.e., axial, sagittal, and coronal).
-% 
-%   Example
-%   --------
-%       % To display an image (MRI example)
-%       load mri 
-%       Image = squeeze(D); 
-%       figure, 
-%       imshow3D(Image) 
-%
-%       % To display the image, and adjust the display range
-%       figure,
-%       imshow3D(Image,[20 100]);
-%
-%       % To define the initial slice number
-%       figure,
-%       imshow3D(Image,[],5);
-%
-%   See also IMSHOW.
-
-%
-% - Maysam Shahedi (mshahedi@gmail.com)
-% - Released: 1.0.0   Date: 2013/04/15
-% - Revision: 1.1.0   Date: 2013/04/19
-% - Revision: 1.5.0   Date: 2016/09/22
-% - Revision: 1.6.0   Date: 2018/06/07
-% - Revision: 1.6.1   Date: 2018/10/29
-% 
+% Edited by James May 2025 to add capture button, set logging.
 
 sno = size(Img,3);  % number of slices
 S = round(sno/2);
-
-PlayFlag = false;   % Play flag, playing when it is 'True'
+PlayFlag = false;
 Tinterv = 100;
 
 global InitialCoord;
 
 MinV = 0;
 MaxV = max(Img(:));
-LevV = (double( MaxV) + double(MinV)) / 2;
+LevV = (double(MaxV) + double(MinV)) / 2;
 Win = double(MaxV) - double(MinV);
 WLAdjCoe = (Win + 1)/1024;
-FineTuneC = [1 1/16];    % Regular/Fine-tune mode coefficients
+FineTuneC = [1 1/16];
 
 if isa(Img,'uint8')
     MaxV = uint8(Inf);
     MinV = uint8(-Inf);
-    LevV = (double( MaxV) + double(MinV)) / 2;
+    LevV = (double(MaxV) + double(MinV)) / 2;
     Win = double(MaxV) - double(MinV);
     WLAdjCoe = (Win + 1)/1024;
 elseif isa(Img,'uint16')
     MaxV = uint16(Inf);
     MinV = uint16(-Inf);
-    LevV = (double( MaxV) + double(MinV)) / 2;
+    LevV = (double(MaxV) + double(MinV)) / 2;
     Win = double(MaxV) - double(MinV);
     WLAdjCoe = (Win + 1)/1024;
 elseif isa(Img,'uint32')
     MaxV = uint32(Inf);
     MinV = uint32(-Inf);
-    LevV = (double( MaxV) + double(MinV)) / 2;
+    LevV = (double(MaxV) + double(MinV)) / 2;
     Win = double(MaxV) - double(MinV);
     WLAdjCoe = (Win + 1)/1024;
 elseif isa(Img,'uint64')
     MaxV = uint64(Inf);
     MinV = uint64(-Inf);
-    LevV = (double( MaxV) + double(MinV)) / 2;
+    LevV = (double(MaxV) + double(MinV)) / 2;
     Win = double(MaxV) - double(MinV);
     WLAdjCoe = (Win + 1)/1024;
 elseif isa(Img,'int8')
     MaxV = int8(Inf);
     MinV = int8(-Inf);
-    LevV = (double( MaxV) + double(MinV)) / 2;
+    LevV = (double(MaxV) + double(MinV)) / 2;
     Win = double(MaxV) - double(MinV);
     WLAdjCoe = (Win + 1)/1024;
 elseif isa(Img,'int16')
     MaxV = int16(Inf);
     MinV = int16(-Inf);
-    LevV = (double( MaxV) + double(MinV)) / 2;
+    LevV = (double(MaxV) + double(MinV)) / 2;
     Win = double(MaxV) - double(MinV);
     WLAdjCoe = (Win + 1)/1024;
 elseif isa(Img,'int32')
     MaxV = int32(Inf);
     MinV = int32(-Inf);
-    LevV = (double( MaxV) + double(MinV)) / 2;
+    LevV = (double(MaxV) + double(MinV)) / 2;
     Win = double(MaxV) - double(MinV);
     WLAdjCoe = (Win + 1)/1024;
 elseif isa(Img,'int64')
     MaxV = int64(Inf);
     MinV = int64(-Inf);
-    LevV = (double( MaxV) + double(MinV)) / 2;
+    LevV = (double(MaxV) + double(MinV)) / 2;
     Win = double(MaxV) - double(MinV);
     WLAdjCoe = (Win + 1)/1024;
 elseif isa(Img,'logical')
     MaxV = 0;
     MinV = 1;
-    LevV =0.5;
+    LevV = 0.5;
     Win = 1;
     WLAdjCoe = 0.1;
 end    
@@ -143,22 +95,22 @@ LVFntSz = 9;
 WVFntSz = 9;
 BtnSz = 10;
 
-if (nargin < 3)
-    S = round(sno/2);
+% Handle voltages
+if nargin < 3 || isempty(voltages)
+    voltages = 1:sno;
 else
-    S = initS;
-    if S > sno
-        S = sno;
-        warning('Initial slice number out of range');
-    elseif S < 1
-        S = 1;
-        warning('Initial slice number out of range');
+    if length(voltages) ~= sno
+        error('Length of voltages (%d) must match number of slices (%d)', length(voltages), sno);
     end
 end
 
-if (nargin < 2)
-    [Rmin Rmax] = WL2R(Win, LevV);
-elseif numel(disprange) == 0
+% Handle LOGpath, LOGfile
+if nargin < 4
+    LOGpath = '';
+    LOGfile = '';
+end
+
+if nargin < 2 || isempty(disprange)
     [Rmin Rmax] = WL2R(Win, LevV);
 else
     LevV = (double(disprange(2)) + double(disprange(1))) / 2;
@@ -167,6 +119,7 @@ else
     [Rmin Rmax] = WL2R(Win, LevV);
 end
 
+% Use current figure
 clf
 axes('position',[0,0.2,1,0.8]), imshow(squeeze(Img(:,:,S,:)), [Rmin Rmax])
 
@@ -182,35 +135,41 @@ ChBx_Pos = [320 20 80 20];
 Play_Pos = [uint16(FigPos(3)-100)+40 45 30 20];
 Time_Pos = [uint16(FigPos(3)-100)+35 20 40 20];
 Ttxt_Pos = [uint16(FigPos(3)-100)-50 18 90 20];
+Capture_Pos = [uint16(FigPos(3)-200)+1 65 80 20]; % Next to Stxt_Pos
 
-% W/L Button styles:
+% W/L Button styles
 WL_BG = ones(Btn_Pos(4),Btn_Pos(3),3)*0.85;
-WL_BG(1,:,:) = 1; WL_BG(:,1,:) = 1; WL_BG(:,end-1,:) = 0.6; WL_BG(:,end,:) = 0.4; WL_BG(end,:,:) = 0.4;
+WL_BG(1,:,:) = 1; WL_BG(:,1,:) = 1; WL_BG(:,end-1,:) = 0.4; WL_BG(:,end,:) = 0.2; WL_BG(end,:,:) = 0.2;
 
-% Play Button styles:
+% Play Button styles
 Play_BG = ones(Play_Pos(4),Play_Pos(3),3)*0.85;
-Play_BG(1,:,:) = 1; Play_BG(:,1,:) = 1; Play_BG(:,end-1,:) = 0.6; Play_BG(:,end,:) = 0.4; Play_BG(end,:,:) = 0.4;
-Play_Symb = [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1; 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1; 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1;...
-             0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1;...
-             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1;...
-             0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1; 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1; 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1;...
-             0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+Play_BG(1,:,:) = 1; Play_BG(:,1,:) = 1; Play_BG(:,end-1,:) = 0.4; Play_BG(:,end,:) = 0.2; Play_BG(end,:,:) = 0.2;
+Play_Symb = [0,0,1,1,1,1,1,1,1,1,1,1,1,1; 0,0,0,0,1,1,1,1,1,1,1,1,1,1; 0,0,0,0,0,0,1,1,1,1,1,1,1,1;...
+             0,0,0,0,0,0,0,0,1,1,1,1,1,1; 0,0,0,0,0,0,0,0,0,0,1,1,1,1; 0,0,0,0,0,0,0,0,0,0,0,0,1,1;...
+             0,0,0,0,0,0,0,0,0,0,0,0,0,0; 0,0,0,0,0,0,0,0,0,0,0,0,1,1; 0,0,0,0,0,0,0,0,0,0,1,1,1,1;...
+             0,0,0,0,0,0,0,0,1,1,1,1,1,1; 0,0,0,0,0,0,1,1,1,1,1,1,1,1; 0,0,0,0,1,1,1,1,1,1,1,1,1,1;...
+             0,0,1,1,1,1,1,1,1,1,1,1,1,1];
 Play_BG(floor((Play_Pos(4)-13)/2)+1:floor((Play_Pos(4)-13)/2)+13,floor(Play_Pos(3)/2)-7:floor(Play_Pos(3)/2)+6,:) = ...
     repmat(Play_Symb,1,1,3) .* Play_BG(floor((Play_Pos(4)-13)/2)+1:floor((Play_Pos(4)-13)/2)+13,floor(Play_Pos(3)/2)-7:floor(Play_Pos(3)/2)+6,:);
 Pause_BG = ones(Play_Pos(4),Play_Pos(3),3)*0.85;
-Pause_BG(1,:,:) = 1; Pause_BG(:,1,:) = 1; Pause_BG(:,end-1,:) = 0.6; Pause_BG(:,end,:) = 0.4; Pause_BG(end,:,:) = 0.4;
-Pause_Symb = repmat([0, 0, 0, 1, 1, 1, 1, 0, 0, 0],13,1);
+Pause_BG(1,:,:) = 1; Pause_BG(:,1,:) = 1; Pause_BG(:,end-1,:) = 0.4; Pause_BG(:,end,:) = 0.2; Pause_BG(end,:,:) = 0.2;
+Pause_Symb = repmat([0,0,0,1,1,1,1,0,0,0],13,1);
 Pause_BG(floor((Play_Pos(4)-13)/2)+1:floor((Play_Pos(4)-13)/2)+13,floor(Play_Pos(3)/2)-5:floor(Play_Pos(3)/2)+4,:) = ...
     repmat(Pause_Symb,1,1,3) .* Pause_BG(floor((Play_Pos(4)-13)/2)+1:floor((Play_Pos(4)-13)/2)+13,floor(Play_Pos(3)/2)-5:floor(Play_Pos(3)/2)+4,:);
 
+% Capture Button styles
+Capture_BG = ones(Capture_Pos(4),Capture_Pos(3),3)*0.6; % Light blue base
+Capture_BG(:,:,1) = 0.6; Capture_BG(:,:,2) = 0.8; Capture_BG(:,:,3) = 1;
+Capture_BG(1,:,:) = 1; Capture_BG(:,1,:) = 1; Capture_BG(:,end-1,:) = 0.4; Capture_BG(:,end,:) = 0.2; Capture_BG(end,:,:) = 0.2;
 
 if sno > 1
     shand = uicontrol('Style', 'slider','Min',1,'Max',sno,'Value',S,'SliderStep',[1/(sno-1) 10/(sno-1)],'Position', S_Pos,'Callback', {@SliceSlider, Img});
-    stxthand = uicontrol('Style', 'text','Position', Stxt_Pos,'String',sprintf('Slice# %d / %d',S, sno), 'FontSize', SFntSz);
-    playhand = uicontrol('Style', 'pushbutton','Position', Play_Pos, 'Callback' , @Play);
+    stxthand = uicontrol('Style', 'text','Position', Stxt_Pos,'String',sprintf('Slice# %d (V = %.4f) / %d',S, voltages(S), sno), 'FontSize', SFntSz);
+    playhand = uicontrol('Style', 'pushbutton','Position', Play_Pos, 'Callback', @Play);
     set(playhand, 'cdata', Play_BG)
     ttxthand = uicontrol('Style', 'text','Position', Ttxt_Pos,'String','Interval (ms): ',  'FontSize', txtFntSz);
     timehand = uicontrol('Style', 'edit','Position', Time_Pos,'String',sprintf('%d',Tinterv), 'BackgroundColor', [1 1 1], 'FontSize', LVFntSz,'Callback', @TimeChanged);
+    capturehand = uicontrol('Style', 'pushbutton','Position', Capture_Pos,'String','Capture', 'FontSize', BtnSz, 'FontWeight', 'bold', 'CData', Capture_BG, 'Callback', @CaptureSlice);
 else
     stxthand = uicontrol('Style', 'text','Position', Stxt_Pos,'String','2D image', 'FontSize', SFntSz);
 end    
@@ -218,16 +177,15 @@ ltxthand = uicontrol('Style', 'text','Position', Ltxt_Pos,'String','Level: ',  '
 wtxthand = uicontrol('Style', 'text','Position', Wtxt_Pos,'String','Window: ',  'FontSize', txtFntSz);
 lvalhand = uicontrol('Style', 'edit','Position', Lval_Pos,'String',sprintf('%6.0f',LevV), 'BackgroundColor', [1 1 1], 'FontSize', LVFntSz,'Callback', @WinLevChanged);
 wvalhand = uicontrol('Style', 'edit','Position', Wval_Pos,'String',sprintf('%6.0f',Win), 'BackgroundColor', [1 1 1], 'FontSize', WVFntSz,'Callback', @WinLevChanged);
-Btnhand = uicontrol('Style', 'pushbutton','Position', Btn_Pos,'String','Auto W/L', 'FontSize', BtnSz, 'Callback' , @AutoAdjust);
+Btnhand = uicontrol('Style', 'pushbutton','Position', Btn_Pos,'String','Auto W/L', 'FontSize', BtnSz, 'Callback', @AutoAdjust);
 set(Btnhand, 'cdata', WL_BG)
 ChBxhand = uicontrol('Style', 'checkbox','Position', ChBx_Pos,'String','Fine-tune', 'FontSize', txtFntSz);
 
-set (gcf, 'WindowScrollWheelFcn', @mouseScroll);
-set (gcf, 'ButtonDownFcn', @mouseClick);
+set(gcf, 'WindowScrollWheelFcn', @mouseScroll);
+set(gcf, 'ButtonDownFcn', @mouseClick);
 set(get(gca,'Children'),'ButtonDownFcn', @mouseClick);
 set(gcf,'WindowButtonUpFcn', @mouseRelease)
 set(gcf,'ResizeFcn', @figureResized)
-
 
 % -=< Figure resize callback function >=-
     function figureResized(object, eventdata)
@@ -237,11 +195,13 @@ set(gcf,'ResizeFcn', @figureResized)
         Play_Pos = [uint16(FigPos(3)-100)+40 45 30 20];
         Time_Pos = [uint16(FigPos(3)-100)+35 20 40 20];
         Ttxt_Pos = [uint16(FigPos(3)-100)-50 18 90 20];
+        Capture_Pos = [uint16(FigPos(3)-200)+1 65 80 20];
         if sno > 1
             set(shand,'Position', S_Pos);
             set(playhand, 'Position', Play_Pos)
             set(ttxthand, 'Position', Ttxt_Pos)
             set(timehand, 'Position', Time_Pos)
+            set(capturehand, 'Position', Capture_Pos)
         end
         set(stxthand,'Position', Stxt_Pos);
         set(ltxthand,'Position', Ltxt_Pos);
@@ -253,19 +213,19 @@ set(gcf,'ResizeFcn', @figureResized)
     end
 
 % -=< Slice slider callback function >=-
-    function SliceSlider (hObj,event, Img)
+    function SliceSlider(hObj, event, Img)
         S = round(get(hObj,'Value'));
         set(get(gca,'children'),'cdata',squeeze(Img(:,:,S,:)))
         caxis([Rmin Rmax])
         if sno > 1
-            set(stxthand, 'String', sprintf('Slice# %d / %d',S, sno));
+            set(stxthand, 'String', sprintf('Slice# %d (V = %.4f) / %d', S, voltages(S), sno));
         else
             set(stxthand, 'String', '2D image');
         end
     end
 
 % -=< Mouse scroll wheel callback function >=-
-    function mouseScroll (object, eventdata)
+    function mouseScroll(object, eventdata)
         UPDN = eventdata.VerticalScrollCount;
         S = S - UPDN;
         if (S < 1)
@@ -275,7 +235,7 @@ set(gcf,'ResizeFcn', @figureResized)
         end
         if sno > 1
             set(shand,'Value',S);
-            set(stxthand, 'String', sprintf('Slice# %d / %d',S, sno));
+            set(stxthand, 'String', sprintf('Slice# %d (V = %.4f) / %d', S, voltages(S), sno));
         else
             set(stxthand, 'String', '2D image');
         end
@@ -283,14 +243,14 @@ set(gcf,'ResizeFcn', @figureResized)
     end
 
 % -=< Mouse button released callback function >=-
-    function mouseRelease (object,eventdata)
+    function mouseRelease(object, eventdata)
         set(gcf, 'WindowButtonMotionFcn', '')
     end
 
 % -=< Mouse click callback function >=-
-    function mouseClick (object, eventdata)
+    function mouseClick(object, eventdata)
         MouseStat = get(gcbf, 'SelectionType');
-        if (MouseStat(1) == 'a')        %   RIGHT CLICK
+        if (MouseStat(1) == 'a')  % RIGHT CLICK
             InitialCoord = get(0,'PointerLocation');
             set(gcf, 'WindowButtonMotionFcn', @WinLevAdj);
         end
@@ -299,15 +259,13 @@ set(gcf,'ResizeFcn', @figureResized)
 % -=< Window and level mouse adjustment >=-
     function WinLevAdj(varargin)
         PosDiff = get(0,'PointerLocation') - InitialCoord;
-
         Win = Win + PosDiff(1) * WLAdjCoe * FineTuneC(get(ChBxhand,'Value')+1);
         LevV = LevV - PosDiff(2) * WLAdjCoe * FineTuneC(get(ChBxhand,'Value')+1);
         if (Win < 1)
             Win = 1;
         end
-
-        [Rmin, Rmax] = WL2R(Win,LevV);
-        caxis([Rmin, Rmax])
+        [Rmin, Rmax] = WL2R(Win, LevV);
+        caxis([Rmin Rmax])
         set(lvalhand, 'String', sprintf('%6.0f',LevV));
         set(wvalhand, 'String', sprintf('%6.0f',Win));
         InitialCoord = get(0,'PointerLocation');
@@ -315,19 +273,17 @@ set(gcf,'ResizeFcn', @figureResized)
 
 % -=< Window and level text adjustment >=-
     function WinLevChanged(varargin)
-
         LevV = str2double(get(lvalhand, 'string'));
         Win = str2double(get(wvalhand, 'string'));
         if (Win < 1)
             Win = 1;
         end
-
-        [Rmin, Rmax] = WL2R(Win,LevV);
-        caxis([Rmin, Rmax])
+        [Rmin, Rmax] = WL2R(Win, LevV);
+        caxis([Rmin Rmax])
     end
 
 % -=< Window and level to range conversion >=-
-    function [Rmn Rmx] = WL2R(W,L)
+    function [Rmn Rmx] = WL2R(W, L)
         Rmn = L - (W/2);
         Rmx = L + (W/2);
         if (Rmn >= Rmx)
@@ -336,18 +292,18 @@ set(gcf,'ResizeFcn', @figureResized)
     end
 
 % -=< Window and level auto adjustment callback function >=-
-    function AutoAdjust(object,eventdata)
+    function AutoAdjust(object, eventdata)
         Win = double(max(Img(:))-min(Img(:)));
-        Win (Win < 1) = 1;
+        Win(Win < 1) = 1;
         LevV = double(min(Img(:)) + (Win/2));
-        [Rmin, Rmax] = WL2R(Win,LevV);
-        caxis([Rmin, Rmax])
+        [Rmin, Rmax] = WL2R(Win, LevV);
+        caxis([Rmin Rmax])
         set(lvalhand, 'String', sprintf('%6.0f',LevV));
         set(wvalhand, 'String', sprintf('%6.0f',Win));
     end
 
 % -=< Play button callback function >=-
-    function Play (hObj,event)
+    function Play(hObj, event)
         PlayFlag = ~PlayFlag;
         if PlayFlag
             set(playhand, 'cdata', Pause_BG)
@@ -360,16 +316,50 @@ set(gcf,'ResizeFcn', @figureResized)
                 S = 1;
             end
             set(shand,'Value',S);
-            set(stxthand, 'String', sprintf('Slice# %d / %d',S, sno));
+            set(stxthand, 'String', sprintf('Slice# %d (V = %.4f) / %d', S, voltages(S), sno));
             set(get(gca,'children'),'cdata',squeeze(Img(:,:,S,:)))
             pause(Tinterv/1000)
         end
     end
 
-% -=< Time interval adjustment callback function>=-
+% -=< Time interval adjustment callback function >=-
     function TimeChanged(varargin)
         Tinterv = str2double(get(timehand, 'string'));
     end
-    
+
+% -=< Capture slice callback function >=-
+    function CaptureSlice(~, ~)
+        % Load or initialize data.grid
+        if evalin('base', 'exist(''data'', ''var'')')
+            data = evalin('base', 'data');
+        else
+            data.grid = struct();
+        end
+        
+        % Initialize or append to arrays
+        if ~isfield(data.grid, 'selectedSlice')
+            data.grid.selectedSlice = [];
+            data.grid.selectedVoltage = [];
+            data.grid.selectedSliceData = [];
+        end
+        
+        % Append current slice
+        data.grid.selectedSlice = [data.grid.selectedSlice; S];
+        data.grid.selectedVoltage = [data.grid.selectedVoltage; voltages(S)];
+        data.grid.selectedSliceData = cat(3, data.grid.selectedSliceData, squeeze(Img(:,:,S,:)));
+        
+        % Save to base workspace
+        assignin('base', 'data', data);
+        
+        % Confirmation message
+        fprintf('Captured Slice# %d (V = %.4f)\n', S, voltages(S));
+        
+        % Log capture
+        if ~isempty(LOGpath) && ~isempty(LOGfile) && ischar(LOGpath) && ischar(LOGfile)
+            LOGcomment = sprintf('Captured Slice# %d (V = %.4f)', S, voltages(S));
+            logUsedBlocks(LOGpath, LOGfile, '  ^  ', LOGcomment, 0);
+        else
+            warning('Logging skipped: LOGpath or LOGfile invalid or undefined.');
+        end
+    end
 end
-% -=< Maysam Shahedi (mshahedi@gmail.com), October 29, 2018>=-
