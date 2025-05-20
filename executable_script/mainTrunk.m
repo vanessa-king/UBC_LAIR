@@ -1149,36 +1149,36 @@ saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(figName));
 
 % Clear preset variables
 clearvars dataset variableIn1 variableIn2 variableIn3 figName step_size numx numy;
-%% VG01A Visualize-Grid-01-A: gridslice viewer for all grids (including the non-square one)
-% Edited by Jiabin Nov 2024.
-% This section processes 3D dIdV data into image slices and visualizes the stack.
+%% VG01A Visualize-Grid-01-A; Visualizes dIdV stack as RGB images
+% Edited by Jiabin Nov 2024, James May 2025
+% Processes 3D dI/dV data into a stack of RGB image slices for all layers.
+% Features:
+% - Select global or dynamic color range.
+% - Displays interactive stack with slice number and voltage.
+% - Adds button to capture displayed slice and voltage.
+% - Stores sliced_grid, sliceNumbers, voltages in data.grid
+% - Passes LOGpath, LOGfile to gridSliceViewer for capture logging
+% Notes:
+% - No figure saving
 
-% Prompt for range type selection
-%   Dynamic range adjusts the contrast of each image slice individually, 
-        % based on: mean(xy laer) +- 8*std(xy layer).
-%   Global range applies a consistent color scale across all slices, 
-        % using the global minimum and maximum values.
-
-%presets:
-dataset = 'grid'; %specify the dataset to be used
-variableIn1 = 'dIdV_smoothed'; %specify the variable data(x,y,V) a V slice is taken from: e.g. dIdV
-variableIn2 = 'points'; %specify the variable to be processed as the number of slice cuts
-variableIn3 = 'invgray'; %specify the colormap to be used
-    % Common MATLAB colormaps include:
-    % - 'parula' (default MATLAB colormap)
-    % - 'jet' (classic rainbow colormap)
-    % - 'hsv' (circular color spectrum)
-    % - 'cool' (cyan to magenta)
-    % - 'hot' (black-red-yellow-white)
-    % - 'gray' (grayscale)
-    % - 'bone' (gray with a blue tinge)
-    % - 'copper' (dark to light copper tone)
-nestedStructure = true; % Set to true if variableIn2 is nested under 'header'
+% Presets:
+dataset = 'grid';
+variableIn1 = 'dIdV';
+variableIn2 = 'V_reduced';
+variableIn3 = 'invgray';  % Colormap: 'invgray' (default), 'jet', 'hot', 'gray', 'parula', or any valid MATLAB colormap
+energyLayer = 255;
+variableOut1 = 'sliced_grid';
+variableOut2 = 'sliceNumbers';
+variableOut3 = 'voltages';
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Close existing figures to prevent blank figure
+close all;
+
+% Prompt for range type
 while true
-    rangeChoice = upper(input('Select color range type you want (G/g for Global, D/d for Dynamic): ', 's'));
+    rangeChoice = upper(input('Select color range type (G/g for Global, D/d for Dynamic): ', 's'));
     if strcmp(rangeChoice, 'G')
         rangeType = 'global';
         break;
@@ -1191,25 +1191,16 @@ while true
 end
 
 % LOG data in/out
-LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableIn3 = %s; nestedStructure = %s; rangeType = %s", ...
-    dataset, variableIn1, variableIn2, variableIn3, mat2str(nestedStructure), rangeType);
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableIn3 = %s; energyLayer = %d; rangeType = %s; variableOut1 = %s; variableOut2 = %s; variableOut3 = %s", ...
+    dataset, variableIn1, variableIn2, variableIn3, energyLayer, rangeType, variableOut1, variableOut2, variableOut3);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VG01A", LOGcomment, 0);
 
-% Prepare input data
-inputData1 = data.(dataset).(variableIn1);
-if nestedStructure
-    inputData2 = data.(dataset).header.(variableIn2);
-else
-    inputData2 = data.(dataset).(variableIn2);
-end
+% Execute gridSliceViewer
+[data.(dataset).(variableOut1), data.(dataset).(variableOut2), data.(dataset).(variableOut3)] = ...
+    gridSliceViewer(data.(dataset).(variableIn1), data.(dataset).(variableIn2), energyLayer, rangeType, variableIn3, LOGpath, LOGfile);
+LOGcomment = "Displayed interactive stack with slice number and voltage";
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
-
-% Cartesian coordinate mapping
-gridStackResult = gridSliceViewer(inputData1, inputData2, rangeType, variableIn3);
-
-% Convert gridStackResult to string if it's not already
-if ~ischar(gridStackResult) && ~isstring(gridStackResult)
-    gridStackResult = jsonencode(gridStackResult);
-end
-
-clearvars dataset variableIn1 variableIn2 variableIn3 targetFolder plot_name nestedStructure inputData1 inputData2 gridStackResult
+% Clear variables
+clearvars dataset variableIn1 variableIn2 variableIn3 energyLayer
+clearvars variableOut1 variableOut2 variableOut3 rangeChoice rangeType
