@@ -703,9 +703,7 @@ clear plot_name savefigpath;
 clearvars dataset variableIn1 variableIn2 variableIn3 C variableOut1 variableOut2 variableOut3 variableOut4 variableOut5;
 
 %% PC02A Processing-Correcting-02-A; correct the grid for drift 
-% Edited by Markus May 2024, Vanessa Nov 2023
-% Note: format is updated - gridDriftCorrection() needs to be updated,
-% requires a test dataset!
+% Edited by Vanessa April 2025, Markus May 2024, Vanessa Nov 2023
 
 %presets:
 datasetGrid ='grid';                %specify the dataset to be used: e.g. grid
@@ -716,6 +714,8 @@ datasetTopoAfter ='topoAfter';      %specify the dataset to be used: e.g. topoAf
 variableTopoAfter ='z';             %specify the variable to be processed: e.g. z
 datasetOut ='grid';                 %specify the dataset to return the data to: e.g. grid 
 variableOut ='I_driftCorr';         %specify the variable to return the data to: e.g. I (overwrite data) or I_smoothed
+variableOut2 = 'x_driftCorr';
+variableOut3 = 'y_driftCorr';
 theta = 0;                          %angle to rotate the grid (in degrees)
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -724,7 +724,7 @@ LOGcomment = sprintf("Grid in: %s.%s; topo before: %s.%s; topo after: %s.%s; dat
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PC02A", LOGcomment ,0);
 
 %execute function
-[data.(datasetOut).(variableOut),LOGcomment] = driftCorrection(data.(datasetGrid).(variableGrid), data.(datasetTopoBefore).(variableTopoBefore), data.(datasetTopoAfter).(variableTopoAfter), theta);
+[data.(datasetOut).(variableOut), data.(datasetOut).(variableOut2), data.(datasetOut).(variableOut3),LOGcomment] = driftCorrection(data.(datasetGrid).(variableGrid), data.(datasetTopoBefore).(variableTopoBefore), data.(datasetTopoAfter).(variableTopoAfter), theta);
 %LOG function call
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 %ask for plotname and the folder it should be saved in:
