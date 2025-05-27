@@ -410,37 +410,3 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", "qpiCalculate(dIdV_masked)
 
 % Clean up variables
 clearvars dataset variableIn variableOut1 variableOut2 variableOut3 inputData param1 param2
-
-%% QP05A QPI-Process-05-A: Square cropping
-% Created by Dong Chen in May 2025
-%
-% This section crops the QPI data to a square shape.
-%
-% The cropping process:
-% - Resizes the QPI data to a square shape
-% - Centers the cropped data
-%
-% presets:
-dataset = 'grid';           % specify the dataset to be used: e.g. grid
-variableIn = 'QPI';         % specify the input variable (QPI data)
-variableOut = 'QPI_cropped'; % specify the variable name to store the cropped QPI data
-
-%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% LOG data in/out:
-LOGcomment = sprintf("Crop DataIn: %s.%s; and get dataOut: %s.%s", ...
-    dataset, variableIn, dataset, variableOut);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "QP05A", LOGcomment, 0);
-
-% Get input data
-inputData = data.(dataset).(variableIn);
-
-% Crop data
-[data.(dataset).(variableOut), LOGcomment] = cropSquare(inputData);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
-
-% Clean up variables
-clearvars dataset variableIn variableOut inputData
-
-
-
-
