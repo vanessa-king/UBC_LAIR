@@ -1156,7 +1156,7 @@ clearvars dataset variableIn1 variableIn2 variableIn3 figName step_size numx num
 % - Select global or dynamic color range.
 % - Displays interactive stack with slice number and voltage.
 % - Adds button to capture displayed slice and voltage.
-% - Stores sliced_grid, sliceNumbers, voltages in data.grid
+% - Stores sliced_(dataset), sliceNumbers, voltages in data.(dataset)
 % - Passes LOGpath, LOGfile to gridSliceViewer for capture logging
 % Notes:
 % - No figure saving
@@ -1166,7 +1166,6 @@ dataset = 'grid';
 variableIn1 = 'dIdV';
 variableIn2 = 'V_reduced';
 variableIn3 = 'invgray';  % Colormap: 'invgray' (default), 'jet', 'hot', 'gray', 'parula', or any valid MATLAB colormap
-energyLayer = 255;
 variableOut1 = 'sliced_grid';
 variableOut2 = 'sliceNumbers';
 variableOut3 = 'voltages';
@@ -1191,16 +1190,16 @@ while true
 end
 
 % LOG data in/out
-LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableIn3 = %s; energyLayer = %d; rangeType = %s; variableOut1 = %s; variableOut2 = %s; variableOut3 = %s", ...
-    dataset, variableIn1, variableIn2, variableIn3, energyLayer, rangeType, variableOut1, variableOut2, variableOut3);
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableIn3 = %s; rangeType = %s; variableOut1 = %s; variableOut2 = %s; variableOut3 = %s", ...
+    dataset, variableIn1, variableIn2, variableIn3, rangeType, variableOut1, variableOut2, variableOut3);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VG01A", LOGcomment, 0);
 
 % Execute gridSliceViewer
 [data.(dataset).(variableOut1), data.(dataset).(variableOut2), data.(dataset).(variableOut3)] = ...
-    gridSliceViewer(data.(dataset).(variableIn1), data.(dataset).(variableIn2), energyLayer, rangeType, variableIn3, LOGpath, LOGfile);
+    gridSliceViewer(data.(dataset).(variableIn1), data.(dataset).(variableIn2), rangeType, variableIn3, LOGpath, LOGfile);
 LOGcomment = "Displayed interactive stack with slice number and voltage";
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % Clear variables
-clearvars dataset variableIn1 variableIn2 variableIn3 energyLayer
+clearvars dataset variableIn1 variableIn2 variableIn3
 clearvars variableOut1 variableOut2 variableOut3 rangeChoice rangeType

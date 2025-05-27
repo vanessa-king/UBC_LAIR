@@ -1,25 +1,22 @@
-function [sliced_grid, sliceNumbers, voltages] = gridSliceViewer(data, V, EnergyLayer, rangeType, colormapName, LOGpath, LOGfile)
+function [sliced_grid, sliceNumbers, voltages] = gridSliceViewer(data, V, rangeType, colormapName, LOGpath, LOGfile)
 % GRIDSLICEVIEWER Processes 3D dIdV data into an RGB image stack for visualization.
 %   Edited by Jiabin Nov 2024, James May 2025
 %
 % Inputs:
 %   data: 3D matrix (x, y, V) of dIdV data.
 %   V: Voltage vector (column) matching data's third dimension.
-%   EnergyLayer: Number of layers to process (max = size(data, 3)).
 %   rangeType: 'global' or 'dynamic'.
 %   colormapName: Colormap name (default 'invgray').
 %   LOGpath: Path to log file (for capture logging).
 %   LOGfile: Log file name (for capture logging).
 %
 % Outputs:
-%   sliced_grid: 4D RGB stack (x, y, EnergyLayer, 3).
-%   sliceNumbers: Indices (1:EnergyLayer) as column.
+%   sliced_grid: 4D RGB stack (x, y, slices, 3).
 %   voltages: Corresponding voltages from V as column.
 
 arguments
     data (:,:,:) {mustBeNumeric}
     V (:,1) {mustBeNumeric}
-    EnergyLayer (1,1) {mustBeInteger, mustBePositive}
     rangeType (1,:) char {mustBeMember(rangeType, {'global', 'dynamic'})}
     colormapName (1,:) char = 'invgray'
     LOGpath (1,:) char = ''
@@ -29,10 +26,6 @@ end
 % Validate inputs
 if size(data, 3) ~= length(V)
     error('Length of V (%d) must match third dimension of data (%d)', length(V), size(data, 3));
-end
-if EnergyLayer > size(data, 3)
-    EnergyLayer = size(data, 3);
-    warning('EnergyLayer adjusted to match data: %d', EnergyLayer);
 end
 
 % Load colormap
@@ -60,12 +53,12 @@ if strcmp(rangeType, 'global')
 end
 
 % Pre-allocate output
-sliced_grid = zeros(size(Grid, 1), size(Grid, 2), EnergyLayer, 3);
-sliceNumbers = (1:EnergyLayer)';
-voltages = V(1:EnergyLayer);
+sliced_grid = zeros(size(Grid, 1), size(Grid, 2), size(data, 3), 3);
+sliceNumbers = (1:size(data, 3))';
+voltages = V(1:size(data, 3));
 
 % Process slices
-for k = 1:EnergyLayer
+for k = 1:size(data, 3)
     sliceData = Grid(:,:,k);
     if strcmp(rangeType, 'dynamic')
         med = median(sliceData(:));
@@ -79,7 +72,7 @@ end
 
 % Display
 figure('Name', sprintf('3D Grid View - %s Range, %s Colormap', rangeType, colormapName));
-imshow3D(sliced_grid, [], voltages, LOGpath, LOGfile);
+imshow3D_LAIR(sliced_grid, [], voltages, LOGpath, LOGfile);
 
     % Nested mat2im
     function im = mat2im(mat, cmap, limits)
