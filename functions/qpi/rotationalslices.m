@@ -1,4 +1,4 @@
-function [data2D, angles] = rotational_slices(data3D, rangetype, line_width)
+function [data2D, angles] = rotationalslices(data3D, rangetype, line_width)
 % ROTATIONAL_SLICES Creates 2D slices from 3D data by rotating a line through the center
 %   This function creates a series of 2D slices by rotating a line through the center
 %   of the data at different angles. The user adjusts a pre-drawn circle to determine the line length.

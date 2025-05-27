@@ -241,7 +241,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "QV03A", LOGcomment, 0);
 inputData = data.(dataset).(variableIn);
 
 % Create rotational slices
-[data.(dataset).(variableOut1), data.(dataset).(variableOut2)] = rotational_slices(inputData, param1, param2);
+[data.(dataset).(variableOut1), data.(dataset).(variableOut2)] = rotationalslices(inputData, param1, param2);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", sprintf("rotational_slices(QPI, '%s', %d)", param1, param2), 0);
 
 % Clean up variables
