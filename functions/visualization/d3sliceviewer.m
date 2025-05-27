@@ -1,4 +1,4 @@
-function [data2D, mask, comment] = d3sliceviewer(data3D, mode, contrast, mask)
+function [data2D, mask, comment] = d3sliceviewer(data3D, mode, contrast, input_mask)
 % D3SLICEVIEWER Creates a 2D slice viewer from 3D data with line/segment selection
 %   This function allows users to select points on a slice of 3D data and create
 %   a line or line segment mask based on those points.
@@ -7,7 +7,7 @@ function [data2D, mask, comment] = d3sliceviewer(data3D, mode, contrast, mask)
 %   data3D - 3D dataset to visualize
 %   mode   - 'segment' or 'line' to determine mask type
 %   contrast - 'dynamic' or 'global' for data normalization (default: 'dynamic')
-%   mask   - (Optional) 3D mask array. If provided, skips point selection
+%   input_mask - Optional mask to apply to the data
 %
 % Outputs:
 %   data2D - 2D array of values along the line across slices
@@ -24,18 +24,18 @@ arguments
     data3D {mustBeNumeric}
     mode {mustBeMember(mode, {'segment', 'line'})}
     contrast {mustBeMember(contrast, {'dynamic', 'global'})} = 'dynamic'
-    mask {mustBeNumeric} = []
+    input_mask {mustBeNumeric} = []
 end
 
 % If mask is provided, skip point selection
-if ~isempty(mask)
+if ~isempty(input_mask)
     % Validate mask dimensions
-    if ~isequal(size(mask), size(data3D))
+    if ~isequal(size(input_mask), size(data3D))
         error('Provided mask must have same dimensions as data3D');
     end
     
     % Get the coordinates of masked points in the first slice
-    [y_coords, x_coords] = find(~isnan(mask(:,:,1)));
+    [y_coords, x_coords] = find(~isnan(input_mask(:,:,1)));
     
     % Create the 2D data array
     data2D = zeros(length(x_coords), size(data3D, 3));

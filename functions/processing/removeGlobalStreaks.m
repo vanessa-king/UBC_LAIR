@@ -1,21 +1,26 @@
-function [dIdV_nostreaks, QPI_nostreaks] = RemoveStreaks(dIdV, varargin)
-% Description: 
-%   Function takes 3D dIdV map and removes tip changes
-%   Outputs fixed dIdV as well as FT QPI map
-%   Valid only if peaks in dIdV occur at same position in all tip configs
-%   Effectively normalises each line in the scan
-%   Also fixes tip changes occuring during scan line
+function [dIdV_nostreaks, QPI_nostreaks] = removeGlobalStreaks(dIdV, varargin)
+% REMOVEGLOBALSTREAKS Removes global streaks from QPI data
+%   This function removes global streaks from QPI data by normalizing each scan line.
+%   The algorithm:
+%   - Calculates mean and variance for each row and column
+%   - Identifies lines with variance below threshold
+%   - Normalizes these lines to the global mean
+%   - Can be applied to horizontal, vertical, or both directions
 %
-% Input:
-%   dIdV: dIdV arrary from the load3ds (xsize*ysize*elayer arrary).
-%   'Direction': (optional) Direction to remove streaks
-%                'none' - apply to both directions (default)
-%                'horizontal' - apply only to horizontal direction
-%                'vertical' - apply only to vertical direction
+% Inputs:
+%   dIdV - 3D data array containing the dI/dV data
+%   varargin - Optional name-value pairs:
+%       'Direction' - 'none' (both), 'horizontal', or 'vertical'
 %
-% Output: 
-%   dIdV_nostreaks: dIdV after removing the streaks (xsize*ysize*elayer arrary). 
-%   QPI_nostreaks: 2D FFT of dIdV_nostreaks. 
+% Outputs:
+%   dIdV_nostreaks - Streak-removed dI/dV data
+%   QPI_nostreaks - QPI of the streak-removed data
+%
+% Example:
+%   [dIdV_nostreaks, QPI_nostreaks] = removeGlobalStreaks(dIdV, 'Direction', 'horizontal')
+%
+% Created: May 2025
+% Dong Chen
 
 % Parse optional inputs
 p = inputParser;
