@@ -598,7 +598,7 @@ clearvars imageV targetFolder plot_name
 dataset = 'grid';   % specify the dataset to be used: e.g. grid
 variableIn = 'I';  % specify the variable to be processed, e.g. I. Note that by default ‘I’ is the forward scan
 variableOut = 'I_smoothed'; % specify the variable to return the data to, e.g. I_smoothed
-span = 3;       %size of the moving window. E.g. 3: for nearest neighbor averaging; 5 for next nearast neighbor averaging.
+span = 3;       %size of the moving window. E.g. 3: for nearest neighbor averaging; 5 for next nearest neighbor averaging.
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %LOG data in/out:

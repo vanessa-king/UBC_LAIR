@@ -33,7 +33,7 @@ center = [floor(rows/2)+1, floor(cols/2)+1];
 
 % Display the first slice
 figure;
-imagesc(data3D(:,:,floor(size(data3D,3))/2));
+imagesc(data3D(:,:,floor(size(data3D,3)/2)));
 colormap gray;
 axis equal;
 title('Adjust circle radius to determine line length');

@@ -33,7 +33,7 @@ function [mask, masked_data, masked_qpi, comment] = qpiMask(grid_data, slice_idx
 % Validate inputs
 arguments
     grid_data {mustBeNumeric}
-    slice_idx {mustBeInteger, mustBePositive} = []
+    slice_idx {mustBeInteger, mustBePositive} = 1
     mode {mustBeMember(mode, {'binary', 'gaussian_window'})} = 'binary'
     sigma {mustBeNumeric, mustBePositive} = []
     operation_mode {mustBeMember(operation_mode, {'remove', 'select'})} = 'remove'
