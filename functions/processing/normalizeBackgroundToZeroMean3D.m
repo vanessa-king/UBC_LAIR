@@ -68,12 +68,14 @@ y_max = round(position(2) + position(4));
 
 % Initialize the output array with correct dimensions
 normalized_data_3d = zeros(size(data_3d));  % Use exact same size as input
+background_info = zeros(k, 2);  % Preallocate for [mean, variance] of each slice
 
 % Process each slice individually using the same background area
 for i = 1:k
     background = data_3d(y_min:y_max, x_min:x_max, i);
     background_mean = mean(background(:));
-    background_info = [background_mean, var(background(:))];
+    background_variance = var(background(:));
+    background_info(i, :) = [background_mean, background_variance];
     
     % Extract the current slice
     data = data_3d(:, :, i);
