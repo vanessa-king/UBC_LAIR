@@ -1172,9 +1172,6 @@ variableOut3 = 'voltages';
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Close existing figures to prevent blank figure
-close all;
-
 % Prompt for range type
 while true
     rangeChoice = upper(input('Select color range type (G/g for Global, D/d for Dynamic): ', 's'));
@@ -1196,7 +1193,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VG01A", LOGcomment, 0);
 
 % Execute gridSliceViewer
 [data.(dataset).(variableOut1), data.(dataset).(variableOut2), data.(dataset).(variableOut3)] = ...
-    gridSliceViewer(data.(dataset).(variableIn1), data.(dataset).(variableIn2), rangeType, variableIn3, LOGpath, LOGfile);
+    gridSliceViewer(data.(dataset).(variableIn1), data.(dataset).(variableIn2), rangeType, variableIn3, dataset, LOGpath, LOGfile);
 LOGcomment = "Displayed interactive stack with slice number and voltage";
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 

@@ -1,4 +1,4 @@
-function [sliced_grid, sliceNumbers, voltages] = gridSliceViewer(data, V, rangeType, colormapName, LOGpath, LOGfile)
+function [sliced_grid, sliceNumbers, voltages] = gridSliceViewer(data, V, rangeType, colormapName, dataset, LOGpath, LOGfile)
 % GRIDSLICEVIEWER Processes 3D dIdV data into an RGB image stack for visualization.
 %   Edited by Jiabin Nov 2024, James May 2025
 %
@@ -19,6 +19,7 @@ arguments
     V (:,1) {mustBeNumeric}
     rangeType (1,:) char {mustBeMember(rangeType, {'global', 'dynamic'})}
     colormapName (1,:) char = 'invgray'
+    dataset (1,:) char = 'grid'
     LOGpath (1,:) char = ''
     LOGfile (1,:) char = ''
 end
@@ -72,7 +73,7 @@ end
 
 % Display
 figure('Name', sprintf('3D Grid View - %s Range, %s Colormap', rangeType, colormapName));
-imshow3D_LAIR(sliced_grid, [], voltages, LOGpath, LOGfile);
+imshow3D_LAIR(sliced_grid, [], voltages, dataset, LOGpath, LOGfile);
 
     % Nested mat2im
     function im = mat2im(mat, cmap, limits)
