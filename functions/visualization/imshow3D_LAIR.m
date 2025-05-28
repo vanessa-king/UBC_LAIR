@@ -1,4 +1,4 @@
-function imshow3D_LAIR(Img, disprange, voltages, LOGpath, LOGfile)
+function imshow3D_LAIR(Img, disprange, voltages, dataset, LOGpath, LOGfile)
 %IMSHOW3D displays 3D grayscale or RGB images in a slice by slice fashion
 %with mouse-based slice browsing and window and level adjustment control,
 %and auto slice browsing control.
@@ -14,6 +14,7 @@ function imshow3D_LAIR(Img, disprange, voltages, LOGpath, LOGfile)
 %    [LOW HIGH]: display range that controls the display intensity range of
 %                a grayscale image (default: the broadest available range)
 %    voltages:   Voltage vector (column) for slice labels (default: 1:sno)
+%    dataset:    Name of the dataset field in data structure (e.g., 'grid')
 %    LOGpath:    Path to log file (for capture logging)
 %    LOGfile:    Log file name (for capture logging)
 %
@@ -104,8 +105,12 @@ else
     end
 end
 
-% Handle LOGpath, LOGfile
-if nargin < 4
+% Handle dataset, LOGpath, LOGfile
+if nargin < 5
+    dataset = 'grid'; % Default if not provided
+    LOGpath = '';
+    LOGfile = '';
+elseif nargin < 6
     LOGpath = '';
     LOGfile = '';
 end
@@ -329,24 +334,23 @@ set(gcf,'ResizeFcn', @figureResized)
 
 % -=< Capture slice callback function >=-
     function CaptureSlice(~, ~)
-        % Load or initialize data.grid
+        % Load or initialize data.(dataset)
         if evalin('base', 'exist(''data'', ''var'')')
             data = evalin('base', 'data');
         else
-            data.grid = struct();
+            data.(dataset) = struct();
         end
         
         % Initialize or append to arrays
-        if ~isfield(data.grid, 'selectedSlice')
-            data.grid.selectedSlice = [];
-            data.grid.selectedVoltage = [];
-            data.grid.selectedSliceData = [];
+        if ~isfield(data.(dataset), 'selectedSlice')
+            data.(dataset).selectedSlice = [];
+            data.(dataset).selectedVoltage = [];
+
         end
         
         % Append current slice
-        data.grid.selectedSlice = [data.grid.selectedSlice; S];
-        data.grid.selectedVoltage = [data.grid.selectedVoltage; voltages(S)];
-        data.grid.selectedSliceData = cat(3, data.grid.selectedSliceData, squeeze(Img(:,:,S,:)));
+        data.(dataset).selectedSlice = [data.(dataset).selectedSlice; S];
+        data.(dataset).selectedVoltage = [data.(dataset).selectedVoltage; voltages(S)];
         
         % Save to base workspace
         assignin('base', 'data', data);
