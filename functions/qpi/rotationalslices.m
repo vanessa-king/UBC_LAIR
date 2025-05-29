@@ -5,7 +5,7 @@ function [data2D, angles] = rotationalslices(data3D, rangetype, line_width)
 %
 % Inputs:
 %   data3D - 3D dataset to visualize
-%   rangetype - 'dynamic' or 'global' for data normalization
+%   rangetype - 'dynamic' (normalized per slice), 'global' (raw data), or 'log' (logarithmic scaling)
 %   line_width - Width of the line in pixels (default: 1)
 %
 % Outputs:
@@ -16,14 +16,14 @@ function [data2D, angles] = rotationalslices(data3D, rangetype, line_width)
 %   angles - Array of angles used for rotation (in radians)
 %
 % Example:
-%   [data2D, angles] = rotational_slices(LDoS_noisy, 'dynamic', 3)
+%   [data2D, angles] = rotational_slices(LDoS_noisy, 'log', 3)
 %
 % Created: March 2024
 
 % Validate inputs
 arguments
     data3D {mustBeNumeric}
-    rangetype {mustBeMember(rangetype, {'dynamic', 'global'})} = 'dynamic'
+    rangetype {mustBeMember(rangetype, {'dynamic', 'global', 'log'})} = 'dynamic'
     line_width {mustBeInteger, mustBePositive} = 1
 end
 
@@ -127,6 +127,17 @@ for i = 1:length(angles)
                                           linspace(1,length(values),max_points));
                         % no normalization
                         width_data(:,z,w) = interpolated;
+                    end
+                case 'log'
+                    for z = 1:size(data3D, 3)
+                        values = data3D(sub2ind(size(data3D), y_coords, x_coords, z*ones(size(x_coords))));
+                        % Interpolate to fixed number of points
+                        interpolated = interp1(1:length(values), values, ...
+                                          linspace(1,length(values),max_points));
+                        % Apply logarithmic scaling
+                        % Add small offset to avoid log(0)
+                        offset = 1e-10;
+                        width_data(:,z,w) = log(abs(interpolated));
                     end
             end
         end

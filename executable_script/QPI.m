@@ -68,34 +68,13 @@
 % QV03A QPI-Visualize-03-A: Create rotational slices from 3D data
 %
 % Process:
-% QN01A QPI-Normalize-01-A: Normalize dIdV data
-% QP01A QPI-Process-01-A: Filter in q-space
+% QZ01A QPI-Zero-01-A: Zero background to dIdV data
+% QP01A QPI-Process-01-A: Create and apply center-symmetric mask in q-space
 % QP02A QPI-Process-02-A: Streak removal - Global streaks
 % QP02B QPI-Process-02-B: Streak removal - Local directional streaks
 % QP04A QPI-Process-04-A: Defect masking using Gaussian suppression
 % QP05A QPI-Process-05-A: Square cropping (Optional, main trunk has crop)
-%
-% Select:
-% QS01A QPI-Select-01-A: Create and apply center-symmetric mask in q-space
-
-% QPI Processing ****(MUST!)****
-% ; Bragg Align(100-109)-> means you can locate this in QPI_mean_historical.m (from line - to line)
-% ; Data Symmetrize(wishlist: symmetry under an operation)(123-135)
-% ; 2D Slice from 3D data - energy or spatial(testScript_volumeSlicedView_historical.m)
-
-% Pre-QPI grid processing (No Need here, go Main_Trunk)
-% ; DriftCorr(wishlist) & Crop grid(32-38)
-% ; Streaks Remove(39-50)
-% ; Defect Masking(51-72)
-% Theory processing 
-% ; Load the Theory calculation(now only support DFT)(393-406)
-% ; JDOS calculation(414-432)
-% QPI Visualization(Maybe Main_Trunk)
-% ; Grid/QPI 3D Viewer/Printout(default False)
-% ; QPI/JDOS/DFT slice 2D Viewer/Printout(default False)
-
-
-%% QN01A QPI-Normalize-01-A: Normalize dIdV data
+%% QZ01A QPI-Zero-01-A: Zero background to dIdV data
 % Created by Dong Chen in May 2025
 %
 % This section normalizes the dIdV data by removing background and setting mean to zero.
@@ -107,9 +86,9 @@
 % presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
 variableIn = 'dIdV';        % specify the input variable (dIdV data)
+rangetype = 'dynamic';         % range type: 'global' (all slices) or 'slice' (individual slices)
+slice = '';               % optional: specific slice indices to normalize, if empty normalizes all slices
 variableOut = 'dIdV_normalized'; % specify the variable name to store the normalized data
-param1 = 'global';         % range type: 'global' (all slices) or 'slice' (individual slices)
-param2 = '';               % optional: specific slice indices to normalize, if empty normalizes all slices
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % LOG data in/out:
@@ -121,8 +100,8 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "QN01A", LOGcomment, 0);
 inputData = data.(dataset).(variableIn);
 
 % Normalize data
-[data.(dataset).(variableOut), LOGcomment] = normalizeBackgroundToZeroMean3D(inputData, param1, param2);
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", sprintf("normalizeBackgroundToZeroMean3D(dIdV, '%s', %s)", param1, mat2str(param2)), 0);
+[data.(dataset).(variableOut), LOGcomment] = normalizeBackgroundToZeroMean3D(inputData, rangetype, slice);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", sprintf("normalizeBackgroundToZeroMean3D(dIdV, '%s', %s)", rangetype, mat2str(slice)), 0);
 
 % Clean up variables
 clearvars dataset variableIn variableOut inputData param1 param2
@@ -229,7 +208,7 @@ variableIn = 'QPI';         % specify the input variable (QPI data)
 variableOut1 = 'rotational_slices'; % specify the variable name to store the slice data
 variableOut2 = 'slice_angles'; % specify the variable name to store the angles
 param1 = 'dynamic';         % range type: 'dynamic' (normalized per slice) or 'global'
-param2 = 1;                 % line width in pixels
+param2 = 5;                 % line width in pixels
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % LOG data in/out:
@@ -238,7 +217,7 @@ LOGcomment = sprintf("Create rotational slices from DataIn: %s.%s; and get dataO
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "QV03A", LOGcomment, 0);
 
 % Get input data
-inputData = data.(dataset).(variableIn);
+inputData = abs(data.(dataset).(variableIn));
 
 % Create rotational slices
 [data.(dataset).(variableOut1), data.(dataset).(variableOut2)] = rotationalslices(inputData, param1, param2);
@@ -247,7 +226,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", sprintf("rotational_slices
 % Clean up variables
 clearvars dataset variableIn variableOut1 variableOut2 inputData param1 param2
 
-%% QS01A QPI-Select-01-A: Create and apply center-symmetric mask in q-space
+%% QP01A QPI-Processing-01-A: Create and apply center-symmetric mask in q-space
 % Created by Dong Chen in May 2025
 %
 % This section creates a center-symmetric mask in q-space and apply it to the QPI data.
@@ -261,15 +240,16 @@ clearvars dataset variableIn variableOut1 variableOut2 inputData param1 param2
 % - Select: keeps only the masked regions
 %
 % presets:
-dataset = 'grid';           % specify the dataset to be used: e.g. grid
+dataset = 'grid05';           % specify the dataset to be used: e.g. grid
 variableIn = 'dIdV';        % specify the input variable (real-space grid data)
-variableOut1 = 'dIdV_masked'; % specify the variable name to store the masked real-space data
-variableOut2 = 'QPI_masked'; % specify the variable name to store the masked QPI data
-variableOut3 = 'QPI_mask';   % specify the variable name to store the mask
 slice_idx = [];            % optional: specify slice index, if empty will show full 3D dataset
 param1 = 'gaussian_window'; % mask mode: 'binary' or 'gaussian_window'
 param2 = 2;                % sigma for gaussian window (only used if param1 is 'gaussian_window')
 param3 = 'remove';         % operation mode: 'remove' or 'select'
+
+variableOut1 = 'dIdV_masked'; % specify the variable name to store the masked real-space data
+variableOut2 = 'QPI_masked'; % specify the variable name to store the masked QPI data
+variableOut3 = 'QPI_mask';   % specify the variable name to store the mask
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % LOG data in/out:
