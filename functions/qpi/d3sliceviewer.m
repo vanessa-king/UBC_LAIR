@@ -1,4 +1,4 @@
-function [data2D, mask, comment] = d3sliceviewer(data3D, mode, contrast, input_mask)
+function [data2D, mask, comment, pointA, pointB] = d3sliceviewer(data3D, mode, contrast, input_pointA, input_pointB)
 % D3SLICEVIEWER Creates a 2D slice viewer from 3D data with line/segment selection
 %   This function allows users to select points on a slice of 3D data and create
 %   a line or line segment mask based on those points.
@@ -7,15 +7,19 @@ function [data2D, mask, comment] = d3sliceviewer(data3D, mode, contrast, input_m
 %   data3D - 3D dataset to visualize
 %   mode   - 'segment' or 'line' to determine mask type
 %   contrast - 'dynamic' or 'global' for data normalization (default: 'dynamic')
-%   input_mask - Optional mask to apply to the data
+%   input_pointA - Optional [y,x] coordinates for first point (skips interactive selection)
+%   input_pointB - Optional [y,x] coordinates for second point (skips interactive selection)
 %
 % Outputs:
 %   data2D - 2D array of values along the line across slices
 %   mask   - 3D mask array (1 for selected points, NaN for others)
 %   comment - Log comment string
+%   pointA - [y,x] coordinates of first point
+%   pointB - [y,x] coordinates of second point
 %
 % Example:
-%   [data2D, mask, comment] = d3sliceviewer(LDoS_noisy, 'segment', 'dynamic', [])
+%   [data2D, mask, comment, pointA, pointB] = d3sliceviewer(LDoS_noisy, 'segment', 'dynamic')
+%   [data2D, mask, comment, pointA, pointB] = d3sliceviewer(LDoS_noisy, 'segment', 'dynamic', [10,20], [30,40])
 %
 % Created: March 2024
 
@@ -24,100 +28,63 @@ arguments
     data3D {mustBeNumeric}
     mode {mustBeMember(mode, {'segment', 'line'})}
     contrast {mustBeMember(contrast, {'dynamic', 'global'})} = 'dynamic'
-    input_mask {mustBeNumeric} = []
+    input_pointA {mustBeNumeric} = []
+    input_pointB {mustBeNumeric} = []
 end
 
-% If mask is provided, skip point selection
-if ~isempty(input_mask)
-    % Validate mask dimensions
-    if ~isequal(size(input_mask), size(data3D))
-        error('Provided mask must have same dimensions as data3D');
-    end
-    
-    % Get the coordinates of masked points in the first slice
-    [y_coords, x_coords] = find(~isnan(input_mask(:,:,1)));
-    
-    % Create the 2D data array
-    data2D = zeros(length(x_coords), size(data3D, 3));
-    for i = 1:size(data3D, 3)
-        for j = 1:length(x_coords)
-            data2D(j, i) = data3D(y_coords(j), x_coords(j), i);
-        end
-    end
-    
-    % Apply contrast normalization
-    switch contrast
-        case 'dynamic'
-            % Normalize each slice independently
-            for i = 1:size(data2D, 2)
-                slice_data = data2D(:,i);
-                data2D(:,i) = (slice_data - min(slice_data)) / (max(slice_data) - min(slice_data));
-            end
-        case 'global'
-            % No normalization needed for global contrast
-    end
-    
-    % Plot the data with flipped axes
+% If points are provided, skip interactive selection
+if ~isempty(input_pointA) && ~isempty(input_pointB)
+    pointA = input_pointA;
+    pointB = input_pointB;
+else
+    % Step 1: Display 3D data and select slice
     figure;
-    imagesc(data2D');
+    d3gridDisplay(data3D, 'dynamic');
+    title('Select a slice to draw points on');
+
+    % Get slice selection from user
+    slice_idx = input('Enter slice number to draw points on: ');
+    if isempty(slice_idx) || slice_idx < 1 || slice_idx > size(data3D, 3)
+        error('Invalid slice number');
+    end
+    close;
+
+    % Display selected slice
+    fig = figure;
+    imagesc(data3D(:,:,slice_idx));
     colormap gray;
-    xlabel('Position along line');
-    ylabel('Slice number');
-    title('Line values across slices');
-    colorbar;
-    
-    comment = sprintf("d3sliceviewer(data:%s x %s x %s, mode: %s, contrast: %s)| Using provided mask", ...
-        mat2str(size(data3D,1)), mat2str(size(data3D,2)), mat2str(size(data3D,3)), mode, contrast);
-    return;
-end
+    axis equal;
+    title(sprintf('Slice %d - Select points', slice_idx));
 
-% Step 1: Display 3D data and select slice
-figure;
-d3gridDisplay(data3D, 'dynamic');
-title('Select a slice to draw points on');
+    % Step 2: Select point selection mode
+    disp('Select point selection mode:');
+    disp('1. Through the center');
+    disp('2. Through Braggs');
+    disp('3. Other');
+    mode_choice = input('Enter mode number (1-3): ');
 
-% Get slice selection from user
-slice_idx = input('Enter slice number to draw points on: ');
-if isempty(slice_idx) || slice_idx < 1 || slice_idx > size(data3D, 3)
-    error('Invalid slice number');
-end
-close;
-
-% Display selected slice
-fig = figure;
-imagesc(data3D(:,:,slice_idx));
-colormap gray;
-axis equal;
-title(sprintf('Slice %d - Select points', slice_idx));
-
-% Step 2: Select point selection mode
-disp('Select point selection mode:');
-disp('1. Through the center');
-disp('2. Through Braggs');
-disp('3. Other');
-mode_choice = input('Enter mode number (1-3): ');
-
-switch mode_choice
-    case 1 % Through the center
-        [pointA, pointB] = selectPointsThroughCenter(data3D(:,:,slice_idx), mode, fig);
-    case 2 % Through Braggs
-        [pointA, pointB] = selectPointsThroughBraggs(data3D(:,:,slice_idx), fig);
-    case 3 % Other
-        [mask,~,pointA, pointB, ~] = gridMaskLineSegment(data3D(:,:,slice_idx));
-    otherwise
-        error('Invalid mode selection');
+    switch mode_choice
+        case 1 % Through the center
+            [pointA, pointB] = selectPointsThroughCenter(data3D(:,:,slice_idx), mode, fig);
+        case 2 % Through Braggs
+            [pointA, pointB] = selectPointsThroughBraggs(data3D(:,:,slice_idx), fig);
+        case 3 % Other
+            [mask,~,pointA, pointB, ~] = gridMaskLineSegment(data3D(:,:,slice_idx));
+        otherwise
+            error('Invalid mode selection');
+    end
 end
 
 % Generate mask based on pointA and pointB
 switch mode
     case 'segment'
-        mask = gridMaskLineSegment(data3D(:,:,slice_idx), pointA, pointB);
+        mask = gridMaskLineSegment(data3D(:,:,1), pointA, pointB);
     case 'line'
-        mask = gridMaskLine(data3D(:,:,slice_idx), pointA, pointB);
+        mask = gridMaskLine(data3D(:,:,1), pointA, pointB);
 end
 
 comment = sprintf("d3sliceviewer(data:%s x %s x %s, mode: %s, contrast: %s)| line defined by pt1: %s, pt2: %s", ...
-    mat2str(size(data3D,1)), mat2str(size(data3D,2)), mat2str(size(data3D,3)), mode, contrast, pointA, pointB);
+    mat2str(size(data3D,1)), mat2str(size(data3D,2)), mat2str(size(data3D,3)), mode, contrast, mat2str(pointA), mat2str(pointB));
 
 % Convert mask to double and set zeros to NaN
 mask = double(mask);

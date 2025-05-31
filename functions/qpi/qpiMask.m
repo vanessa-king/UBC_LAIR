@@ -88,6 +88,9 @@ region_type = input('Choose region type (1 for circle, 2 for rectangle): ');
 % Initialize cell array to store region information
 region_info = cell(num_regions, 1);
 
+% Initialize array to store all region handles
+all_region_handles = [];
+
 % Let user select each region
 for i = 1:num_regions
     disp(['Select region #', num2str(i)]);
@@ -139,6 +142,18 @@ for i = 1:num_regions
             radius = h.Radius;
             sym_center = sym_h.Center;
             
+            % Draw permanent circles on the plot
+            theta = linspace(0, 2*pi, 100);
+            x1 = center(1) + radius * cos(theta);
+            y1 = center(2) + radius * sin(theta);
+            x2 = sym_center(1) + radius * cos(theta);
+            y2 = sym_center(2) + radius * sin(theta);
+            
+            % Add to plot and store handles
+            h1 = plot(x1, y1, 'g-', 'LineWidth', 2);
+            h2 = plot(x2, y2, 'g-', 'LineWidth', 2);
+            all_region_handles = [all_region_handles, h1, h2];
+            
             % Create circular masks
             [X_grid, Y_grid] = meshgrid(1:cols, 1:rows);
             
@@ -167,6 +182,7 @@ for i = 1:num_regions
             delete(sym_h);
             delete(h_marker);
             delete(sym_marker);
+            
             
         case 2 % Rectangle
             % Let user draw a rectangular ROI
@@ -222,6 +238,15 @@ for i = 1:num_regions
             rotation = h.RotationAngle;
             sym_position = sym_h.Position;
             sym_center = [sym_position(1) + sym_position(3)/2, sym_position(2) + sym_position(4)/2];
+            
+            % Draw permanent rectangles on the plot
+            % Original rectangle
+            rect1 = rectangle('Position', position, 'EdgeColor', 'g', 'LineWidth', 2, 'Rotation', rotation);
+            % Mirrored rectangle
+            rect2 = rectangle('Position', sym_position, 'EdgeColor', 'g', 'LineWidth', 2, 'Rotation', rotation);
+            
+            % Add to plot and store handles
+            all_region_handles = [all_region_handles, rect1, rect2];
             
             % Update region information with final positions
             region_info{i}.center = center;

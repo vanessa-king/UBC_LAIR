@@ -1,4 +1,4 @@
-function [Y_masked, defect_centers, comment] = gaussianMaskDefects(Y, threshold_slice, num_defect_type)
+function [Y_masked, defect_centers, defect_mask, comment] = gaussianMaskDefects(Y, threshold_slice, num_defect_type)
     % Apply Gaussian masking to defects in 3D data
     % g_M(r,E) = g(r,E) × (1 - M(r - r_0, σ))
     % M is a truncated Gaussian with maximum value = 0.99, it is applied within 1 sigma from the defect center
@@ -13,6 +13,7 @@ function [Y_masked, defect_centers, comment] = gaussianMaskDefects(Y, threshold_
     % Outputs:
     %   Y_masked: 3D data with defects masked using Gaussian suppression
     %   defect_centers: cell array containing centers of selected defects for each type
+    %   defect_mask: 2D logical array containing the mask used for suppression (same mask applied to all slices)
     %   comment: string containing information about the masking operation
     
     % Input validation
@@ -27,6 +28,7 @@ function [Y_masked, defect_centers, comment] = gaussianMaskDefects(Y, threshold_
     defect_centers = cell([1,num_defect_type]);
     % Get defect centers
     Y_masked= Y;
+    defect_mask = true(size(Y,1), size(Y,2));  % Initialize 2D mask as all true
     comment = sprintf("gaussianMaskDefects(threshold_slice:%d, num_defect_type:%d)|", threshold_slice, num_defect_type);
     
     for i = 1:num_defect_type
@@ -38,7 +40,8 @@ function [Y_masked, defect_centers, comment] = gaussianMaskDefects(Y, threshold_
         % Define radii for each defect
         sigmas = defineDefectRadii(Y(:,:,threshold_slice), defect_centers{i});
         % Apply Gaussian masks
-        [Y_masked, ~] = applyGaussianMasks(Y_masked, defect_centers{i}, sigmas);
+        [Y_masked, current_mask] = applyGaussianMasks(Y_masked, defect_centers{i}, sigmas);
+        defect_mask = defect_mask.*current_mask;  % Combine masks using first slice only
         % Display results
         displayResults(Y, Y_masked, threshold_slice, defect_centers{i}, sigmas);
         
@@ -146,33 +149,36 @@ end
 function [Y_masked, defect_mask] = applyGaussianMasks(Y, defect_centers, sigmas)
     % Apply Gaussian masks to the data
     Y_masked = Y;
-    defect_mask = false(size(Y));
+    defect_mask = false(size(Y,1), size(Y,2));  % Initialize 2D mask
     [X, Y_coord] = meshgrid(1:size(Y,2), 1:size(Y,1));
     
-    for i = 1:size(Y, 3)
-        mask = ones(size(Y,1), size(Y,2));
-        for j = 1:size(defect_centers, 1)
-            r0 = defect_centers(j,:);
-            % Calculate distance from each point to defect center
-            distance_squared = (X-r0(1)).^2 + (Y_coord-r0(2)).^2;
-            distance = sqrt(distance_squared);
-            
-            sigma = sigmas(j);
-            % Create smooth transition around 3 sigma
-            step_loc = 2*sigma;  % Start transition before 3 sigma
-            step_shapeness = 10;
-            % Create smooth step function as a function handle
-            smooth_step_fn = @(d, loc, shape) 0.5 + 0.5*(tanh(-shape*(d-loc)));
-            smooth_step = smooth_step_fn(distance, step_loc, step_shapeness);
-            
-            %Create gaussian with smooth transition
-            gaussian = 0.99 * exp(-distance_squared/(2*sigma^2)) .* smooth_step;
+    % Create mask for first slice only
+    mask = ones(size(Y,1), size(Y,2));
+    for j = 1:size(defect_centers, 1)
+        r0 = defect_centers(j,:);
+        % Calculate distance from each point to defect center
+        distance_squared = (X-r0(1)).^2 + (Y_coord-r0(2)).^2;
+        distance = sqrt(distance_squared);
+        
+        sigma = sigmas(j);
+        % Create smooth transition around 3 sigma
+        step_loc = 2*sigma;  % Start transition before 3 sigma
+        step_shapeness = 10;
+        % Create smooth step function as a function handle
+        smooth_step_fn = @(d, loc, shape) 0.5 + 0.5*(tanh(-shape*(d-loc)));
+        smooth_step = smooth_step_fn(distance, step_loc, step_shapeness);
+        
+        %Create gaussian with smooth transition
+        gaussian = 0.99 * exp(-distance_squared/(2*sigma^2)) .* smooth_step;
 
-            % Update mask
-            mask = mask .* (1 - gaussian);
-        end
+        % Update mask
+        mask = mask .* (1 - gaussian);
+    end
+    defect_mask = mask;  % Store 2D mask
+    
+    % Apply mask to all slices
+    for i = 1:size(Y, 3)
         Y_masked(:,:,i) = Y(:,:,i) .* mask;
-        defect_mask(:,:,i) = mask;
     end
 end
 

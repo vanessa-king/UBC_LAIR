@@ -1,4 +1,4 @@
-function [data2D, angles] = rotationalslices(data3D, rangetype, line_width)
+function [data2D, angles, radius] = rotationalslices(data3D, rangetype, line_width, radius)
 % ROTATIONAL_SLICES Creates 2D slices from 3D data by rotating a line through the center
 %   This function creates a series of 2D slices by rotating a line through the center
 %   of the data at different angles. The user adjusts a pre-drawn circle to determine the line length.
@@ -7,6 +7,7 @@ function [data2D, angles] = rotationalslices(data3D, rangetype, line_width)
 %   data3D - 3D dataset to visualize
 %   rangetype - 'dynamic' (normalized per slice), 'global' (raw data), or 'log' (logarithmic scaling)
 %   line_width - Width of the line in pixels (default: 1)
+%   radius - Optional radius for the circle. If not provided, user will be prompted to draw a circle
 %
 % Outputs:
 %   data2D - 3D array where:
@@ -14,9 +15,11 @@ function [data2D, angles] = rotationalslices(data3D, rangetype, line_width)
 %            dim2: original data slices (energy)
 %            dim3: angle slices
 %   angles - Array of angles used for rotation (in radians)
+%   radius - Radius of the circle used for slicing
 %
 % Example:
 %   [data2D, angles] = rotational_slices(LDoS_noisy, 'log', 3)
+%   [data2D, angles, radius] = rotational_slices(LDoS_noisy, 'log', 3, 50)
 %
 % Created: March 2024
 
@@ -25,33 +28,37 @@ arguments
     data3D {mustBeNumeric}
     rangetype {mustBeMember(rangetype, {'dynamic', 'global', 'log'})} = 'dynamic'
     line_width {mustBeInteger, mustBePositive} = 1
+    radius {mustBeNumeric} = []
 end
 
 % Calculate center point
 [rows, cols, ~] = size(data3D);
 center = [floor(rows/2)+1, floor(cols/2)+1];
 
-% Display the first slice
-figure;
-imagesc(data3D(:,:,floor(size(data3D,3)/2)));
-colormap gray;
-axis equal;
-title('Adjust circle radius to determine line length');
-hold on;
+% If radius not provided, get it interactively
+if isempty(radius)
+    % Display the first slice
+    figure;
+    imagesc(data3D(:,:,floor(size(data3D,3)/2)));
+    colormap gray;
+    axis equal;
+    title('Adjust circle radius to determine line length');
+    hold on;
 
-% Create initial circle with radius 1
-h = drawcircle('Center', [center(2), center(1)], 'Radius', 1);
-h.FaceAlpha = 0.1;  % Make circle semi-transparent
+    % Create initial circle with radius 1
+    h = drawcircle('Center', [center(2), center(1)], 'Radius', 1);
+    h.FaceAlpha = 0.1;  % Make circle semi-transparent
 
-% Wait for user to finish adjusting
-wait(h);
+    % Wait for user to finish adjusting
+    wait(h);
 
-% Get circle properties
-radius = h.Radius;
-
-% Clean up
-delete(h);
-hold off;
+    % Get circle properties
+    radius = h.Radius;
+    
+    % Clean up
+    delete(h);
+    hold off;
+end
 
 % Generate angles (0 to pi)
 angles = linspace(0, pi, 360);

@@ -1,36 +1,64 @@
-function [dIdV_nostreaks, QPI_nostreaks] = removeGlobalStreaks(dIdV, varargin)
+function [dIdV_nostreaks, QPI_nostreaks] = removeGlobalStreaks(dIdV, mask, direction)
 % REMOVEGLOBALSTREAKS Removes global streaks from QPI data
 %   This function removes global streaks from QPI data by normalizing each scan line.
 %   The algorithm:
 %   - Calculates mean and variance for each row and column
-%   - Identifies lines with variance below threshold
 %   - Normalizes these lines to the global mean
 %   - Can be applied to horizontal, vertical, or both directions
+%   - Only processes non-NaN entries based on the input mask
 %
 % Inputs:
 %   dIdV - 3D data array containing the dI/dV data
-%   varargin - Optional name-value pairs:
-%       'Direction' - 'none' (both), 'horizontal', or 'vertical'
+%   mask - (optional) 2D numeric mask where 1 indicates regions to process, other values will be set to NaN
+%          If not provided, all regions will be processed
+%   direction - (optional) 'none' (both), 'horizontal', or 'vertical'. Default is 'none'
 %
 % Outputs:
 %   dIdV_nostreaks - Streak-removed dI/dV data
 %   QPI_nostreaks - QPI of the streak-removed data
 %
 % Example:
-%   [dIdV_nostreaks, QPI_nostreaks] = removeGlobalStreaks(dIdV, 'Direction', 'horizontal')
+%   [dIdV_nostreaks, QPI_nostreaks] = removeGlobalStreaks(dIdV)
+%   [dIdV_nostreaks, QPI_nostreaks] = removeGlobalStreaks(dIdV, [], 'horizontal')
+%   [dIdV_nostreaks, QPI_nostreaks] = removeGlobalStreaks(dIdV, mask, 'vertical')
 %
 % Created: May 2025
 % Dong Chen
 
-% Parse optional inputs
-p = inputParser;
-addParameter(p, 'Direction', 'none', @(x) ismember(x, {'none', 'horizontal', 'vertical'}));
-parse(p, varargin{:});
-direction = p.Results.Direction;
+% Set default values for optional inputs
+if nargin < 2
+    mask = [];
+end
+if nargin < 3
+    direction = 'none';
+end
+
+% Validate inputs
+validateattributes(dIdV, {'numeric'}, {'3d'});
+if ~isempty(mask)
+    validateattributes(mask, {'numeric'}, {'2d'});
+end
+if ~ismember(direction, {'none', 'horizontal', 'vertical'})
+    error('Direction must be ''none'', ''horizontal'', or ''vertical''');
+end
 
 x_num = size(dIdV,1); % x-direction scan size
 y_num = size(dIdV,2); % y-direction scan size
 points = size(dIdV,3); % number of points in bias sweep
+
+% If mask is not provided, create a matrix of ones
+if isempty(mask)
+    mask = ones(x_num, y_num);
+end
+
+% Validate mask dimensions
+if ~isequal(size(mask), [x_num, y_num])
+    error('Mask dimensions must match the first two dimensions of dIdV');
+end
+
+% Create binary mask with NaN for non-1 values
+binary_mask = ones(size(mask));
+binary_mask(mask ~= 1) = NaN;
 
 %% dIdV with no streaks
 
@@ -41,27 +69,50 @@ dIdV_nostreaks = dIdV; % Initialize with original data
 
 % for loop averages each scan line to zero
 for k = 1:(points)
-    col_mean = mean(dIdV(:,:,k), 1);
-    col_var = var(dIdV(:,:,k),0, 1);
-    row_mean = mean(dIdV(:,:,k), 2);
-    row_var = var(dIdV(:,:,k),0, 2);
+    % Apply mask to current slice
+    current_slice = dIdV(:,:,k) .* binary_mask;
     
-    % Use max as threshold
-    threshold_col = max(col_var);
-    threshold_row = max(row_var);
+    % Calculate means and variances only for non-NaN values
+    col_mean = zeros(1, y_num);
+    col_var = zeros(1, y_num);
+    row_mean = zeros(x_num, 1);
+    row_var = zeros(x_num, 1);
     
-    % Find indices below thresholds
-    idx_col = find(col_var <= threshold_col);
-    idx_row = find(row_var <= threshold_row);
+    % Calculate column statistics using only non-NaN values
+    for j = 1:y_num
+        valid_data = current_slice(:,j);
+        valid_data = valid_data(~isnan(valid_data));
+        if ~isempty(valid_data)
+            col_mean(j) = mean(valid_data);
+            col_var(j) = var(valid_data, 0);
+        else
+            col_mean(j) = NaN;
+            col_var(j) = NaN;
+        end
+    end
     
-    % Apply corrections based on direction
-    totalcol_mean = mean(col_mean);
-    totalrow_mean = mean(row_mean);
+    % Calculate row statistics using only non-NaN values
+    for i = 1:x_num
+        valid_data = current_slice(i,:);
+        valid_data = valid_data(~isnan(valid_data));
+        if ~isempty(valid_data)
+            row_mean(i) = mean(valid_data);
+            row_var(i) = var(valid_data, 0);
+        else
+            row_mean(i) = NaN;
+            row_var(i) = NaN;
+        end
+    end
+    
+    % Calculate global means excluding NaN values
+    totalcol_mean = mean(col_mean(~isnan(col_mean)));
+    totalrow_mean = mean(row_mean(~isnan(row_mean)));
     
     % Apply horizontal correction (rows)
     if strcmp(direction, 'none') || strcmp(direction, 'horizontal')
         for i = 1:x_num
-            if ismember(i, idx_row)
+            if ~isnan(row_mean(i))  % Only process if we have valid statistics
+                % Apply correction to entire row, including NaN regions
                 dIdV_nostreaks(i,:,k) = dIdV(i,:,k) - row_mean(i) + totalrow_mean;
             end
         end
@@ -70,7 +121,8 @@ for k = 1:(points)
     % Apply vertical correction (columns)
     if strcmp(direction, 'none') || strcmp(direction, 'vertical')
         for j = 1:y_num
-            if ismember(j, idx_col)
+            if ~isnan(col_mean(j))  % Only process if we have valid statistics
+                % Apply correction to entire column, including NaN regions
                 dIdV_nostreaks(:,j,k) = dIdV(:,j,k) - col_mean(j) + totalcol_mean;
             end
         end
@@ -109,7 +161,17 @@ fprintf('Fourier transforming \n')
 QPI_nostreaks = zeros(x_num, y_num, points); % Create zero matrix for QPI results
 
 for i = 1:(points)
-    QPI_nostreaks(:,:,i) = abs(fftshift(fft2(dIdV_nostreaks(:,:,i) - mean(mean(dIdV_nostreaks(:,:,i))))));
+    % Apply mask to current slice
+    current_slice = dIdV_nostreaks(:,:,i) .* binary_mask;
+    
+    % Calculate mean excluding NaN values
+    valid_data = current_slice(~isnan(current_slice));
+    slice_mean = mean(valid_data);
+    
+    % Replace NaN with mean for FFT
+    current_slice(isnan(current_slice)) = slice_mean;
+    
+    QPI_nostreaks(:,:,i) = abs(fftshift(fft2(current_slice - slice_mean)));
 end
 
 end
