@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addOn>
+  <identifier>e56d72b7-4a80-11e4-9553-005056977bd0</identifier>
+  <displayType>Function</displayType>
+  <translatedDisplayType>
+    <en_US>Function</en_US>
+    <ja_JP>関数</ja_JP>
+    <ko_KR>함수</ko_KR>
+    <zh_CN>函数</zh_CN>
+  </translatedDisplayType>
+  <name>mat2im</name>
+  <author>Rob Campbell</author>
+  <version>1.4.0.0</version>
+  <downloadUrl>https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/submissions/26322/versions/5/download/zip?src=addons_ml_desktop_install&amp;profile_id=18891077&amp;license=924490&amp;release_family=R2024b</downloadUrl>
+  <licenseUrl>https://addons.mathworks.com/registry/v1/e56d72b7-4a80-11e4-9553-005056977bd0/1.4.0.0/-/license</licenseUrl>
+  <previewImageUrl>https://www.mathworks.com/responsive_image/160/120/0/0/0/cache/matlabcentral/mlc-downloads/downloads/submissions/26322/versions/5/screenshot.png</previewImageUrl>
+  <releaseNotesUrl>https://www.mathworks.com/add-ons/e56d72b7-4a80-11e4-9553-005056977bd0/55ffbc6f-00ed-a578-1c6a-4f5d91a17a2a/releaseNotes</releaseNotesUrl>
+  <installationFolder>Functions</installationFolder>
+</addOn>
