@@ -347,7 +347,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 clearvars dataset variableIn1 variableOut
 
 %% SM01A Selecting-Mask-01-A; creates directional masks for data analysis
-% Edited by Dong Chen in Dec 2024
+% Edited by Dong Chen in Dec 2024; Rysa June 2025
 % Description:
 % Generates directional masks for analyzing 2D or 3D datasets along a user-defined line,
 % with adjustable perpendicular width selected either interactively or programmatically.
@@ -372,10 +372,12 @@ clearvars dataset variableIn1 variableOut
 % Overlapping bins (bin_sep < bin_size) and gapped bins (bin_sep > bin_size) are allowed.
 
 %presets:
-dataset = 'grid';           % specify the dataset to be used: e.g. grid
-variableIn = 'I_smoothed';          % specify the variable to be processed   
+dataset = 'topo';           % specify the dataset to be used: e.g. grid
+variableIn1 = 'z';          % specify the variable to be processed 
+n = 341;           % slice number (n-th index of 3rd dim of data) [optional]
 variableOut = 'directional_masks';     % specify the variable name to store the masks
 connected = false;         % flag for side connectivity in mask generation
+saveplots = false;         % option to save plots (True: save; False: no save)
 
 % Optional variable inputs
 % set values to [] if not used
@@ -386,26 +388,32 @@ bin_sep = [];              % separation between consecutive bins
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %LOG data in/out:
-LOGcomment = sprintf("DataIn: %s.%s; dataOut: %s.%s", ...
-    dataset, variableIn, dataset, variableOut);
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; n = %s; startPoint = %s; endPoint = %s; bin_size = %s; bin_sep = %s;" + ...
+    " variableOut = %s; ", dataset, variableIn1, num2str(n), num2str(startPoint), num2str(endPoint), num2str(bin_size), num2str(bin_sep), ...
+    variableOut);
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM01A", LOGcomment, 0);
 
 % Get input data
-inputData = data.(dataset).(variableIn);
+inputData = data.(dataset).(variableIn1);
 
 % Create directional masks
 [data.(dataset).(variableOut), data.(dataset).([variableOut '_combined']), LOGcomment] = ...
-    maskDirectional(inputData, ...
-    'connected', connected, ...
-    'startPoint', startPoint, ...
-    'endPoint', endPoint, ...
-    'bin_size', bin_size, ...
-    'bin_sep', bin_sep);
-
-LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
-
+    maskDirectional(inputData, n, connected, startPoint, endPoint, bin_size, bin_sep);
+if saveplots==true
+    %ask for plotname:
+    plot_name = uniqueNamePrompt("Directional mask","",LOGpath);
+    LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+    
+    %save the created figures here:
+    savefig(strcat(LOGpath,"/",plot_name,".fig"))
+    %create copy of the log corresponding to the saved figures
+    saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+else
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+end
 % Clean up variables
-clearvars dataset variableIn variableOut connected startPoint endPoint bin_size bin_sep inputData slice_idx 
+clearvars dataset variableIn1 n variableOut connected startPoint endPoint bin_size bin_sep inputData
 %% SM02A Selecting-Mask-02-A; circular mask
 
 % Edited by Jiabin May 2024; Jisun Oct 2023, again in Feb 2024, again in Dec 2024.
@@ -686,7 +694,7 @@ clearvars dataset variableIn1 variableIn2 variableOut1 variableOut2
 
 %presets:
 dataset = 'grid';           % specify the dataset to be used: e.g. grid
-variableIn1 = 'I_smoothed'; % specify the variable to be processed, e.g. I, I_smoothed, or I_backward
+variableIn1 = 'I'; % specify the variable to be processed, e.g. I, I_smoothed, or I_backward
                             % this is a 3d array form (x, y, V)
 variableIn2 = 'V';          % specify the variable to be processed, e.g. V or Z
                             % this is a 1d array form (V, 1)
