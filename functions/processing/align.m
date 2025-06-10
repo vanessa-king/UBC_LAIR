@@ -12,13 +12,11 @@ function [topoBeforeCorrected, Before_registration] = align(topoBefore,topoAfter
 %   Created by Vanessa April 2025
 
 figure;
-hold on;
-title('Before and after topo');
 imshowpair(topoBefore,topoAfter);
 axis image;
 axis xy;
-hold off;
-
+title('Before and After Topo');
+set(gca,'Position',[0 0 1 0.9])
 
 %% Normalize after (fixed) image: code edited from RegistrationEstimator app
 % Get linear indices to finite valued data
@@ -75,14 +73,11 @@ topoBeforeCorrected = imwarp(topoBefore, beforeRefObj, tform, 'OutputView', afte
 % Store spatial referencing object
 Before_registration.SpatialRefObj = afterRefObj;
 
-
-
 figure;
-hold on;
-title('Corrected before topo and after topo');
 imshowpair(topoBeforeCorrected, topoAfter);
 axis image;
 axis xy;
-hold off;
+title('Corrected Before Topo and After Topo');
+set(gca,'Position',[0 0 1 0.9])
 
 end
