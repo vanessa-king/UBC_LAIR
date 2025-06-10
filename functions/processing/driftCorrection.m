@@ -1,4 +1,4 @@
-function [dataCorrected, xCorrected, yCorrected, comment] = driftCorrection(data, before, after, theta)
+function [dataCorrected, xCorrected, yCorrected, comment] = driftCorrection(data, before, after)
 %Correct for drift over time in a grid map.
 %   Calculates the drift from before and after topography images and skews
 %   the grid to compensate. You can rotate by angle theta (deg) if you
@@ -7,7 +7,6 @@ function [dataCorrected, xCorrected, yCorrected, comment] = driftCorrection(data
 %   - data: [x,y,V] 3D array of values (ie: I or z)
 %   - before: [x,y] 2D array of values from the before topo (ie: z)
 %   - after: [x,y] 2D array of values from the after topo (ie: z)
-%   - theta: angle to rotate the grid (in degrees)
 %   
 %   Output:
 %   - xCorrected: [x,y] 2D array of x values corresponding to the
@@ -25,7 +24,6 @@ arguments
     data          
     before
     after      
-    theta = 0
 end
 
 %output format for comment: "<function>(<VAR1>=<VAR1_value>,<VAR2>=<VAR2_value>,<VAR3>,...,)|"  
