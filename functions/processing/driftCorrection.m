@@ -1,4 +1,4 @@
-function [dataCorrected, xCorrected, yCorrected, comment] = driftCorrection(data, before, after)
+function [dataCorrected, topoCorrected, xCorrected, yCorrected, Before_registration, comment] = driftCorrection(data, before, after)
 %Correct for drift over time in a grid map.
 %   Calculates the drift from before and after topography images and skews
 %   the grid to compensate. You can rotate by angle theta (deg) if you
@@ -36,37 +36,11 @@ comment = sprintf(formatSpec,mat2str(size(data)), mat2str(size(before)), mat2str
 
 %regular function processing:
 
-% segment the image
-level = graythresh(mat2gray(before));
-before_image = double(imbinarize(mat2gray(before),level));
-after_image = double(imbinarize(mat2gray(after),level));
+[topoCorrected, Before_registration] = align(before, after);
 
-%blend the before and after image together and plot
-blendedImage = imblend(after_image,before_image);
-figure;
-hold on;
-title('Before and after scans, segmented')
-imagesc(blendedImage');
-axis image;
-axis xy;
-hold off;
-
-%identify 'objects' in the images
-before = regionprops(before_image,'centroid');
-before_objects = before.Centroid;
-after = regionprops(after_image,'centroid');
-after_objects = after.Centroid;
-
-%calculate linear shear to compensate drift
-drift = before_objects - after_objects; 
-theta = deg2rad(theta);
-
-x_drift = drift(1)/size(data,1);
-y_drift = drift(2)/size(data,2);
-transform = affinetform2d([cos(theta)-y_drift*sin(theta), sin(theta)+y_drift*cos(theta), 0; ...
-    x_drift*cos(theta)-sin(theta), x_drift*sin(theta)+cos(theta), 0; ...
-    0, 0, 1]);
-transformedImage = imwarp(data,transform);
+transformedImage = topoCorrected;
+transform = Before_registration.Transform;
+ 
 %temp = imwarp(squeeze(data(1,:,:)),transform); %Hmm, check what grid(1,:,:) is supposed to be
 %iv = zeros(length(grid.V),size(temp,1), size(temp,2));
 %for i = 1:length(grid.V)
