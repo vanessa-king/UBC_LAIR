@@ -840,6 +840,37 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 % clear excess variables
 clearvars dataset1 dataset2 variableIn1 variableIn2 variableIn3 variableIn4 variableIn5 variableIn6 variableOut1 
 clearvars type n1 n2 V_target_1 V_target_2
+
+%% PI04A Processing-Image-04-A; align two 2D images
+% Edited by V. King 2025/06
+% Align two images rigidly (only translation & rotation allowed)
+
+% presets:
+datasetBefore ='topoBefore'; %specify the dataset of the moving image: e.g. topoBefore
+variableInBefore = 'z';      %specify the variable of the moving image: e.g. z 
+
+datasetAfter ='topoAfter';   %specify the dataset of the still image: e.g. topoAfter
+variableInAfter = 'z';       %specify the variable of the still iamge: e.g. z
+     
+
+% return variables: 
+variableOut1 = 'corrected_z';     % corrected version of variableInBefore
+variableOut2 = 'registration';    % transform and spatial information
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% LOG data in/out
+LOGcomment = sprintf("datasetBefore = %s; variableInBefore = %s; datasetAfter = %s; variableInAfter = %s; variableOut1 = %s; variableOut2 = %s", datasetBefore, variableInBefore, datasetAfter, variableInAfter, variableOut1, variableOut2);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PI04A", LOGcomment ,0);
+
+%execute function
+[data.(datasetBefore).(variableOut1), data.(datasetBefore).(variableOut2), LOGcomment] = align(data.(datasetBefore).(variableInBefore), data.(datasetAfter).(variableInAfter));
+
+% log the function execution 
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
+% clear excess variables
+clearvars datasetBefore datasetAfter variableInBefore variableInAfter variableOut1 variableOut2
 %% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias 
 
 % Edited by James October 2023, Jiabin July 2024, Rysa Sept 2024
@@ -904,16 +935,16 @@ clearvars bias_of_interest targetFolder plot_name defaultname
 %Dong Chen 2024; M. Altthaler 2024/12; Jisun 2025/4
 
 % Presets:
-LayoutCase = 'gridsliceImage';   % specify the layout format: gridsliceImage or topoImage
-dataset = 'grid';           % specify the dataset to be used: e.g. grid, topo
-variableIn1 = 'dIdV';           % specify the variable containing the data to be plotted: e.g. z, dIdV
+LayoutCase = 'topoImage';   % specify the layout format: gridsliceImage or topoImage
+dataset = 'topoBefore';           % specify the dataset to be used: e.g. grid, topo
+variableIn1 = 'corrected_z';           % specify the variable containing the data to be plotted: e.g. z, dIdV
 
 % optional variable inputs
 % set values to [] if not used
 % Relevant inputs for slicing 3D -> 2D data:
 n = [];                         % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
-variableIn2 = 'V_reduced';      % Voltage axis for the 3D data set: e.g. 'V_reduced' for dIdV or 'V' for I(V)
-imageV = 0.02;  
+variableIn2 = [];      % Voltage axis for the 3D data set: e.g. 'V_reduced' for dIdV or 'V' for I(V)
+imageV = [];  
 
 % define the folder where the created figure to be saved
 savefigpath = '';   % If you choose '', it will pop up a window for a user to select the folder to save the figure.
