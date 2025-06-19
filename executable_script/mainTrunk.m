@@ -734,8 +734,8 @@ savefigpath = '';   % If you choose '', it will pop up a window for a user to se
 
                             
 variableOut1 = 'norm_dIdV'; % This is a 3d array form (x, y, V-1).                            
-variableOut2 = 'V_reduced'; % This is a 1d array form (V-1, 1).                            
-variableOut3 = 'I_corrected'; % This is a 1d array form (x, y, V).                            
+variableOut2 = 'I_corrected'; % This is a 1d array form (V-1, 1).                            
+variableOut3 = 'V_reduced'; % This is a 1d array form (x, y, V).                            
 variableOut4 = 'I_offset';  % This is a 1d array form (x, y).                            
 variableOut5 = 'I_offset_std'; % This is a neumetic value.
 
