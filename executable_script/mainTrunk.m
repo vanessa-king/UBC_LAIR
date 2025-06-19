@@ -855,7 +855,7 @@ variableInAfter = 'z';       %specify the variable of the still iamge: e.g. z
 
 % return variables: 
 variableOut1 = 'corrected_z';     % corrected version of variableInBefore
-variableOut2 = 'registration';    % transform and spatial information
+variableOut2 = 'registration';    % transform and spatial informations
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
