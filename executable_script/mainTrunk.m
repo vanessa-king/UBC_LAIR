@@ -21,7 +21,7 @@
 %               I = Initialize 
 %               M = Mask
 %               S = Spectrum
-%               T = Threshold
+%       ,       T = Threshold
 %               W = Workspace
 %       - XX:  Running number for consecutive blocks (01, 02, ..., 99)
 %       - Z:   Alternating letter for variations of a block (a, b, c, ...)
