@@ -896,7 +896,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 clearvars dataset1 dataset2 variableIn1 variableIn2 variableIn3 variableIn4 variableIn5 variableIn6 variableOut1 
 clearvars type n1 n2 V_target_1 V_target_2
 
-%% VT03A Visualize-Topo-01-A; 2D Image Plotting (topography or grid slice)
+%% VT03A Visualize-Topo-03-A; 2D Image Plotting (topography or grid slice)
 % This section of code generates a 2D image of data using the specified layout format.
 % The layout can be 'gridsliceImage' or 'topoImage'. The image will be saved to a specified folder.
 
