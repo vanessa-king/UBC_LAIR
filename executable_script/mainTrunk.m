@@ -851,7 +851,8 @@ variableInBefore = 'z';      %specify the variable of the moving image: e.g. z
 
 datasetAfter ='topoAfter';   %specify the dataset of the still image: e.g. topoAfter
 variableInAfter = 'z';       %specify the variable of the still iamge: e.g. z
-     
+
+scaling = 1;     %specify if you want to allow for image isotropic scaling
 
 % return variables: 
 variableOut1 = 'corrected_z';     % corrected version of variableInBefore
@@ -864,13 +865,13 @@ LOGcomment = sprintf("datasetBefore = %s; variableInBefore = %s; datasetAfter = 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PI04A", LOGcomment ,0);
 
 %execute function
-[data.(datasetBefore).(variableOut1), data.(datasetBefore).(variableOut2), LOGcomment] = align(data.(datasetBefore).(variableInBefore), data.(datasetAfter).(variableInAfter));
+[data.(datasetBefore).(variableOut1), data.(datasetBefore).(variableOut2), LOGcomment] = align(data.(datasetBefore).(variableInBefore), data.(datasetAfter).(variableInAfter), scaling);
 
 % log the function execution 
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 
 % clear excess variables
-clearvars datasetBefore datasetAfter variableInBefore variableInAfter variableOut1 variableOut2
+clearvars datasetBefore datasetAfter variableInBefore variableInAfter scaling variableOut1 variableOut2
 %% VT01A Visualize-Topo-01-A; visualizes a slice of dI/dV data at a user-defined bias 
 
 % Edited by James October 2023, Jiabin July 2024, Rysa Sept 2024

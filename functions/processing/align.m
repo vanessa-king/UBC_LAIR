@@ -1,4 +1,4 @@
-function [topoBeforeCorrected, Before_registration, comment] = align(topoBefore,topoAfter)
+function [topoBeforeCorrected, Before_registration, comment] = align(topoBefore,topoAfter, scaling)
 %Aligns two images
 %   Align a before and after topography image and returns the
 %   transformation and the corrected after topographic image. 
@@ -6,6 +6,9 @@ function [topoBeforeCorrected, Before_registration, comment] = align(topoBefore,
 %   Input: 
 %   - topoBefore: [x,y] 2D array of values from the before topo (ie: z)
 %   - topoAfter: [x,y] 2D array of values from the after topo (ie: z)
+%   - scaling: boolean - if the transformation can allow for isotropic
+%   scaling. This should be informed by the relative real space dimensions
+%   of the two images
 %   
 %   Output:
 %   - topoBeforeCorrected: [x,y] the before topo in the spatial reference 
@@ -17,17 +20,17 @@ function [topoBeforeCorrected, Before_registration, comment] = align(topoBefore,
 arguments
     topoBefore  {mustBeNumeric}     % 2D data
     topoAfter   {mustBeNumeric}     % 2D data
+    scaling     {mustBeNumeric}     % boolean
 end
 
 % comment
-comment = sprintf("topoPaneSub( topoBefore: %s x %s, topoAfter: %s x %s)|", mat2str(size(topoBefore,1)),mat2str(size(topoBefore,2)), mat2str(size(topoAfter,1)),mat2str(size(topoAfter,2)));
+comment = sprintf("topoPaneSub( topoBefore: %s x %s, topoAfter: %s x %s, scaling= %s)|", mat2str(size(topoBefore,1)),mat2str(size(topoBefore,2)), mat2str(size(topoAfter,1)),mat2str(size(topoAfter,2)), num2str(scaling));
 
 figure;
+subplot(1,2,1)
 imshowpair(topoBefore,topoAfter);
-axis image;
-axis xy;
+axis image; axis xy;
 title('Before and After Topo');
-set(gca,'Position',[0 0 1 0.9])
 
 %% Normalize after (fixed) image: code edited from RegistrationEstimator app
 % Get linear indices to finite valued data
@@ -77,18 +80,20 @@ end
 afterRefObj = imref2d(size(topoAfter));
 beforeRefObj = imref2d(size(topoBefore));
 
-% Phase correlation
-tform = imregcorr(topoBefore, beforeRefObj, topoAfter, afterRefObj,'Method','gradcorr','transformtype','rigid');
+% Gradient correlation
+if scaling==1 %Allow for isotropic scaling in addition to trranslation and rotation
+    tform = imregcorr(topoBefore, beforeRefObj, topoAfter, afterRefObj,'Method','gradcorr','transformtype','similarity');
+else %Only allow translation and rotation
+    tform = imregcorr(topoBefore, beforeRefObj, topoAfter, afterRefObj,'Method','gradcorr','transformtype','rigid');
+end
 Before_registration.Transformation = tform;
 topoBeforeCorrected = imwarp(topoBefore, beforeRefObj, tform, 'OutputView', afterRefObj, 'SmoothEdges', false);
 % Store spatial referencing object
 Before_registration.SpatialRefObj = afterRefObj;
 
-figure;
+subplot(1,2,2)
 imshowpair(topoBeforeCorrected, topoAfter);
-axis image;
-axis xy;
+axis image; axis xy;
 title('Corrected Before Topo and After Topo');
-set(gca,'Position',[0 0 1 0.9])
 
 end
