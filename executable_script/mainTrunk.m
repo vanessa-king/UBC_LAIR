@@ -79,6 +79,7 @@
     % SL02A Selecting-Logic-02-A; logic OR for two masks
     % SI01A Selecting-Invert-01-A; invert mask (or veil)
     % SM01A Selecting-Mask-01-A; select a directional mask (with/without binning)
+    % SM01B Selecting-Mask-01-B; select a directional mask (with/without binning)
     % SM02A Selecting-Mask-02-A; circular mask
     % SM03A Selecting-Mask-03-A; rectangular mask
     % SM04A Selecting-Mask-04-A; threshold mask
@@ -414,6 +415,86 @@ else
 end
 % Clean up variables
 clearvars dataset variableIn1 n variableOut connected startPoint endPoint bin_size bin_sep inputData
+%% SM01B Selecting-Mask-01-B; select a directional mask (with/without binning)
+
+% Edited by M. Altthaler 06-2025
+% Description:
+% Generates directional masks for analyzing 2D or 3D datasets along a user-defined line,
+% with adjustable perpendicular width selected either interactively or programmatically.
+% These masks allow directional averaging, orientation-specific filtering, or local
+% statistical analysis.
+% By default, the function outputs:
+%   data.grid.directional_masks — a 3D array of logical masks with size (X, Y, N),
+%   where N is the number of narrow masks generated perpendicular to the main line.
+% Optional parameters `bin_size` and `bin_sep` allow you to group (or "bin") these
+% N narrow masks along the 3rd dimension into wider, combined masks for coarser analysis:
+%   - bin_size:   The number of adjacent masks to combine into each bin.
+%   - bin_sep:    The number of masks to move forward before starting the next bin.
+%
+% For example, setting bin_size = 2 and bin_sep = 3 results in bins that use every 3rd
+% mask, each bin containing 2 consecutive masks:
+%   Bin 1 → masks(:,:,1:2)
+%   Bin 2 → masks(:,:,4:5)
+%   Bin 3 → masks(:,:,7:8)
+%
+% This creates an additional output:
+%   data.grid.directional_masks_combined — a 3D array with fewer, wider masks.
+% Overlapping bins (bin_sep < bin_size) and gapped bins (bin_sep > bin_size) are allowed.
+
+% PRESETS:
+% data in: 
+dataset = 'grid';           % specify the dataset to be used: e.g. grid
+variableIn1 = 'I';          % specify the variable to be processed 
+% masks out:
+variableOut = 'directional_masks';     % specify the variable name to store the masks
+% save plot boolean
+saveplots = false;          % option to save plots (True: save; False: no save)
+
+% optional variable inputs
+% set values to [] if not used
+% Relevant inputs for slicing 3D -> 2D data:
+n = 52;                    % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
+variableIn2 = 'V';          % Voltage axis for the 3D data set: e.g. 'V_reduced' for dIdV or 'V' for I(V)
+imageV = [];                % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
+% optional to force a connected main line
+connected = [];              % flag for side connectivity in mask generation [1 = true, 0 = false]
+% optional to reproduce data (partial inputs yield a preset, e.g. only width)
+startPoint = [];            % [x,y] coordinates of start point, [] for interactive selection
+endPoint = [];              % [x,y] coordinates of end point, [] for interactive selection
+width = [];                 % width of the ROI, [] for interactive selection
+%optional to (re)roduce combined mask
+bin_size = [];              % number of masks to combine in each bin
+bin_sep = [];               % separation between consecutive bins
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%LOG data in/out:
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableOut = %s; (variableOut2 = %s_combined;)", dataset, variableIn1, variableOut, variableOut);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "SM01B", LOGcomment, 0);
+
+LOGcomment = sprintf("Optional inputs: n = %s; variableIn2 = %s; imageV  = %s; connected = %s; startPoint = %s; endPoint = %s; width = %s; bin_size = %s; bin_sep = %s;" + ...
+    " variableOut = %s;", num2str(n), variableIn2, num2str(imageV), connected ,num2str(startPoint), num2str(endPoint), num2str(width), num2str(bin_size), num2str(bin_sep));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+
+% Create directional masks
+[data.(dataset).(variableOut), data.(dataset).([variableOut '_combined']), figMasks, LOGcomment] = maskDirectionalB(data.(dataset).(variableIn1),n,data.(dataset).(variableIn2),imageV,connected,startPoint,endPoint,width,bin_size, bin_sep);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+if saveplots==true
+    %ask for plotname:
+    plot_name = uniqueNamePrompt("Directional mask","",LOGpath);
+    LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+    
+    %save the created figures here:
+    savefig(figMasks,strcat(LOGpath,"/",plot_name,".fig"))
+    %create copy of the log corresponding to the saved figures
+    saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+else
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+end
+% Clean up variables
+clearvars dataset variableIn1 variableOut saveplots n variableIn2 imageV connected startPoint endPoint width bin_size bin_sep inputData
 %% SM02A Selecting-Mask-02-A; circular mask
 
 % Edited by Jiabin May 2024; Jisun Oct 2023, again in Feb 2024, again in Dec 2024.
