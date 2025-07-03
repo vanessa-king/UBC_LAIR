@@ -896,6 +896,39 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
 clearvars dataset1 dataset2 variableIn1 variableIn2 variableIn3 variableIn4 variableIn5 variableIn6 variableOut1 
 clearvars type n1 n2 V_target_1 V_target_2
 
+%% PI04A Processing-Image-04-A; align two 2D images
+% Edited by V. King 2025/06
+% Align two images using translation, rotation, and optionally isotropic scaling
+
+% presets:
+datasetBefore ='topoBefore'; %specify the dataset of the moving image: e.g. topoBefore
+variableInBefore = 'z';      %specify the variable of the moving image: e.g. z 
+
+datasetAfter ='topoAfter';   %specify the dataset of the still image: e.g. topoAfter
+variableInAfter = 'z';       %specify the variable of the still iamge: e.g. z
+
+scaling = 1;     %specify if you want to allow for image isotropic scaling
+
+% return variables: 
+variableOut1 = 'corrected_z';     % corrected version of variableInBefore
+variableOut2 = 'registration';    % transform and spatial informations
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% LOG data in/out
+LOGcomment = sprintf("datasetBefore = %s; variableInBefore = %s; datasetAfter = %s; variableInAfter = %s; variableOut1 = %s; variableOut2 = %s", datasetBefore, variableInBefore, datasetAfter, variableInAfter, variableOut1, variableOut2);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PI04A", LOGcomment ,0);
+
+%execute function
+[data.(datasetBefore).(variableOut1), data.(datasetBefore).(variableOut2), LOGcomment] = align(data.(datasetBefore).(variableInBefore), data.(datasetAfter).(variableInAfter), scaling);
+
+% log the function execution 
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+
+% clear excess variables
+clearvars datasetBefore datasetAfter variableInBefore variableInAfter scaling variableOut1 variableOut2
+
+
 %% VT03A Visualize-Topo-03-A; 2D Image Plotting (topography or grid slice)
 % This section of code generates a 2D image of data using the specified layout format.
 % The layout can be 'gridsliceImage' or 'topoImage'. The image will be saved to a specified folder.
