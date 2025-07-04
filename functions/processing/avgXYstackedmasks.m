@@ -41,11 +41,12 @@ function [avg_out, STD_out, comment] = avgXYstackedmasks(data, masks)
         mat2str(size(masks, 2)), mat2str(size(masks, 3)));
     
     %mask: 0 -> NaN
-    masks(~(logical(masks))) = NaN;
+    masks = double(masks); %need to convert to double to allow NaN
+    masks(masks==0) = NaN;
     
     % preallocate memory for output variables
-    avg_out = zero(size(data, 3),size(masks, 3)); 
-    STD_out = zero(size(data, 3),size(masks, 3));
+    avg_out = zeros(size(data, 3),size(masks, 3)); 
+    STD_out = zeros(size(data, 3),size(masks, 3));
     
     % iteratively assign avg and STD for each layer L 
     for i = 1:size(masks, 3)

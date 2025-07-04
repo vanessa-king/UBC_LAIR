@@ -675,16 +675,16 @@ clearvars dataset variableIn1 variableOut1
 % Presets
 % Define dataset and input/output variables here
 dataset = 'grid';               % specify the dataset to be used: e.g., grid
-variableIn1 = 'dIdV';     % the variable that you want to average. e.g. I_forward, I_backward
+variableIn1 = 'I';     % the variable that you want to average. e.g. I_forward, I_backward
                                 % If you want to average dIdV, you need to run PD01A or PD01B first. 
                                 % Also you can input dIdV_forward or dIdV_backward to get average 
                                 % of foward or backward only average dIdV.
 variableIn2 = 'directional_masks';  % Stacked Masks (eg. output from directional mask)
 
 % return variables:
-variableOut1 = 'avg_dIdV';      % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
+variableOut1 = 'avg_I';      % specify the first output variable. e.g. avg_dIdV or avg_IV_fwd or avg_IV_bwd
                                 % or avg_dIdV_fwd or avg_dIdV_bwd
-variableOut2 = 'dIdV_STD';      %standard deviation
+variableOut2 = 'STD_I';      %standard deviation
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Log input and output variables
 LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s; DataOut: variableOut1 = %s, variableOut2 = %s", ...
@@ -694,7 +694,7 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "PA02B", LOGcomment, 0);
 % Main code execution section
 
 % Function call
-[~, data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = avgXYstackedmasks(requiredStructCall(data,dataset,variableIn1), optionalStructCall(data,dataset,variableIn2));
+[data.(dataset).(variableOut1), data.(dataset).(variableOut2), LOGcomment] = avgXYstackedmasks(requiredStructCall(data,dataset,variableIn1), requiredStructCall(data,dataset,variableIn2));
 LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 
 % Clear preset variables
@@ -1203,6 +1203,50 @@ saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(figName));
 
 % Clear preset variables
 clearvars dataset variableIn1 variableIn2 variableIn3 figName step_size numx numy;
+
+%% VS05A Visualize-Spectra-03-A; Visualizes spectra along a line (directional mask)
+% This section of code generates a 2D plot of specra. 
+
+% created M. Altthaler 07/2025
+
+% Presets
+% Define dataset and input/output variables here
+dataset = 'grid';                   % specify the dataset to be used: e.g., grid
+variableIn1 = 'avg_I';              % avg. of data
+variableIn2 = 'STD_I';              % STD of data
+variableIn3 = 'V';                  % Voltage axis
+plotError  = 0;                     % plotError: 1 = yes, 0 = no
+
+% optional variable input: set value to [] if not used
+savePlot = 0;                       % save plot: 1 = yes, 0 = no
+    
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Log input and output variables
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s, variableIn3 = %s, plotError = %s;",dataset,variableIn1,variableIn2,variableIn3,plotError);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS05A", LOGcomment, 0);
+
+% Main code execution section
+% Function call
+[tempFig, LOGcomment] =  plotSpectraStackedMask(requiredStructCall(data,dataset,variableIn1), requiredStructCall(data,dataset,variableIn2), requiredStructCall(data,dataset,variableIn3), plotError);
+
+%opt. save plot
+if savePlot == 1
+    %ask for plotname:
+    plot_name = uniqueNamePrompt("Averaged pectra along line mask","",LOGpath);
+    LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+    
+    %save the created figures here:
+    savefig(tempFig,strcat(LOGpath,"/",plot_name,".fig"))
+    %create copy of the log corresponding to the saved figures
+    saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+else
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+end
+
+% Clear preset variables
+clearvars dataset variableIn1 variableIn2 variableIn3 variableIn4 savePlot 
 %% VG01A Visualize-Grid-01-A; Visualizes dIdV stack as RGB images
 % Edited by Jiabin Nov 2024, James May 2025
 % Processes 3D dI/dV data into a stack of RGB image slices for all layers.
@@ -1254,3 +1298,4 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 % Clear variables
 clearvars dataset variableIn1 variableIn2 variableIn3
 clearvars variableOut1 variableOut2 variableOut3 rangeChoice rangeType
+
