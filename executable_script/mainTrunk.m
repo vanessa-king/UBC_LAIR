@@ -1361,8 +1361,8 @@ clearvars variableOut1 variableOut2 variableOut3 rangeChoice rangeType
 
 % PRESETS:
 % data in: 
-dataset = 'grid';           % specify the dataset to be used: e.g. topo [grid]
-variableIn1 = 'I';          % specify the variable to be processed: e.g. z [I, dIdV]
+dataset = 'topo';           % specify the dataset to be used: e.g. topo [grid]
+variableIn1 = 'z';          % specify the variable to be processed: e.g. z [I, dIdV]
 
 % save plot boolean
 saveplots = false;          % option to save plots [true: save, false: don't save]
@@ -1370,8 +1370,8 @@ saveplots = false;          % option to save plots [true: save, false: don't sav
 % optional variable inputs
 % set values to [] if not used
 % Relevant inputs for slicing 3D -> 2D data:
-n = 52;                     % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
-variableIn2 = 'V';          % Voltage axis for the 3D data set: e.g. 'V_reduced' for dIdV or 'V' for I(V)
+n = [];                     % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
+variableIn2 = [];          % Voltage axis for the 3D data set: e.g. 'V_reduced' for dIdV or 'V' for I(V)
 imageV = [];                % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
 % optional to reproduce data (partial inputs yield a preset, e.g. only width)
 startPoint = [];            % [x,y] coordinates of start point, [] for interactive selection
