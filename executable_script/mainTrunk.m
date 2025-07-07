@@ -1204,7 +1204,7 @@ saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, strcat(figName));
 % Clear preset variables
 clearvars dataset variableIn1 variableIn2 variableIn3 figName step_size numx numy;
 
-%% VS05A Visualize-Spectra-03-A; Visualizes spectra along a line (directional mask)
+%% VS05A Visualize-Spectra-05-A; Visualizes spectra from directional mask
 % This section of code generates a 2D plot of specra. 
 
 % created M. Altthaler 07/2025
@@ -1212,7 +1212,7 @@ clearvars dataset variableIn1 variableIn2 variableIn3 figName step_size numx num
 % Presets
 % Define dataset and input/output variables here
 dataset = 'grid';                   % specify the dataset to be used: e.g., grid
-variableIn1 = 'avg_I';              % avg. of data
+variableIn1 = 'avg_I';              % average of data
 variableIn2 = 'STD_I';              % STD of data
 variableIn3 = 'V';                  % Voltage axis
 plotError  = 0;                     % plotError: 1 = yes, 0 = no
@@ -1246,7 +1246,52 @@ else
 end
 
 % Clear preset variables
-clearvars dataset variableIn1 variableIn2 variableIn3 variableIn4 savePlot 
+clearvars dataset variableIn1 variableIn2 variableIn3 plotError savePlot 
+%% VS06A Visualize-Spectra-06-A; Visualizes spectra from directional mask along a line
+% This section of code generates a 2D plot of specra. 
+
+% created M. Altthaler 07/2025
+
+% Presets
+% Define dataset and input/output variables here
+dataset = 'grid';                   % specify the dataset to be used: e.g., grid
+variableIn1 = 'avg_I';              % average of data
+variableIn2 = 'directional_masks';              % mask used to generate average of data
+variableIn3 = 'V';                  % Voltage axis
+plotCont  = 1;                     % plotError: 1 = yes, 0 = no
+
+% optional variable input: set value to [] if not used
+numContLines = [];                   % Number of contour lines [default: 20]
+
+savePlot = 0;                       % save plot: 1 = yes, 0 = no
+    
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Log input and output variables
+LOGcomment = sprintf("DataIn: dataset = %s, variableIn1 = %s, variableIn2 = %s, variableIn3 = %s, plotError = %s, numContLines = %s;",dataset,variableIn1,variableIn2,variableIn3, mat2str(plotCont), mat2str(numContLines));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VS06A", LOGcomment, 0);
+
+% Main code execution section
+% Function call
+[tempFig, LOGcomment] =  plotSpectraAlongLineStackedMask(requiredStructCall(data,dataset,variableIn1), requiredStructCall(data,dataset,variableIn2), requiredStructCall(data,dataset,variableIn3), plotCont, numContLines);
+
+%opt. save plot
+if savePlot == 1
+    %ask for plotname:
+    plot_name = uniqueNamePrompt("Averaged pectra along line mask","",LOGpath);
+    LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+    
+    %save the created figures here:
+    savefig(tempFig,strcat(LOGpath,"/",plot_name,".fig"))
+    %create copy of the log corresponding to the saved figures
+    saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+else
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+end
+
+% Clear preset variables
+clearvars dataset variableIn1 variableIn2 variableIn3 plotCont numContLines savePlot 
 %% VG01A Visualize-Grid-01-A; Visualizes dIdV stack as RGB images
 % Edited by Jiabin Nov 2024, James May 2025
 % Processes 3D dI/dV data into a stack of RGB image slices for all layers.
