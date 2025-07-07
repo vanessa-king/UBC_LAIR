@@ -23,7 +23,7 @@ end
 [startPoint, endPoint, width, fig] = drawROIlineWidthAndPlot(data_slice,startPoint, endPoint, width); 
 
 % comment:display ROI selection for LOG
-comment = sprintf("draggableProfile() executed, GUI selection: startPoint = %s, endPoint = %s, width = %s;", mat2str(startPoint),mat2str(endPoint),mat2str(width));
+comment = sprintf("draggableProfile() executed | GUI selection: startPoint = %s, endPoint = %s, width = %s; | opt. 3D->2D conversion: imN = %s, V_actual = %s", mat2str(startPoint),mat2str(endPoint),mat2str(width),mat2str(imN),mat2str(V_actual));
 end
 
 %% main helper functions
