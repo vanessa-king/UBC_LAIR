@@ -1215,7 +1215,7 @@ dataset = 'grid';                   % specify the dataset to be used: e.g., grid
 variableIn1 = 'avg_I';              % average of data
 variableIn2 = 'STD_I';              % STD of data
 variableIn3 = 'V';                  % Voltage axis
-plotError  = 0;                     % plotError: 1 = yes, 0 = no
+plotError  = 1;                     % plotError: 1 = yes, 0 = no
 
 % optional variable input: set value to [] if not used
 savePlot = 0;                       % save plot: 1 = yes, 0 = no
@@ -1344,3 +1344,65 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 clearvars dataset variableIn1 variableIn2 variableIn3
 clearvars variableOut1 variableOut2 variableOut3 rangeChoice rangeType
 
+%% VP01A Visualize-Profile-01-A; Plots a profile of width along a UI selected line
+
+% Created by M. Altthaler 07-2025
+
+% Description:
+% GUI based selection of a line with variable width (ROI) on a topo image
+% or grid slice (2D). Upon dragging the ROI updates. Once a ROI is
+% temporarily selected the height profile (averaged over the line width) 
+% along the line is dislayed, as well as the standard deviation. The enter
+% key concludes the selection and returns the current selection to be saved
+% if the option (saveplots = true) is chosen.
+% Using the startPoint, endPoint, and width input reproduces a previous
+% ROI and subsequent plots. Partial inputs (i.e. only the width) can be 
+% used to preset a specific value. 
+
+% PRESETS:
+% data in: 
+dataset = 'grid';           % specify the dataset to be used: e.g. topo [grid]
+variableIn1 = 'I';          % specify the variable to be processed: e.g. z [I, dIdV]
+
+% save plot boolean
+saveplots = false;          % option to save plots [true: save, false: don't save]
+
+% optional variable inputs
+% set values to [] if not used
+% Relevant inputs for slicing 3D -> 2D data:
+n = 52;                     % slice number (n-th index of 3rd dim of data) [variableIn2 optional]
+variableIn2 = 'V';          % Voltage axis for the 3D data set: e.g. 'V_reduced' for dIdV or 'V' for I(V)
+imageV = [];                % target voltage -> closest value in variableIn2 is chosen [requires variableIn2]
+% optional to reproduce data (partial inputs yield a preset, e.g. only width)
+startPoint = [];            % [x,y] coordinates of start point, [] for interactive selection
+endPoint = [];              % [x,y] coordinates of end point, [] for interactive selection
+width = [];                 % width of the ROI, [] for interactive selection
+
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%LOG data in/out:
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s;)", dataset, variableIn1);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VP01A", LOGcomment, 0);
+
+LOGcomment = sprintf("Optional inputs: n = %s; variableIn2 = %s; imageV  = %s; startPoint = %s; endPoint = %s; width = %s;", num2str(n), variableIn2, num2str(imageV), num2str(startPoint), num2str(endPoint), num2str(width));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+
+
+% Create directional masks
+[figProfile, LOGcomment] = draggableProfile(requiredStructCall(data,dataset,variableIn1),n,optionalStructCall(data,dataset,variableIn2),imageV,startPoint,endPoint,width);
+ 
+if saveplots==true
+    %ask for plotname:
+    plot_name = uniqueNamePrompt("Directional mask","",LOGpath);
+    LOGcomment = strcat(LOGcomment,sprintf(", plotname=%s",plot_name));
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment ,0);
+    
+    %save the created figures here:
+    savefig(figProfile,strcat(LOGpath,"/",plot_name,".fig"))
+    %create copy of the log corresponding to the saved figures
+    saveUsedBlocksLog(LOGpath, LOGfile, LOGpath, plot_name);
+else
+    LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+end
+% Clean up variables
+clearvars dataset variableIn1 variableOut saveplots n variableIn2 imageV connected startPoint endPoint width bin_size bin_sep inputData

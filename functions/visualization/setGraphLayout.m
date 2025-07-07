@@ -69,5 +69,11 @@ switch LayoutCase
         colormap('gray')
         axis image
         axis xy;
-
+    case "topoProfile"
+        ax.FontSize = 12;
+        ax.Title.String = 'Average of profile along the line';
+        ax.XLabel.String = 'Line';
+        ax.YLabel.String = 'Height';
+        axis square;
+        axis tight;
 end
