@@ -1344,6 +1344,53 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 clearvars dataset variableIn1 variableIn2 variableIn3
 clearvars variableOut1 variableOut2 variableOut3 rangeChoice rangeType
 
+
+%% VG02A Visualize-Grid-02-A; Export grid to video file 
+% Edited by M. Altthaler 07/2025
+% Processes 3D dI/dV data into a RGB video
+% Features:
+% - Select global or dynamic color range (matches VG01A)
+% - Set delay (inverse frame rate) 
+% Notes:
+% - Saves video to UI selected location
+
+% Presets:
+dataset = 'grid';
+variableIn1 = 'I';
+variableIn2 = 'V';
+variableIn3 = 'invgray';    % Colormap: 'invgray' (default), 'jet', 'hot', 'gray', 'parula', or any valid MATLAB colormap
+delay = 20;                 % delay in ms, i.e. 100ms -> 10 frames (layers) per second [range: 6ms-1000ms, yields 1-172 frames per second]
+croppedVideo = 0;           % 1: Crop plot to data only | 0: include axis labels and voltage (title) per frame
+videoSize = [600 600];      % Size of video in pixels (usually: n x n, e.g. 800 x 800)    
+
+%%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Prompt for range type
+while true
+    rangeChoice = upper(input('Select color range type (G/g for Global, D/d for Dynamic): ', 's'));
+    if strcmp(rangeChoice, 'G')
+        rangeType = 'global';
+        break;
+    elseif strcmp(rangeChoice, 'D')
+        rangeType = 'dynamic';
+        break;
+    else
+        fprintf('Invalid selection. Please enter G or D.\n');
+    end
+end
+
+% LOG data in/out
+LOGcomment = sprintf("dataset = %s; variableIn1 = %s; variableIn2 = %s; variableIn3 = %s; delay = %s; rangeType = %s; croppedVideo = %s; videoSize = %s", ...
+    dataset, variableIn1, variableIn2, variableIn3, mat2str(delay), rangeType,mat2str(croppedVideo), mat2str(videoSize));
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "VG02A", LOGcomment, 0);
+
+% Execute videoWriter function
+[LOGcomment,file,location] = gridVideoWriter(data.(dataset).(variableIn1), data.(dataset).(variableIn2), rangeType, delay, variableIn3,croppedVideo,videoSize);
+LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
+saveUsedBlocksLog(LOGpath, LOGfile,location,file);
+
+% Clear variables
+clearvars dataset variableIn1 variableIn2 variableIn3 delay rangeChoice rangeType croppedVideo videoSize location file
 %% VP01A Visualize-Profile-01-A; Plots a profile of width along a UI selected line
 
 % Created by M. Altthaler 07-2025
