@@ -33,7 +33,7 @@ end
 
 % Calculate center point
 [rows, cols, ~] = size(data3D);
-center = [floor(rows/2)+1, floor(cols/2)+1];
+center = [floor(rows/2+1), floor(cols/2+1)];
 
 % If radius not provided, get it interactively
 if isempty(radius)
@@ -173,6 +173,22 @@ colormap gray;
 title(sprintf('Angle: %.2f° (0° = vertical)', rad2deg(angles(1))));
 xlabel('Position along line');
 ylabel('Energy slice');
+% Get current limits
+xlim_actual = xlim;
+ylim_actual = ylim;
+
+% Define desired normalized labels
+xtick_labels = linspace(-1, 1, 11);         % Labels you want on x-axis
+ytick_labels = linspace(-800, 800, 17);     % Labels you want on y-axis
+
+% Map normalized labels back to actual tick positions
+xtick_positions = linspace(xlim_actual(1), xlim_actual(2), numel(xtick_labels));
+ytick_positions = linspace(ylim_actual(1), ylim_actual(2), numel(ytick_labels));
+
+% Set tick positions and corresponding labels
+set(gca, 'XTick', xtick_positions, 'XTickLabel', xtick_labels);
+set(gca, 'YTick', ytick_positions, 'YTickLabel', ytick_labels);
+axis xy;
 colorbar;
 
 % Store data in figure for callback

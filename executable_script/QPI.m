@@ -205,6 +205,15 @@ LOGcomment = logUsedBlocks(LOGpath, LOGfile, "  ^  ", LOGcomment, 0);
 % Clean up variables
 clearvars dataset variableIn variableOut1 variableOut2 inputData sliceType contrastMode pointA pointB
 
+%% picking and cropping within the bragg peaks
+data.grid.QPI_mirrow_2=combined_data_xymirror(497:992,end-496+1:end,:);
+data.grid.QPI_mirrow_1=combined_data_xymirror(1:496,end-496+1:end,:);
+data.grid.QPI_fourfold_1=combined_data_fourfold(1:496,end-496+1:end,:);
+data.grid.QPI_fourfold_2=combined_data_fourfold(497:992,end-496+1:end,:);
+data.grid.QPI_fourfold_2=data.grid.QPI_fourfold_2(125:373,125:373,:);
+data.grid.QPI_fourfold_1=data.grid.QPI_fourfold_1(125:373,125:373,:);
+data.grid.QPI_mirrow_2=data.grid.QPI_mirrow_2(125:373,125:373,:);
+data.grid.QPI_mirrow_1=data.grid.QPI_mirrow_1(125:373,125:373,:);
 %% QV03A QPI-Visualize-03-A: Create rotational slices from 3D data
 % Created by Dong Chen in May 2025
 %
@@ -216,13 +225,13 @@ clearvars dataset variableIn variableOut1 variableOut2 inputData sliceType contr
 % - Provides interactive angle selection via slider
 %
 % presets:
-dataset = 'grid5';           % specify the dataset to be used: e.g. grid
-variableIn = 'QPI';         % specify the input variable (QPI data)
-variableOut1 = 'rotational_slices'; % specify the variable name to store the slice data
+dataset = 'grid';           % specify the dataset to be used: e.g. grid
+variableIn = 'QPI_fourfold_2';         % specify the input variable (QPI data)
+variableOut1 = 'rotational_fourfold_2'; % specify the variable name to store the slice data
 variableOut2 = 'slice_angles'; % specify the variable name to store the angles
 contrastMode = 'global';    % range type: 'dynamic' (normalized per slice) or 'global' or 'log'
 lineWidth = 1;              % line width in pixels
-radius = [34];                % radius of the ROI
+radius = size(data.(dataset).(variableIn),1)/2;                % radius of the ROI
 
 %%%%%%%%%%%%%%%%%% DO NOT EDIT BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % LOG data in/out:
